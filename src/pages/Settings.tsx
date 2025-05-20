@@ -1,8 +1,10 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import StarRating from '@/components/settings/StarRating';
 import { Settings as SettingsIcon } from 'lucide-react';
+import ActivityItem from '@/components/activity/ActivityItem';
 
 interface CriterionWeight {
   id: string;
@@ -51,6 +53,29 @@ const Settings = () => {
     }
   ]);
 
+  const recentActivities = [
+    {
+      type: 'upload' as const,
+      message: 'New CV uploaded for Senior AI Engineer',
+      timestamp: '2 hours ago'
+    },
+    {
+      type: 'document' as const,
+      message: 'CV analysis completed for Thomas Dubois',
+      timestamp: '3 hours ago'
+    },
+    {
+      type: 'transition' as const,
+      message: 'Emma Bernard moved to interview stage',
+      timestamp: '5 hours ago'
+    },
+    {
+      type: 'event' as const,
+      message: 'Interview scheduled with Sophie Martin',
+      timestamp: '1 day ago'
+    }
+  ];
+
   const handleWeightChange = (id: string, newWeight: number) => {
     setCriteria(prevCriteria => 
       prevCriteria.map(criterion => 
@@ -60,10 +85,10 @@ const Settings = () => {
   };
 
   return (
-    <div className="ml-64 p-8">
+    <div className="ml-64 p-8 bg-[#F9FAFB]">
       <Header title="Settings" />
       
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto space-y-6">
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
@@ -95,6 +120,25 @@ const Settings = () => {
                     onChange={(value) => handleWeightChange(criterion.id, value)} 
                   />
                 </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Activity Section */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {recentActivities.map((activity, index) => (
+                <ActivityItem
+                  key={index}
+                  type={activity.type}
+                  message={activity.message}
+                  timestamp={activity.timestamp}
+                />
               ))}
             </div>
           </CardContent>
