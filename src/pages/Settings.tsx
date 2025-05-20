@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import StarRating from '@/components/settings/StarRating';
-import { AdjustmentsHorizontal } from 'lucide-react';
+import { Settings as SettingsIcon } from 'lucide-react';
 
 interface CriterionWeight {
   id: string;
@@ -68,7 +67,7 @@ const Settings = () => {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
-              <AdjustmentsHorizontal className="h-5 w-5 text-primary" />
+              <SettingsIcon className="h-5 w-5 text-primary" />
               <CardTitle>Evaluation Criteria Weights</CardTitle>
             </div>
             <CardDescription>
