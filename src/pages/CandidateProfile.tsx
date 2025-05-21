@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Download, Star, StarOff, Send, FileText, Calendar,
-  ThumbsUp, ThumbsDown, Clipboard, Link, BookOpen, Languages
+  ThumbsUp, ThumbsDown, Clipboard, Link, BookOpen, Languages,
+  Upload
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -12,6 +12,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery } from "@tanstack/react-query";
 import { Separator } from "@/components/ui/separator";
+import { 
+  Dialog, 
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 import { CandidateDetail, CandidateStatus } from "@/types/candidate";
 import CandidateHeader from "@/components/candidate/CandidateHeader";
 import CandidateSummary from "@/components/candidate/CandidateSummary";
@@ -19,6 +25,7 @@ import SkillsMatchingGrid from "@/components/candidate/SkillsMatchingGrid";
 import DocumentsSection from "@/components/candidate/DocumentsSection";
 import PersonalityFitChart from "@/components/candidate/PersonalityFitChart";
 import CandidateTimeline from "@/components/candidate/CandidateTimeline";
+import { FileUploader } from "@/components/candidate/FileUploader";
 
 // Mock function to fetch candidate data
 const fetchCandidateData = async (id: string): Promise<CandidateDetail> => {
@@ -103,6 +110,7 @@ const CandidateProfile = () => {
   const { toast } = useToast();
   const [hrComment, setHrComment] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
 
   const { data: candidate, isLoading, error } = useQuery({
     queryKey: ['candidate', candidateId],
@@ -197,19 +205,38 @@ const CandidateProfile = () => {
     });
   };
 
+  const handleFileUpload = (name: string, files: File[]) => {
+    toast({
+      title: "Files Uploaded",
+      description: `${files.length} files uploaded for ${name || candidate?.name}. AI analysis started.`,
+    });
+    setShowUploadDialog(false);
+  };
+
   return (
     <div className="flex-1 p-6 ml-64 bg-gray-50">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <CandidateHeader 
-          name={candidate.name}
-          targetJob={candidate.targetJob}
-          score={candidate.aiScore}
-          status={candidate.status}
-          aiStatus={candidate.aiStatus}
-          lastUpdated={candidate.lastUpdated}
-          onCopyLink={handleCopyLink}
-        />
+        {/* Header with Upload Button */}
+        <div className="flex justify-between items-center">
+          <CandidateHeader 
+            name={candidate.name}
+            targetJob={candidate.targetJob}
+            score={candidate.aiScore}
+            status={candidate.status}
+            aiStatus={candidate.aiStatus}
+            lastUpdated={candidate.lastUpdated}
+            onCopyLink={handleCopyLink}
+          />
+          
+          <Button 
+            onClick={() => setShowUploadDialog(true)}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Upload className="h-4 w-4" />
+            Upload Documents
+          </Button>
+        </div>
 
         <div className="grid grid-cols-12 gap-6 mt-6">
           {/* Left column - Summary & Comments */}
@@ -326,6 +353,16 @@ const CandidateProfile = () => {
           </div>
         </div>
       </div>
+
+      {/* Upload Dialog */}
+      <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Upload Additional Documents</DialogTitle>
+          </DialogHeader>
+          <FileUploader onUpload={handleFileUpload} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

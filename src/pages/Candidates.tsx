@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Upload, Calendar, BarChart } from 'lucide-react';
@@ -20,6 +21,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle 
+} from "@/components/ui/dialog";
+import { FileUploader } from '@/components/candidate/FileUploader';
+import { useToast } from "@/hooks/use-toast";
+import CandidateDetails from '@/components/candidate/CandidateDetails';
 
 interface Candidate {
   id: number;
@@ -38,6 +48,8 @@ interface Candidate {
 }
 
 const Candidates = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [allCandidates] = useState<Candidate[]>([
     {
       id: 1,
@@ -92,6 +104,9 @@ const Candidates = () => {
   const [jobFilter, setJobFilter] = useState('all');
   const [scoreFilter, setScoreFilter] = useState(0);
   const [date, setDate] = useState<Date | undefined>(undefined);
+  const [expandedCandidate, setExpandedCandidate] = useState<number | null>(null);
+  const [selectedCVCandidate, setSelectedCVCandidate] = useState<number | null>(null);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
 
   useEffect(() => {
     let result = allCandidates;
@@ -142,6 +157,41 @@ const Candidates = () => {
       default:
         return 'bg-gray-100 text-gray-700';
     }
+  };
+
+  const handleToggleDetails = (candidateId: number) => {
+    if (expandedCandidate === candidateId) {
+      setExpandedCandidate(null);
+    } else {
+      setExpandedCandidate(candidateId);
+    }
+  };
+
+  const handleViewCV = (candidateId: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    setSelectedCVCandidate(candidateId);
+  };
+
+  const handleChangeStatus = (candidateId: number, newStatus: 'New' | 'Reviewed' | 'Interview') => {
+    // In a real app, this would update the database
+    // For now, we'll just show a toast message
+    const candidate = allCandidates.find(c => c.id === candidateId);
+    if (candidate) {
+      toast({
+        title: "Status Updated",
+        description: `${candidate.name}'s status has been changed to ${newStatus}`,
+      });
+    }
+  };
+
+  const handleFileUpload = (name: string, files: File[]) => {
+    // In a real app, this would upload the files to a server
+    // and trigger AI processing
+    toast({
+      title: "Files Uploaded",
+      description: `${files.length} files uploaded for ${name}. AI analysis started.`,
+    });
+    setShowUploadDialog(false);
   };
 
   const availableJobs = ['Product Manager', 'Senior AI Engineer'];
@@ -260,6 +310,11 @@ const Candidates = () => {
                 />
               </PopoverContent>
             </Popover>
+
+            <Button onClick={() => setShowUploadDialog(true)} className="flex items-center gap-2">
+              <Upload className="h-4 w-4" />
+              Upload CV
+            </Button>
           </div>
         </div>
       </div>
@@ -335,16 +390,64 @@ const Candidates = () => {
                   </div>
                 </div>
 
-                <button className="w-full flex justify-center items-center gap-1 text-gray-500 text-sm py-1 hover:bg-gray-50 rounded-md">
-                  <span>Show More</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button 
+                  className="w-full flex justify-center items-center gap-1 text-gray-500 text-sm py-1 hover:bg-gray-50 rounded-md"
+                  onClick={() => handleToggleDetails(candidate.id)}
+                >
+                  <span>{expandedCandidate === candidate.id ? "Show Less" : "Show More"}</span>
+                  <svg 
+                    className={`w-4 h-4 transition-transform ${expandedCandidate === candidate.id ? "rotate-180" : ""}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
+                {expandedCandidate === candidate.id && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <CandidateDetails candidate={candidate} />
+                  </div>
+                )}
+
                 <div className="border-t border-gray-100 mt-4 pt-4 flex justify-between items-center">
-                  <button className="text-blue-600 text-sm font-medium hover:underline">View Resume</button>
-                  <button className="text-gray-600 text-sm hover:text-gray-900">Change Status</button>
+                  <button 
+                    className="text-blue-600 text-sm font-medium hover:underline"
+                    onClick={(e) => handleViewCV(candidate.id, e)}
+                  >
+                    View Resume
+                  </button>
+                  
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-gray-600 text-sm hover:text-gray-900">
+                        Change Status
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0">
+                      <div className="p-2">
+                        <button
+                          onClick={() => handleChangeStatus(candidate.id, 'New')}
+                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-blue-50"
+                        >
+                          New
+                        </button>
+                        <button
+                          onClick={() => handleChangeStatus(candidate.id, 'Reviewed')}
+                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-purple-50"
+                        >
+                          Reviewed
+                        </button>
+                        <button
+                          onClick={() => handleChangeStatus(candidate.id, 'Interview')}
+                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-green-50"
+                        >
+                          Interview
+                        </button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
             </Card>
@@ -374,6 +477,33 @@ const Candidates = () => {
           </Button>
         </div>
       )}
+      
+      {/* CV Viewer Dialog */}
+      <Dialog open={selectedCVCandidate !== null} onOpenChange={() => setSelectedCVCandidate(null)}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedCVCandidate && allCandidates.find(c => c.id === selectedCVCandidate)?.name}'s CV
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 h-full overflow-auto bg-gray-100 rounded-md p-4 flex items-center justify-center">
+            <div className="bg-white p-6 rounded shadow max-w-md mx-auto">
+              <p className="text-center text-gray-500">CV Preview would appear here</p>
+              <p className="text-center text-gray-500 mt-2">In a real application, this would display the actual CV document.</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Upload Dialog */}
+      <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Upload Candidate Files</DialogTitle>
+          </DialogHeader>
+          <FileUploader onUpload={handleFileUpload} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
