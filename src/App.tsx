@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/layout/Sidebar";
 import Index from "./pages/Index";
 import Candidates from "./pages/Candidates";
+import CandidateProfile from "./pages/CandidateProfile";
 import JobPostings from "./pages/JobPostings";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -23,6 +24,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/candidates" element={<Candidates />} />
+          <Route path="/candidates/:candidateId" element={<CandidateProfile />} />
           <Route path="/job-postings" element={<JobPostings />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
