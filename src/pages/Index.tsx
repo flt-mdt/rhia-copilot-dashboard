@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import StatCard from '@/components/dashboard/StatCard';
 import CandidateCard from '@/components/dashboard/CandidateCard';
@@ -7,6 +8,12 @@ import JobCard from '@/components/dashboard/JobCard';
 import { Check } from 'lucide-react';
 
 const Index = () => {
+  const navigate = useNavigate();
+  
+  const handleCandidateClick = (id: number) => {
+    navigate(`/candidates/${id}`);
+  };
+  
   return (
     <div className="ml-64 p-8">
       <Header title="Dashboard" />
@@ -59,38 +66,44 @@ const Index = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">Top Candidates</h2>
-            <a href="#" className="text-primary text-sm flex items-center">
+            <Link to="/candidates" className="text-primary text-sm flex items-center">
               View all
               <svg className="h-4 w-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
                 <polyline points="12 5 19 12 12 19"></polyline>
               </svg>
-            </a>
+            </Link>
           </div>
           
-          <CandidateCard 
-            initials="EB" 
-            name="Emma Bernard" 
-            position="Product Manager"
-            applied="20/06/2023" 
-            score={{ rating: "4.7/5", percentage: 94 }}
-          />
+          <div onClick={() => handleCandidateClick(1)} className="cursor-pointer">
+            <CandidateCard 
+              initials="EB" 
+              name="Emma Bernard" 
+              position="Product Manager"
+              applied="20/06/2023" 
+              score={{ rating: "4.7/5", percentage: 94 }}
+            />
+          </div>
           
-          <CandidateCard 
-            initials="SM" 
-            name="Sophie Martin" 
-            position="Senior AI Engineer"
-            applied="15/06/2023" 
-            score={{ rating: "4.6/5", percentage: 92 }}
-          />
+          <div onClick={() => handleCandidateClick(2)} className="cursor-pointer">
+            <CandidateCard 
+              initials="SM" 
+              name="Sophie Martin" 
+              position="Senior AI Engineer"
+              applied="15/06/2023" 
+              score={{ rating: "4.6/5", percentage: 92 }}
+            />
+          </div>
           
-          <CandidateCard 
-            initials="TD" 
-            name="Thomas Dubois" 
-            position="Senior AI Engineer"
-            applied="18/06/2023" 
-            score={{ rating: "4.1/5", percentage: 82 }}
-          />
+          <div onClick={() => handleCandidateClick(3)} className="cursor-pointer">
+            <CandidateCard 
+              initials="TD" 
+              name="Thomas Dubois" 
+              position="Senior AI Engineer"
+              applied="18/06/2023" 
+              score={{ rating: "4.1/5", percentage: 82 }}
+            />
+          </div>
         </div>
         
         {/* Active Job Postings */}

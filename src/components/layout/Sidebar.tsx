@@ -1,12 +1,51 @@
 
-import { Link, useLocation } from "react-router-dom";
-import { Settings, Users, Briefcase } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Settings, Users, Briefcase, LogOut, LogIn } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+interface User {
+  name: string;
+  email: string;
+  role: string;
+  isAuthenticated: boolean;
+}
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [user, setUser] = useState<User | null>(null);
+  
+  useEffect(() => {
+    // Check for user auth on component mount
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Failed to parse user data", error);
+      }
+    }
+  }, []);
   
   const isActive = (path: string) => {
     return location.pathname === path;
+  };
+
+  const handleLogout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem('user');
+    setUser(null);
+    
+    toast({
+      title: "Logout successful",
+      description: "You have been logged out",
+    });
+    
+    // Navigate to login page
+    navigate('/login');
   };
 
   return (
@@ -43,7 +82,7 @@ const Sidebar = () => {
             <Link 
               to="/candidates" 
               className={`flex items-center gap-3 px-4 py-3 ${
-                isActive("/candidates") 
+                location.pathname.includes("/candidates") 
                 ? "bg-blue-50 text-primary font-medium" 
                 : "text-textGray hover:bg-gray-100"
               }`}
@@ -81,14 +120,37 @@ const Sidebar = () => {
         </ul>
       </nav>
       
-      <div className="mt-auto mb-4 mx-4 pt-4 border-t border-gray-200 flex items-center gap-3">
-        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-          <span className="text-gray-600 font-medium">AD</span>
-        </div>
-        <div>
-          <div className="text-sm font-medium">Alex Dupont</div>
-          <div className="text-xs text-gray-500">HR Manager</div>
-        </div>
+      <div className="mt-auto mb-4 mx-4 pt-4 border-t border-gray-200">
+        {user ? (
+          <div className="flex flex-col">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                <span className="text-gray-600 font-medium">
+                  {user.name.split(' ').map(n => n[0]).join('')}
+                </span>
+              </div>
+              <div>
+                <div className="text-sm font-medium">{user.name}</div>
+                <div className="text-xs text-gray-500">{user.role}</div>
+              </div>
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-red-50 hover:text-red-600 transition-colors"
+            >
+              <LogOut size={16} />
+              Déconnexion
+            </button>
+          </div>
+        ) : (
+          <Link 
+            to="/login"
+            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors"
+          >
+            <LogIn size={16} />
+            🔐 Connexion
+          </Link>
+        )}
       </div>
     </div>
   );

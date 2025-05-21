@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -50,7 +49,7 @@ interface Candidate {
 const Candidates = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [allCandidates] = useState<Candidate[]>([
+  const [allCandidates, setAllCandidates] = useState<Candidate[]>([
     {
       id: 1,
       initials: 'EB',
@@ -172,9 +171,22 @@ const Candidates = () => {
     setSelectedCVCandidate(candidateId);
   };
 
+  // Update the status change function to modify the actual candidate state
   const handleChangeStatus = (candidateId: number, newStatus: 'New' | 'Reviewed' | 'Interview') => {
-    // In a real app, this would update the database
-    // For now, we'll just show a toast message
+    // Update the candidates array with the new status
+    const updatedCandidates = allCandidates.map(candidate => 
+      candidate.id === candidateId ? {...candidate, status: newStatus} : candidate
+    );
+    
+    setAllCandidates(updatedCandidates);
+    
+    // Also update filtered candidates if needed
+    setFilteredCandidates(prevFiltered => 
+      prevFiltered.map(candidate => 
+        candidate.id === candidateId ? {...candidate, status: newStatus} : candidate
+      )
+    );
+    
     const candidate = allCandidates.find(c => c.id === candidateId);
     if (candidate) {
       toast({
@@ -201,6 +213,20 @@ const Candidates = () => {
     { label: '≥ 80%', value: 80 },
     { label: '≥ 70%', value: 70 }
   ];
+
+  // Navigate to candidate profile
+  const handleCandidateClick = (candidateId: number, event: React.MouseEvent) => {
+    // Don't navigate if the click was on specific interactive elements
+    if (
+      (event.target as HTMLElement).closest('.status-change-button') ||
+      (event.target as HTMLElement).closest('.view-cv-button')
+    ) {
+      return;
+    }
+    
+    // Navigate to the candidate profile
+    navigate(`/candidates/${candidateId}`);
+  };
 
   return (
     <div className="ml-64 p-8">
@@ -324,7 +350,11 @@ const Candidates = () => {
       {filteredCandidates.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCandidates.map((candidate) => (
-            <Card key={candidate.id} className="overflow-hidden border border-gray-100">
+            <Card 
+              key={candidate.id} 
+              className="overflow-hidden border border-gray-100 transition-shadow hover:shadow-md cursor-pointer" 
+              onClick={(e) => handleCandidateClick(candidate.id, e)}
+            >
               <div className="p-6">
                 <div className="flex justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -383,7 +413,7 @@ const Candidates = () => {
                   <div className="flex items-center gap-2">
                     <span className="p-1 bg-yellow-50 rounded text-yellow-500">
                       <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
                       </svg>
                     </span>
                     <span className="text-sm text-gray-600">Languages: <span className="font-medium">{candidate.scores.languages}</span></span>
@@ -392,11 +422,14 @@ const Candidates = () => {
 
                 <button 
                   className="w-full flex justify-center items-center gap-1 text-gray-500 text-sm py-1 hover:bg-gray-50 rounded-md"
-                  onClick={() => handleToggleDetails(candidate.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/candidates/${candidate.id}`);
+                  }}
                 >
-                  <span>{expandedCandidate === candidate.id ? "Show Less" : "Show More"}</span>
+                  <span>Show More</span>
                   <svg 
-                    className={`w-4 h-4 transition-transform ${expandedCandidate === candidate.id ? "rotate-180" : ""}`} 
+                    className="w-4 h-4" 
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -405,27 +438,24 @@ const Candidates = () => {
                   </svg>
                 </button>
 
-                {expandedCandidate === candidate.id && (
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <CandidateDetails candidate={candidate} />
-                  </div>
-                )}
-
                 <div className="border-t border-gray-100 mt-4 pt-4 flex justify-between items-center">
                   <button 
-                    className="text-blue-600 text-sm font-medium hover:underline"
-                    onClick={(e) => handleViewCV(candidate.id, e)}
+                    className="text-blue-600 text-sm font-medium hover:underline view-cv-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewCV(candidate.id, e);
+                    }}
                   >
                     View Resume
                   </button>
                   
                   <Popover>
                     <PopoverTrigger asChild>
-                      <button className="text-gray-600 text-sm hover:text-gray-900">
+                      <button className="text-gray-600 text-sm hover:text-gray-900 status-change-button" onClick={(e) => e.stopPropagation()}>
                         Change Status
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
+                    <PopoverContent className="w-[200px] p-0" onClick={(e) => e.stopPropagation()}>
                       <div className="p-2">
                         <button
                           onClick={() => handleChangeStatus(candidate.id, 'New')}
