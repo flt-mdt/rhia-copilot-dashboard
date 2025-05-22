@@ -51,9 +51,11 @@ const Sidebar = () => {
   return (
     <div className="w-64 h-screen bg-white fixed left-0 top-0 shadow-md flex flex-col">
       <div className="p-4 flex items-center gap-3">
-        <div className="h-10 w-10 rounded bg-primary flex items-center justify-center">
-          <span className="text-white font-bold">RC</span>
-        </div>
+        <img 
+          src="/lovable-uploads/12438a1e-9fa5-461d-b064-fd80416fb237.png" 
+          alt="RHIA Copilot" 
+          className="h-10 w-auto"
+        />
         <span className="font-semibold text-lg">RHIA Copilot</span>
       </div>
       
@@ -148,7 +150,7 @@ const Sidebar = () => {
             className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors"
           >
             <LogIn size={16} />
-            🔐 Connexion
+            Connexion
           </Link>
         )}
       </div>

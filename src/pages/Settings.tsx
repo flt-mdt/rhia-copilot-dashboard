@@ -1,10 +1,13 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import StarRating from '@/components/settings/StarRating';
-import { Settings as SettingsIcon } from 'lucide-react';
+import { Settings as SettingsIcon, LogOut } from 'lucide-react';
 import ActivityItem from '@/components/activity/ActivityItem';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 interface CriterionWeight {
   id: string;
@@ -14,6 +17,8 @@ interface CriterionWeight {
 }
 
 const Settings = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [criteria, setCriteria] = useState<CriterionWeight[]>([
     {
       id: "technical-skills",
@@ -84,6 +89,19 @@ const Settings = () => {
     );
   };
 
+  const handleLogout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem('user');
+    
+    toast({
+      title: "Logout successful",
+      description: "You have been logged out",
+    });
+    
+    // Navigate to login page
+    navigate('/login');
+  };
+
   return (
     <div className="ml-64 p-8 bg-[#F9FAFB]">
       <Header title="Settings" />
@@ -141,6 +159,26 @@ const Settings = () => {
                 />
               ))}
             </div>
+          </CardContent>
+        </Card>
+        
+        {/* Logout Button */}
+        <Card className="border border-red-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-red-600">Déconnexion</CardTitle>
+            <CardDescription>
+              Déconnectez-vous de votre compte RHIA Copilot
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              variant="destructive"
+              className="w-full"
+              onClick={handleLogout}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Déconnexion
+            </Button>
           </CardContent>
         </Card>
       </div>
