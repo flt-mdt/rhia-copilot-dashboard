@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +18,8 @@ interface Job {
 }
 
 const JobPostings = () => {
+  const navigate = useNavigate();
+  
   const jobs: Job[] = [
     {
       id: 1,
@@ -46,6 +49,15 @@ const JobPostings = () => {
       status: "Draft"
     }
   ];
+  
+  const handleJobClick = (jobId: number) => {
+    navigate(`/job-postings/${jobId}`);
+  };
+  
+  const handleCreateJob = () => {
+    // This would open a form or modal to create a new job posting
+    console.log("Create new job");
+  };
 
   return (
     <div className="ml-64 p-8 bg-[#F9FAFB]">
@@ -54,7 +66,7 @@ const JobPostings = () => {
       <div className="bg-white rounded-lg p-6 border border-gray-100">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-semibold text-gray-900">All Job Postings</h2>
-          <Button className="bg-primary text-white">
+          <Button className="bg-primary text-white" onClick={handleCreateJob}>
             <Plus className="mr-2 h-4 w-4 bg-white text-primary rounded-full p-[2px]" />
             Add New Job
           </Button>
@@ -73,7 +85,10 @@ const JobPostings = () => {
           <TableBody>
             {jobs.map((job) => (
               <React.Fragment key={job.id}>
-                <TableRow className="border-b border-gray-100 hover:bg-gray-50">
+                <TableRow 
+                  className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                  onClick={() => handleJobClick(job.id)}
+                >
                   <TableCell className="py-4">
                     <div className="flex items-center">
                       <div className="bg-blue-100 p-2 rounded-md mr-3">
@@ -112,7 +127,11 @@ const JobPostings = () => {
                 </TableRow>
                 <TableRow className="border-b border-gray-100">
                   <TableCell colSpan={5} className="text-center py-2">
-                    <Button variant="ghost" className="text-gray-500 text-sm">
+                    <Button 
+                      variant="ghost" 
+                      className="text-gray-500 text-sm"
+                      onClick={() => handleJobClick(job.id)}
+                    >
                       Show More <ChevronDown className="ml-1 h-4 w-4" />
                     </Button>
                   </TableCell>
