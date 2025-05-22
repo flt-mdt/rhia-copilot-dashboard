@@ -14,6 +14,10 @@ const Index = () => {
     navigate(`/candidates/${id}`);
   };
   
+  const handleJobClick = (id: number) => {
+    navigate(`/job-postings/${id}`);
+  };
+  
   return (
     <div className="ml-64 p-8">
       <Header title="Dashboard" />
@@ -110,13 +114,13 @@ const Index = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">Active Job Postings</h2>
-            <a href="#" className="text-primary text-sm flex items-center">
+            <Link to="/job-postings" className="text-primary text-sm flex items-center">
               View all
               <svg className="h-4 w-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
                 <polyline points="12 5 19 12 12 19"></polyline>
               </svg>
-            </a>
+            </Link>
           </div>
           
           <JobCard 
@@ -125,6 +129,7 @@ const Index = () => {
             location="Paris, France"
             postedDate="01/06/2023"
             candidates={12}
+            onClick={() => handleJobClick(1)}
           />
           
           <JobCard 
@@ -133,6 +138,7 @@ const Index = () => {
             location="Lyon, France"
             postedDate="05/06/2023"
             candidates={8}
+            onClick={() => handleJobClick(2)}
           />
         </div>
       </div>

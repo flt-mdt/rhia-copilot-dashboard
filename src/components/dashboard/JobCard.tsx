@@ -7,9 +7,10 @@ interface JobCardProps {
   location: string;
   postedDate: string;
   candidates: number;
+  onClick?: () => void;
 }
 
-const JobCard = ({ title, department, location, postedDate, candidates }: JobCardProps) => {
+const JobCard = ({ title, department, location, postedDate, candidates, onClick }: JobCardProps) => {
   return (
     <div className="border-b border-gray-200 py-4">
       <div className="flex justify-between items-center">
@@ -33,7 +34,10 @@ const JobCard = ({ title, department, location, postedDate, candidates }: JobCar
             </svg>
             <span>Posted {postedDate}</span>
           </div>
-          <button className="text-sm border border-gray-200 text-gray-600 px-3 py-1 rounded hover:bg-gray-50">
+          <button 
+            className="text-sm border border-gray-200 text-gray-600 px-3 py-1 rounded hover:bg-gray-50"
+            onClick={onClick}
+          >
             View Details
           </button>
         </div>
