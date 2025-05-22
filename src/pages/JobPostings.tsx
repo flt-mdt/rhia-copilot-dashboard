@@ -55,8 +55,7 @@ const JobPostings = () => {
   };
   
   const handleCreateJob = () => {
-    // This would open a form or modal to create a new job posting
-    console.log("Create new job");
+    navigate('/job-postings/create');
   };
 
   return (
