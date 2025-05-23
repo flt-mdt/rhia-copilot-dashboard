@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Settings, Users, Briefcase, LogOut, LogIn, Search } from "lucide-react";
+import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface User {
@@ -52,7 +52,7 @@ const Sidebar = () => {
     <div className="w-64 h-screen bg-white fixed left-0 top-0 shadow-md flex flex-col">
       <div className="p-4 flex items-center gap-3">
         <img 
-          src="/lovable-uploads/12438a1e-9fa5-461d-b064-fd80416fb237.png" 
+          src="/lovable-uploads/add27bbf-284b-4ea1-ab3e-b9ec42eb3ce3.png" 
           alt="RHIA Copilot" 
           className="h-10 w-auto"
         />
@@ -117,6 +117,19 @@ const Sidebar = () => {
             >
               <Search size={20} />
               Hunter
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/brief" 
+              className={`flex items-center gap-3 px-4 py-3 ${
+                isActive("/brief") 
+                ? "bg-blue-50 text-primary font-medium" 
+                : "text-textGray hover:bg-gray-100"
+              }`}
+            >
+              <MessageSquare size={20} />
+              Brief avec l'IA
             </Link>
           </li>
           <li>

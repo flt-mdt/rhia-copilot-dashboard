@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Hunter from "./pages/Hunter";
+import Brief from "./pages/Brief";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/job-postings/:jobId" element={<JobDetail />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/hunter" element={<Hunter />} />
+          <Route path="/brief" element={<Brief />} />
           <Route path="/login" element={<Login />} />
           <Route path="/sign-in" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<NotFound />} />
