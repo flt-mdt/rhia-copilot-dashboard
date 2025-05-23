@@ -155,14 +155,14 @@ const Brief = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Chat Interface */}
-          <div className="lg:col-span-2">
-            <Card className="h-[600px] flex flex-col">
+          <div className="lg:col-span-2 flex flex-col space-y-4">
+            <Card className="flex-1">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Conversation avec l'IA</CardTitle>
               </CardHeader>
-              <CardContent className="flex-1 flex flex-col">
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+              <CardContent className="flex flex-col">
+                {/* Messages Container with fixed height */}
+                <div className="h-[400px] overflow-y-auto space-y-4 pr-2 mb-4">
                   {messages.map((message) => (
                     <ChatMessage
                       key={message.id}
@@ -183,8 +183,8 @@ const Brief = () => {
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* Input */}
-                <div className="border-t pt-4 mt-4">
+                {/* Input Section */}
+                <div className="border-t pt-4">
                   <div className="flex space-x-2">
                     <Textarea
                       value={currentMessage}
@@ -206,22 +206,26 @@ const Brief = () => {
               </CardContent>
             </Card>
 
-            {/* Suggestions */}
-            <div className="mt-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
-                <Lightbulb className="h-4 w-4 mr-2" />
-                Suggestions pour approfondir
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {suggestions.map((suggestion, index) => (
-                  <SuggestionCard
-                    key={index}
-                    suggestion={suggestion}
-                    onClick={handleSuggestionClick}
-                  />
-                ))}
-              </div>
-            </div>
+            {/* Suggestions - Now separated from chat */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-gray-700 flex items-center">
+                  <Lightbulb className="h-4 w-4 mr-2" />
+                  Suggestions pour approfondir
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {suggestions.map((suggestion, index) => (
+                    <SuggestionCard
+                      key={index}
+                      suggestion={suggestion}
+                      onClick={handleSuggestionClick}
+                    />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Brief Summary */}
