@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,6 +23,7 @@ import Brief from "./pages/Brief";
 import JobTemplatesLibrary from "./pages/JobTemplatesLibrary";
 import Subscription from "./pages/Subscription";
 import RootRedirect from "./components/RootRedirect";
+import Presentation from "./pages/Presentation";
 
 const queryClient = new QueryClient();
 
@@ -36,7 +36,9 @@ const App = () => (
         <LanguageProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<RootRedirect />} />
+              <Route path="/" element={<Presentation />} />
+              <Route path="/presentation" element={<Presentation />} />
+              <Route path="/dashboard-redirect" element={<RootRedirect />} />
               <Route path="/subscription" element={<Subscription />} />
               <Route path="/login" element={<Login />} />
               <Route path="/sign-in" element={<Navigate to="/login" replace />} />

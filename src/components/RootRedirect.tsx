@@ -19,8 +19,8 @@ const RootRedirect = () => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // Si l'utilisateur n'est pas connecté, rediriger vers la page d'abonnement
-  return <Navigate to="/subscription" replace />;
+  // Si l'utilisateur n'est pas connecté, rediriger vers la page de présentation
+  return <Navigate to="/" replace />;
 };
 
 export default RootRedirect;
