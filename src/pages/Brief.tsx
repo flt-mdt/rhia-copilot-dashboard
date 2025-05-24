@@ -4,6 +4,7 @@ import { Send, Lightbulb, FileText, Briefcase, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useNavigate } from 'react-router-dom';
 import InteractiveBriefSummary from '@/components/brief/InteractiveBriefSummary';
 import ChatMessage from '@/components/brief/ChatMessage';
@@ -83,10 +84,12 @@ const Brief = () => {
   }, [messages]);
 
   const suggestions = [
-    "Souhaitez-vous préciser le niveau d'expérience souhaité ?",
-    "Voulez-vous qu'on parle du budget / salaire ?",
-    "Devons-nous explorer plusieurs scénarios de profils ?",
-    "Quel est le contexte du projet ou de l'équipe ?"
+    "Quel est le niveau d'expérience requis pour ce poste ?",
+    "Avez-vous défini une fourchette salariale pour ce recrutement ?",
+    "Souhaitez-vous explorer plusieurs profils différents ?",
+    "Dans quel contexte cette personne va-t-elle évoluer au quotidien ?",
+    "Y a-t-il des contraintes particulières à prendre en compte ?",
+    "Quelles sont vos attentes en termes de disponibilité ?"
   ];
 
   const handleCompletionChange = (section: keyof BriefCompletionState, completed: boolean) => {
@@ -209,153 +212,181 @@ const Brief = () => {
   };
 
   return (
-    <div className="ml-64 min-h-screen bg-bgLight">
-      <div className="p-6">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            🤖 Brief avec l'IA – Définissons votre besoin
-          </h1>
-          <p className="text-gray-600">
-            L'IA vous aide à préciser votre besoin, même si vous ne savez pas encore exactement ce que vous cherchez.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Chat Interface */}
-          <div className="lg:col-span-2 flex flex-col space-y-4">
-            <Card className="flex-1">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Conversation avec l'IA</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col">
-                {/* Messages Container with fixed height */}
-                <div className="h-[400px] overflow-y-auto space-y-4 pr-2 mb-4">
-                  {messages.map((message) => (
-                    <ChatMessage
-                      key={message.id}
-                      message={message}
-                    />
-                  ))}
-                  {isLoading && (
-                    <div className="flex justify-start">
-                      <div className="bg-gray-100 rounded-lg p-3 max-w-md">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  <div ref={messagesEndRef} />
-                </div>
-
-                {/* Input Section */}
-                <div className="border-t pt-4">
-                  <div className="flex space-x-2">
-                    <Textarea
-                      value={currentMessage}
-                      onChange={(e) => setCurrentMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Décrivez vos attentes, vos contraintes ou dites juste 'Je ne sais pas'..."
-                      className="flex-1"
-                      rows={2}
-                    />
-                    <Button 
-                      onClick={handleSendMessage}
-                      disabled={!currentMessage.trim() || isLoading}
-                      className="px-4"
-                    >
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Suggestions - Now separated from chat */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-gray-700 flex items-center">
-                  <Lightbulb className="h-4 w-4 mr-2" />
-                  Suggestions pour approfondir
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {suggestions.map((suggestion, index) => (
-                    <SuggestionCard
-                      key={index}
-                      suggestion={suggestion}
-                      onClick={handleSuggestionClick}
-                    />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+    <TooltipProvider>
+      <div className="ml-64 min-h-screen bg-bgLight">
+        <div className="p-6">
+          {/* Header */}
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              🤖 Brief avec l'IA – Définissons votre besoin
+            </h1>
+            <p className="text-gray-600">
+              L'IA vous aide à préciser votre besoin, même si vous ne savez pas encore exactement ce que vous cherchez.
+            </p>
           </div>
 
-          {/* Brief Summary */}
-          <div className="space-y-6">
-            <InteractiveBriefSummary 
-              briefData={briefData}
-              completionState={completionState}
-              onCompletionChange={handleCompletionChange}
-            />
-            
-            {/* Tools */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center">
-                  <Briefcase className="h-5 w-5 mr-2" />
-                  Outils d'aide
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full justify-start"
-                  onClick={() => navigate('/job-templates')}
-                >
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  📚 Bibliothèque de postes types
-                </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
-                  🔍 Analyser une fiche existante
-                </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
-                  📈 Benchmark marché
-                </Button>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Chat Interface */}
+            <div className="lg:col-span-2 flex flex-col space-y-4">
+              <Card className="flex-1">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Conversation avec l'IA</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col">
+                  {/* Messages Container with fixed height */}
+                  <div className="h-[400px] overflow-y-auto space-y-4 pr-2 mb-4">
+                    {messages.map((message) => (
+                      <ChatMessage
+                        key={message.id}
+                        message={message}
+                      />
+                    ))}
+                    {isLoading && (
+                      <div className="flex justify-start">
+                        <div className="bg-gray-100 rounded-lg p-3 max-w-md">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-3">
-              <Button 
-                onClick={handleSaveBrief}
-                variant="outline"
-                className="w-full"
-                size="lg"
-              >
-                💾 Sauvegarder le brief
-              </Button>
+                  {/* Input Section */}
+                  <div className="border-t pt-4">
+                    <div className="flex space-x-2">
+                      <Textarea
+                        value={currentMessage}
+                        onChange={(e) => setCurrentMessage(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Décrivez vos attentes, vos contraintes ou dites juste 'Je ne sais pas'..."
+                        className="flex-1"
+                        rows={2}
+                      />
+                      <Button 
+                        onClick={handleSendMessage}
+                        disabled={!currentMessage.trim() || isLoading}
+                        className="px-4"
+                      >
+                        <Send className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Suggestions - Now separated from chat */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium text-gray-700 flex items-center">
+                    <Lightbulb className="h-4 w-4 mr-2" />
+                    Questions pour vous aider à préciser votre besoin
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {suggestions.map((suggestion, index) => (
+                      <SuggestionCard
+                        key={index}
+                        suggestion={suggestion}
+                        onClick={handleSuggestionClick}
+                      />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Brief Summary */}
+            <div className="space-y-6">
+              <InteractiveBriefSummary 
+                briefData={briefData}
+                completionState={completionState}
+                onCompletionChange={handleCompletionChange}
+              />
               
-              <Button 
-                className="w-full" 
-                size="lg"
-                disabled={!isBriefComplete}
-                onClick={handleGenerateJobPosting}
-              >
-                <FileText className="h-5 w-5 mr-2" />
-                Générer la fiche de poste
-              </Button>
+              {/* Tools */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center">
+                    <Briefcase className="h-5 w-5 mr-2" />
+                    Outils d'aide
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={() => navigate('/job-templates')}
+                  >
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Bibliothèque de postes types
+                  </Button>
+                  
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full justify-start opacity-50 cursor-not-allowed"
+                        disabled
+                      >
+                        🔍 Analyser une fiche existante
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Fonctionnalité à venir prochainement</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full justify-start opacity-50 cursor-not-allowed"
+                        disabled
+                      >
+                        📈 Benchmark marché
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Fonctionnalité à venir prochainement</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </CardContent>
+              </Card>
+
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                <Button 
+                  onClick={handleSaveBrief}
+                  variant="outline"
+                  className="w-full"
+                  size="lg"
+                >
+                  💾 Sauvegarder le brief
+                </Button>
+                
+                <Button 
+                  className="w-full" 
+                  size="lg"
+                  disabled={!isBriefComplete}
+                  onClick={handleGenerateJobPosting}
+                >
+                  <FileText className="h-5 w-5 mr-2" />
+                  Générer la fiche de poste
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 };
 
