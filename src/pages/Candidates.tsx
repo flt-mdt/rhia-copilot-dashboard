@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -28,87 +29,26 @@ import {
 } from "@/components/ui/dialog";
 import { FileUploader } from '@/components/candidate/FileUploader';
 import { useToast } from "@/hooks/use-toast";
-import CandidateDetails from '@/components/candidate/CandidateDetails';
-
-interface Candidate {
-  id: number;
-  initials: string;
-  name: string;
-  position: string;
-  appliedDate: string;
-  status: 'Interview' | 'Reviewed' | 'New';
-  overallMatch: number;
-  scores: {
-    technical: string;
-    experience: string;
-    education: string;
-    languages: string;
-  };
-}
+import { useCandidates, useCreateCandidate, useUpdateCandidateStatus, type Candidate } from '@/hooks/useCandidatesData';
 
 const Candidates = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [allCandidates, setAllCandidates] = useState<Candidate[]>([
-    {
-      id: 1,
-      initials: 'EB',
-      name: 'Emma Bernard',
-      position: 'Product Manager',
-      appliedDate: 'Applied 20 juin 2023',
-      status: 'Interview',
-      overallMatch: 94,
-      scores: {
-        technical: '4.8/5',
-        experience: '4.9/5',
-        education: '4.3/5',
-        languages: '4.6/5'
-      }
-    },
-    {
-      id: 2,
-      initials: 'SM',
-      name: 'Sophie Martin',
-      position: 'Senior AI Engineer',
-      appliedDate: 'Applied 15 juin 2023',
-      status: 'Reviewed',
-      overallMatch: 92,
-      scores: {
-        technical: '4.5/5',
-        experience: '4.2/5',
-        education: '5/5',
-        languages: '4.5/5'
-      }
-    },
-    {
-      id: 3,
-      initials: 'TD',
-      name: 'Thomas Dubois',
-      position: 'Senior AI Engineer',
-      appliedDate: 'Applied 18 juin 2023',
-      status: 'New',
-      overallMatch: 82,
-      scores: {
-        technical: '4.2/5',
-        experience: '3.8/5',
-        education: '4.5/5',
-        languages: '4/5'
-      }
-    }
-  ]);
+  const { data: candidates = [], isLoading } = useCandidates();
+  const createCandidateMutation = useCreateCandidate();
+  const updateCandidateStatusMutation = useUpdateCandidateStatus();
   
-  const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>(allCandidates);
+  const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [jobFilter, setJobFilter] = useState('all');
   const [scoreFilter, setScoreFilter] = useState(0);
   const [date, setDate] = useState<Date | undefined>(undefined);
-  const [expandedCandidate, setExpandedCandidate] = useState<number | null>(null);
-  const [selectedCVCandidate, setSelectedCVCandidate] = useState<number | null>(null);
+  const [selectedCVCandidate, setSelectedCVCandidate] = useState<string | null>(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
 
   useEffect(() => {
-    let result = allCandidates;
+    let result = candidates;
     
     // Apply search filter
     if (searchQuery) {
@@ -116,7 +56,7 @@ const Candidates = () => {
       result = result.filter(
         candidate => 
           candidate.name.toLowerCase().includes(query) || 
-          candidate.position.toLowerCase().includes(query)
+          (candidate.current_position && candidate.current_position.toLowerCase().includes(query))
       );
     }
     
@@ -127,86 +67,103 @@ const Candidates = () => {
     
     // Apply job filter
     if (jobFilter !== 'all') {
-      result = result.filter(candidate => candidate.position === jobFilter);
+      result = result.filter(candidate => 
+        candidate.job_postings?.title === jobFilter
+      );
     }
     
     // Apply score filter
     if (scoreFilter > 0) {
-      result = result.filter(candidate => candidate.overallMatch >= scoreFilter);
-    }
-    
-    // Apply date filter
-    if (date) {
-      // For simplicity, we're not parsing the actual dates since this is just a UI prototype
-      // In a real app, we would parse the dates and compare them properly
-      console.log("Date filter would be applied here");
+      result = result.filter(candidate => 
+        candidate.ai_score && candidate.ai_score >= scoreFilter
+      );
     }
     
     setFilteredCandidates(result);
-  }, [allCandidates, searchQuery, statusFilter, jobFilter, scoreFilter, date]);
+  }, [candidates, searchQuery, statusFilter, jobFilter, scoreFilter, date]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Interview':
+      case 'interview_scheduled':
         return 'bg-green-100 text-green-700';
-      case 'Reviewed':
+      case 'in_review':
         return 'bg-purple-100 text-purple-700';
-      case 'New':
+      case 'to_analyze':
         return 'bg-blue-100 text-blue-700';
+      case 'contacted':
+        return 'bg-yellow-100 text-yellow-700';
+      case 'hired':
+        return 'bg-emerald-100 text-emerald-700';
+      case 'rejected':
+        return 'bg-red-100 text-red-700';
       default:
         return 'bg-gray-100 text-gray-700';
     }
   };
 
-  const handleToggleDetails = (candidateId: number) => {
-    if (expandedCandidate === candidateId) {
-      setExpandedCandidate(null);
-    } else {
-      setExpandedCandidate(candidateId);
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'to_analyze':
+        return 'New';
+      case 'in_review':
+        return 'Reviewed';
+      case 'interview_scheduled':
+        return 'Interview';
+      case 'contacted':
+        return 'Contacted';
+      case 'hired':
+        return 'Hired';
+      case 'rejected':
+        return 'Rejected';
+      default:
+        return status;
     }
   };
 
-  const handleViewCV = (candidateId: number, e: React.MouseEvent) => {
+  const handleViewCV = (candidateId: string, e: React.MouseEvent) => {
     e.preventDefault();
     setSelectedCVCandidate(candidateId);
   };
 
-  // Update the status change function to modify the actual candidate state
-  const handleChangeStatus = (candidateId: number, newStatus: 'New' | 'Reviewed' | 'Interview') => {
-    // Update the candidates array with the new status
-    const updatedCandidates = allCandidates.map(candidate => 
-      candidate.id === candidateId ? {...candidate, status: newStatus} : candidate
-    );
-    
-    setAllCandidates(updatedCandidates);
-    
-    // Also update filtered candidates if needed
-    setFilteredCandidates(prevFiltered => 
-      prevFiltered.map(candidate => 
-        candidate.id === candidateId ? {...candidate, status: newStatus} : candidate
-      )
-    );
-    
-    const candidate = allCandidates.find(c => c.id === candidateId);
-    if (candidate) {
-      toast({
-        title: "Status Updated",
-        description: `${candidate.name}'s status has been changed to ${newStatus}`,
-      });
-    }
+  const handleChangeStatus = (candidateId: string, newStatus: 'to_analyze' | 'in_review' | 'contacted' | 'interview_scheduled' | 'offer_sent' | 'hired' | 'rejected') => {
+    updateCandidateStatusMutation.mutate({ id: candidateId, status: newStatus });
   };
 
-  const handleFileUpload = (name: string, files: File[]) => {
-    // In a real app, this would upload the files to a server
-    // and trigger AI processing
-    toast({
-      title: "Files Uploaded",
-      description: `${files.length} files uploaded for ${name}. AI analysis started.`,
+  const handleFileUpload = (candidateData: {
+    name: string;
+    jobPostingId: string;
+    files: File[];
+  }) => {
+    // In a real app, you would upload files to storage first
+    // For now, we'll just create the candidate record
+    createCandidateMutation.mutate({
+      name: candidateData.name,
+      target_job_id: candidateData.jobPostingId,
+      ai_status: 'processing'
     });
     setShowUploadDialog(false);
   };
 
-  const availableJobs = ['Product Manager', 'Senior AI Engineer'];
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return `Applied ${date.toLocaleDateString('fr-FR', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    })}`;
+  };
+
+  // Get unique job titles for filter
+  const availableJobs = Array.from(new Set(
+    candidates
+      .filter(c => c.job_postings?.title)
+      .map(c => c.job_postings!.title)
+  ));
+
   const scoreOptions = [
     { label: 'All Scores', value: 0 },
     { label: '≥ 90%', value: 90 },
@@ -214,9 +171,7 @@ const Candidates = () => {
     { label: '≥ 70%', value: 70 }
   ];
 
-  // Navigate to candidate profile
-  const handleCandidateClick = (candidateId: number, event: React.MouseEvent) => {
-    // Don't navigate if the click was on specific interactive elements
+  const handleCandidateClick = (candidateId: string, event: React.MouseEvent) => {
     if (
       (event.target as HTMLElement).closest('.status-change-button') ||
       (event.target as HTMLElement).closest('.view-cv-button')
@@ -224,9 +179,22 @@ const Candidates = () => {
       return;
     }
     
-    // Navigate to the candidate profile
     navigate(`/candidates/${candidateId}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="ml-64 p-8">
+        <Header title="Candidates" />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-gray-500">Loading candidates...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="ml-64 p-8">
@@ -266,9 +234,12 @@ const Candidates = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="New">New</SelectItem>
-                <SelectItem value="Reviewed">Reviewed</SelectItem>
-                <SelectItem value="Interview">Interview</SelectItem>
+                <SelectItem value="to_analyze">New</SelectItem>
+                <SelectItem value="in_review">Reviewed</SelectItem>
+                <SelectItem value="interview_scheduled">Interview</SelectItem>
+                <SelectItem value="contacted">Contacted</SelectItem>
+                <SelectItem value="hired">Hired</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
               </SelectContent>
             </Select>
 
@@ -359,30 +330,36 @@ const Candidates = () => {
                 <div className="flex justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-12 w-12 bg-gray-100">
-                      <AvatarFallback className="text-gray-600">{candidate.initials}</AvatarFallback>
+                      <AvatarFallback className="text-gray-600">
+                        {getInitials(candidate.name)}
+                      </AvatarFallback>
                     </Avatar>
                     <div>
                       <h3 className="font-medium text-lg">{candidate.name}</h3>
-                      <p className="text-gray-500 text-sm">{candidate.position}</p>
+                      <p className="text-gray-500 text-sm">
+                        {candidate.current_position || candidate.job_postings?.title || 'No position'}
+                      </p>
                     </div>
                   </div>
                   <div className="flex flex-col items-end">
                     <Badge 
-                      className={`${getStatusColor(candidate.status)} font-normal text-xs px-3`}
+                      className={`${getStatusColor(candidate.status || 'to_analyze')} font-normal text-xs px-3`}
                       variant="outline"
                     >
-                      {candidate.status}
+                      {getStatusLabel(candidate.status || 'to_analyze')}
                     </Badge>
-                    <span className="text-gray-500 text-xs mt-1">{candidate.appliedDate}</span>
+                    <span className="text-gray-500 text-xs mt-1">
+                      {candidate.created_at ? formatDate(candidate.created_at) : 'No date'}
+                    </span>
                   </div>
                 </div>
 
                 <div className="mb-5">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-sm text-gray-600">Overall Match</span>
-                    <span className="font-medium">{candidate.overallMatch}%</span>
+                    <span className="font-medium">{candidate.ai_score || 0}%</span>
                   </div>
-                  <Progress value={candidate.overallMatch} className="h-2" />
+                  <Progress value={candidate.ai_score || 0} className="h-2" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-y-3 mb-4">
@@ -392,7 +369,7 @@ const Candidates = () => {
                         <path fillRule="evenodd" d="M3 3a1 1 0 000 2h14a1 1 0 100-2H3zm0 6a1 1 0 000 2h14a1 1 0 100-2H3zm0 6a1 1 0 000 2h14a1 1 0 100-2H3z" clipRule="evenodd" />
                       </svg>
                     </span>
-                    <span className="text-sm text-gray-600">Technical: <span className="font-medium">{candidate.scores.technical}</span></span>
+                    <span className="text-sm text-gray-600">Technical: <span className="font-medium">-/5</span></span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="p-1 bg-purple-50 rounded text-purple-500">
@@ -400,7 +377,7 @@ const Candidates = () => {
                         <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                       </svg>
                     </span>
-                    <span className="text-sm text-gray-600">Experience: <span className="font-medium">{candidate.scores.experience}</span></span>
+                    <span className="text-sm text-gray-600">Experience: <span className="font-medium">{candidate.experience_years || 0} ans</span></span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="p-1 bg-green-50 rounded text-green-500">
@@ -408,7 +385,7 @@ const Candidates = () => {
                         <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
                       </svg>
                     </span>
-                    <span className="text-sm text-gray-600">Education: <span className="font-medium">{candidate.scores.education}</span></span>
+                    <span className="text-sm text-gray-600">Education: <span className="font-medium">-/5</span></span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="p-1 bg-yellow-50 rounded text-yellow-500">
@@ -416,7 +393,7 @@ const Candidates = () => {
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
                       </svg>
                     </span>
-                    <span className="text-sm text-gray-600">Languages: <span className="font-medium">{candidate.scores.languages}</span></span>
+                    <span className="text-sm text-gray-600">Location: <span className="font-medium">{candidate.location || 'N/A'}</span></span>
                   </div>
                 </div>
 
@@ -458,22 +435,40 @@ const Candidates = () => {
                     <PopoverContent className="w-[200px] p-0" onClick={(e) => e.stopPropagation()}>
                       <div className="p-2">
                         <button
-                          onClick={() => handleChangeStatus(candidate.id, 'New')}
+                          onClick={() => handleChangeStatus(candidate.id, 'to_analyze')}
                           className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-blue-50"
                         >
                           New
                         </button>
                         <button
-                          onClick={() => handleChangeStatus(candidate.id, 'Reviewed')}
+                          onClick={() => handleChangeStatus(candidate.id, 'in_review')}
                           className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-purple-50"
                         >
                           Reviewed
                         </button>
                         <button
-                          onClick={() => handleChangeStatus(candidate.id, 'Interview')}
+                          onClick={() => handleChangeStatus(candidate.id, 'interview_scheduled')}
                           className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-green-50"
                         >
                           Interview
+                        </button>
+                        <button
+                          onClick={() => handleChangeStatus(candidate.id, 'contacted')}
+                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-yellow-50"
+                        >
+                          Contacted
+                        </button>
+                        <button
+                          onClick={() => handleChangeStatus(candidate.id, 'hired')}
+                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-emerald-50"
+                        >
+                          Hired
+                        </button>
+                        <button
+                          onClick={() => handleChangeStatus(candidate.id, 'rejected')}
+                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-red-50"
+                        >
+                          Rejected
                         </button>
                       </div>
                     </PopoverContent>
@@ -513,7 +508,7 @@ const Candidates = () => {
         <DialogContent className="max-w-4xl h-[80vh]">
           <DialogHeader>
             <DialogTitle>
-              {selectedCVCandidate && allCandidates.find(c => c.id === selectedCVCandidate)?.name}'s CV
+              {selectedCVCandidate && candidates.find(c => c.id === selectedCVCandidate)?.name}'s CV
             </DialogTitle>
           </DialogHeader>
           <div className="flex-1 h-full overflow-auto bg-gray-100 rounded-md p-4 flex items-center justify-center">

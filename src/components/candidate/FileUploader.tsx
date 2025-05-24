@@ -5,18 +5,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useJobPostings } from '@/hooks/useJobPostings';
 
 interface FileUploaderProps {
-  onUpload: (name: string, files: File[]) => void;
+  onUpload: (candidateData: {
+    name: string;
+    jobPostingId: string;
+    files: File[];
+  }) => void;
 }
 
 export const FileUploader = ({ onUpload }: FileUploaderProps) => {
   const [dragging, setDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [candidateName, setCandidateName] = useState('');
+  const [selectedJobId, setSelectedJobId] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { data: jobPostings = [] } = useJobPostings();
   
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -52,7 +66,7 @@ export const FileUploader = ({ onUpload }: FileUploaderProps) => {
   };
   
   const addFiles = (newFiles: File[]) => {
-    // Filter valid file types (you can restrict to certain file types)
+    // Filter valid file types
     const validFiles = newFiles.filter(file => 
       file.type === 'application/pdf' || 
       file.type === 'application/msword' || 
@@ -74,13 +88,27 @@ export const FileUploader = ({ onUpload }: FileUploaderProps) => {
   };
   
   const handleSubmit = () => {
+    if (!candidateName.trim()) {
+      setError("Please enter the candidate's name.");
+      return;
+    }
+    
+    if (!selectedJobId) {
+      setError("Please select a job posting for this candidate.");
+      return;
+    }
+    
     if (files.length === 0) {
       setError("Please add at least one file.");
       return;
     }
     
     setError(null);
-    onUpload(candidateName, files);
+    onUpload({
+      name: candidateName,
+      jobPostingId: selectedJobId,
+      files
+    });
   };
   
   const getFileIcon = (fileType: string) => {
@@ -97,13 +125,30 @@ export const FileUploader = ({ onUpload }: FileUploaderProps) => {
   return (
     <div className="space-y-4">
       <div>
-        <Label htmlFor="candidateName">Candidate Name (optional)</Label>
+        <Label htmlFor="candidateName">Candidate Name *</Label>
         <Input
           id="candidateName"
           placeholder="Enter candidate name"
           value={candidateName}
           onChange={(e) => setCandidateName(e.target.value)}
+          required
         />
+      </div>
+
+      <div>
+        <Label htmlFor="jobPosting">Job Posting *</Label>
+        <Select value={selectedJobId} onValueChange={setSelectedJobId}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a job posting" />
+          </SelectTrigger>
+          <SelectContent>
+            {jobPostings.map((job) => (
+              <SelectItem key={job.id} value={job.id}>
+                {job.title} - {job.department} ({job.location})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       
       <div
@@ -180,6 +225,8 @@ export const FileUploader = ({ onUpload }: FileUploaderProps) => {
         <Button variant="outline" type="button" onClick={() => {
           setFiles([]);
           setCandidateName('');
+          setSelectedJobId('');
+          setError(null);
         }}>
           Clear
         </Button>
