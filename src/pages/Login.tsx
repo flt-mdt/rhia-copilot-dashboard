@@ -23,7 +23,7 @@ const Login = () => {
   // Redirect if already logged in
   React.useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate('/dashboard');
     }
   }, [user, navigate]);
 
@@ -45,7 +45,7 @@ const Login = () => {
           title: t('success.loginSuccess'),
           description: "Bienvenue !",
         });
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (error) {
       toast({
@@ -60,33 +60,8 @@ const Login = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    try {
-      const { error } = await signUp(email, password, name);
-      
-      if (error) {
-        toast({
-          title: "Erreur d'inscription",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: t('success.signupSuccess'),
-          description: "Bienvenue dans RHIA Copilot !",
-        });
-        navigate('/');
-      }
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Une erreur inattendue s'est produite",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // Rediriger vers la page d'abonnement pour signup
+    navigate('/subscription');
   };
 
   const handleGoogleSignIn = async () => {
@@ -181,43 +156,13 @@ const Login = () => {
             
             <TabsContent value="signup">
               <CardTitle className="text-2xl mb-2">{t('login.signup.title')}</CardTitle>
-              <CardDescription className="mb-4">{t('login.signup.description')}</CardDescription>
+              <CardDescription className="mb-4">
+                Choisissez d'abord votre abonnement pour créer votre compte
+              </CardDescription>
               
               <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">{t('login.name')}</Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Alex Dupont"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">{t('login.email')}</Label>
-                  <Input
-                    id="signup-email"
-                    type="email" 
-                    placeholder="alex@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">{t('login.password')}</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? t('common.loading') : t('login.signup.button')}
+                <Button type="submit" className="w-full">
+                  Choisir un abonnement
                 </Button>
               </form>
             </TabsContent>

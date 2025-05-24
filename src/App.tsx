@@ -35,10 +35,11 @@ const App = () => (
         <LanguageProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Subscription />} />
               <Route path="/subscription" element={<Subscription />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/sign-in" element={<Navigate to="/login" replace />} />
-              <Route path="/" element={
+              <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <Sidebar />
                   <Index />

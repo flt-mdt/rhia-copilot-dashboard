@@ -1,8 +1,9 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, CreditCard, Users, Zap, Shield, Headphones, FileText, Settings } from 'lucide-react';
+import { Check, CreditCard, Users, Zap, Shield, Headphones, FileText, Settings, LogIn } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface PricingFeature {
@@ -24,61 +25,62 @@ interface PricingPlan {
 
 const Subscription = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const plans: PricingPlan[] = [
     {
       id: 'starter',
-      name: 'Starter',
+      name: t('subscription.plans.starter.name'),
       price: 29,
       currency: '€',
       period: '/mois',
-      description: 'Parfait pour débuter avec l\'IA RH',
+      description: t('subscription.plans.starter.description'),
       priceId: 'price_starter_monthly', // À remplacer par votre vrai price ID Stripe
       features: [
-        { text: '100 requêtes IA', included: true },
-        { text: '1 compte RH', included: true },
-        { text: 'Support par email', included: true },
-        { text: 'Accès à la plateforme', included: true },
-        { text: 'Génération de rapports RH', included: false },
-        { text: 'Intégration API', included: false },
-        { text: 'Support dédié', included: false },
+        { text: t('subscription.plans.starter.features.requests'), included: true },
+        { text: t('subscription.plans.starter.features.accounts'), included: true },
+        { text: t('subscription.plans.starter.features.emailSupport'), included: true },
+        { text: t('subscription.plans.starter.features.platformAccess'), included: true },
+        { text: t('subscription.plans.starter.features.hrReports'), included: false },
+        { text: t('subscription.plans.starter.features.apiIntegration'), included: false },
+        { text: t('subscription.plans.starter.features.dedicatedSupport'), included: false },
       ]
     },
     {
       id: 'pro',
-      name: 'Pro',
+      name: t('subscription.plans.pro.name'),
       price: 79,
       currency: '€',
       period: '/mois',
-      description: 'Pour les équipes RH en croissance',
+      description: t('subscription.plans.pro.description'),
       highlighted: true,
       priceId: 'price_pro_monthly', // À remplacer par votre vrai price ID Stripe
       features: [
-        { text: '1000 requêtes IA', included: true },
-        { text: 'Jusqu\'à 3 comptes RH', included: true },
-        { text: 'Génération de rapports RH', included: true },
-        { text: 'Priorité support', included: true },
-        { text: 'Accès à la plateforme', included: true },
-        { text: 'Intégration API', included: false },
-        { text: 'Support dédié', included: false },
+        { text: t('subscription.plans.pro.features.requests'), included: true },
+        { text: t('subscription.plans.pro.features.accounts'), included: true },
+        { text: t('subscription.plans.pro.features.hrReports'), included: true },
+        { text: t('subscription.plans.pro.features.prioritySupport'), included: true },
+        { text: t('subscription.plans.pro.features.platformAccess'), included: true },
+        { text: t('subscription.plans.pro.features.apiIntegration'), included: false },
+        { text: t('subscription.plans.pro.features.dedicatedSupport'), included: false },
       ]
     },
     {
       id: 'enterprise',
-      name: 'Enterprise',
+      name: t('subscription.plans.enterprise.name'),
       price: 199,
       currency: '€',
       period: '/mois',
-      description: 'Solution complète pour grandes entreprises',
+      description: t('subscription.plans.enterprise.description'),
       priceId: 'price_enterprise_monthly', // À remplacer par votre vrai price ID Stripe
       features: [
-        { text: 'Requêtes illimitées', included: true },
-        { text: 'Jusqu\'à 10 comptes RH', included: true },
-        { text: 'Intégration API & Webhooks', included: true },
-        { text: 'Support dédié & onboarding', included: true },
-        { text: 'Génération de rapports RH', included: true },
-        { text: 'Priorité support', included: true },
-        { text: 'Accès à la plateforme', included: true },
+        { text: t('subscription.plans.enterprise.features.requests'), included: true },
+        { text: t('subscription.plans.enterprise.features.accounts'), included: true },
+        { text: t('subscription.plans.enterprise.features.apiWebhooks'), included: true },
+        { text: t('subscription.plans.enterprise.features.dedicatedSupport'), included: true },
+        { text: t('subscription.plans.enterprise.features.hrReports'), included: true },
+        { text: t('subscription.plans.enterprise.features.prioritySupport'), included: true },
+        { text: t('subscription.plans.enterprise.features.platformAccess'), included: true },
       ]
     }
   ];
@@ -119,18 +121,37 @@ const Subscription = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        {/* Header avec bouton Sign In */}
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-3">
+            <img 
+              src="/lovable-uploads/fdc4d16b-8516-4b74-b559-2340f062242b.png" 
+              alt="RHIA Copilot Logo" 
+              className="h-10 w-10 object-contain"
+            />
+            <span className="font-semibold text-lg">RHIA Copilot</span>
+          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/login')}
+            className="flex items-center gap-2"
+          >
+            <LogIn className="h-4 w-4" />
+            Sign In
+          </Button>
+        </div>
+
+        {/* Header content */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Choisissez votre plan d'abonnement
+            {t('subscription.title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Automatisez votre processus de recrutement avec notre IA avancée. 
-            Payez uniquement pour ce que vous utilisez.
+            {t('subscription.subtitle')}
           </p>
           <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
             <Shield className="h-4 w-4" />
-            <span>Sans engagement • Résiliable à tout moment</span>
+            <span>{t('subscription.noCommitment')}</span>
           </div>
         </div>
 
@@ -148,7 +169,7 @@ const Subscription = () => {
               {plan.highlighted && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
-                    Le plus populaire
+                    {t('subscription.mostPopular')}
                   </span>
                 </div>
               )}
@@ -176,7 +197,7 @@ const Subscription = () => {
                   }`}
                 >
                   <CreditCard className="h-5 w-5 mr-2" />
-                  Souscrire
+                  {t('subscription.subscribe')}
                 </Button>
 
                 <div className="space-y-4">
@@ -206,7 +227,7 @@ const Subscription = () => {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-16">
           <div className="px-8 py-6 bg-gray-50 border-b">
             <h3 className="text-2xl font-bold text-gray-900 text-center">
-              Comparaison détaillée des fonctionnalités
+              {t('subscription.comparison.title')}
             </h3>
           </div>
           
@@ -215,7 +236,7 @@ const Subscription = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">
-                    Fonctionnalités
+                    {t('subscription.comparison.features')}
                   </th>
                   {plans.map((plan) => (
                     <th key={plan.id} className="px-6 py-4 text-center text-sm font-medium text-gray-900">
@@ -228,7 +249,7 @@ const Subscription = () => {
                 <tr>
                   <td className="px-6 py-4 text-sm text-gray-900 font-medium flex items-center gap-2">
                     <Zap className="h-4 w-4 text-blue-500" />
-                    Requêtes IA mensuelles
+                    {t('subscription.comparison.aiRequests')}
                   </td>
                   <td className="px-6 py-4 text-center text-sm text-gray-700">100</td>
                   <td className="px-6 py-4 text-center text-sm text-gray-700">1 000</td>
@@ -237,7 +258,7 @@ const Subscription = () => {
                 <tr className="bg-gray-50">
                   <td className="px-6 py-4 text-sm text-gray-900 font-medium flex items-center gap-2">
                     <Users className="h-4 w-4 text-green-500" />
-                    Comptes RH
+                    {t('subscription.comparison.hrAccounts')}
                   </td>
                   <td className="px-6 py-4 text-center text-sm text-gray-700">1</td>
                   <td className="px-6 py-4 text-center text-sm text-gray-700">3</td>
@@ -246,7 +267,7 @@ const Subscription = () => {
                 <tr>
                   <td className="px-6 py-4 text-sm text-gray-900 font-medium flex items-center gap-2">
                     <FileText className="h-4 w-4 text-purple-500" />
-                    Rapports RH
+                    {t('subscription.comparison.hrReports')}
                   </td>
                   <td className="px-6 py-4 text-center text-sm text-gray-400">✗</td>
                   <td className="px-6 py-4 text-center text-sm text-green-600">✓</td>
@@ -255,7 +276,7 @@ const Subscription = () => {
                 <tr className="bg-gray-50">
                   <td className="px-6 py-4 text-sm text-gray-900 font-medium flex items-center gap-2">
                     <Settings className="h-4 w-4 text-orange-500" />
-                    API & Webhooks
+                    {t('subscription.comparison.apiWebhooks')}
                   </td>
                   <td className="px-6 py-4 text-center text-sm text-gray-400">✗</td>
                   <td className="px-6 py-4 text-center text-sm text-gray-400">✗</td>
@@ -264,7 +285,7 @@ const Subscription = () => {
                 <tr>
                   <td className="px-6 py-4 text-sm text-gray-900 font-medium flex items-center gap-2">
                     <Headphones className="h-4 w-4 text-blue-500" />
-                    Support
+                    {t('subscription.comparison.support')}
                   </td>
                   <td className="px-6 py-4 text-center text-sm text-gray-700">Email</td>
                   <td className="px-6 py-4 text-center text-sm text-gray-700">Prioritaire</td>
@@ -278,43 +299,39 @@ const Subscription = () => {
         {/* FAQ Section */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-16">
           <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
-            Questions fréquentes
+            {t('subscription.faq.title')}
           </h3>
           <div className="grid md:grid-cols-2 gap-8">
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">
-                Puis-je changer de plan à tout moment ?
+                {t('subscription.faq.changePlan.question')}
               </h4>
               <p className="text-gray-600 text-sm">
-                Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. 
-                Les changements prennent effet immédiatement.
+                {t('subscription.faq.changePlan.answer')}
               </p>
             </div>
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">
-                Que se passe-t-il si je dépasse mon quota ?
+                {t('subscription.faq.exceedQuota.question')}
               </h4>
               <p className="text-gray-600 text-sm">
-                Nous vous préviendrons avant d'atteindre la limite. 
-                Vous pourrez upgrader votre plan ou attendre le mois suivant.
+                {t('subscription.faq.exceedQuota.answer')}
               </p>
             </div>
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">
-                Y a-t-il une période d'essai gratuite ?
+                {t('subscription.faq.freeTrial.question')}
               </h4>
               <p className="text-gray-600 text-sm">
-                Chaque plan inclut une garantie de remboursement de 14 jours 
-                si vous n'êtes pas satisfait.
+                {t('subscription.faq.freeTrial.answer')}
               </p>
             </div>
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">
-                Les données sont-elles sécurisées ?
+                {t('subscription.faq.dataSecure.question')}
               </h4>
               <p className="text-gray-600 text-sm">
-                Oui, toutes vos données sont chiffrées et hébergées en Europe 
-                conformément au RGPD.
+                {t('subscription.faq.dataSecure.answer')}
               </p>
             </div>
           </div>
@@ -323,10 +340,10 @@ const Subscription = () => {
         {/* CTA Section */}
         <div className="text-center">
           <p className="text-gray-600 mb-4">
-            Besoin d'aide pour choisir le bon plan ?
+            {t('subscription.cta.needHelp')}
           </p>
           <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
-            Contactez notre équipe
+            {t('subscription.cta.contactTeam')}
           </Button>
         </div>
       </div>
