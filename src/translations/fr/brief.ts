@@ -1,0 +1,26 @@
+
+export const briefTranslations = {
+  title: "Brief avec l'IA",
+  subtitle: "Définissons votre besoin",
+  description: "L'IA vous aide à clarifier votre besoin, même si vous ne savez pas exactement ce que vous cherchez.",
+  chatTitle: "Conversation avec l'IA",
+  suggestionsTitle: "Questions pour vous aider à réfléchir",
+  summaryTitle: "Résumé du brief",
+  summaryDescription: "Synthèse mise à jour en temps réel",
+  progress: "Progression",
+  toolsTitle: "Outils d'aide",
+  saveBrief: "Sauvegarder le brief",
+  generateJobPosting: "Générer l'offre d'emploi",
+  jobLibrary: "Bibliothèque de modèles d'emploi",
+  analyzeExisting: "Analyser une fiche existante",
+  marketBenchmark: "Benchmark marché",
+  comingSoon: "Fonctionnalité à venir",
+  placeholder: "Décrivez vos attentes, contraintes, ou dites simplement 'Je ne sais pas'...",
+  missions: "Missions principales",
+  hardSkills: "Hard skills requises",
+  softSkills: "Soft skills attendues",
+  context: "Contexte du projet",
+  location: "Localisation",
+  constraints: "Contraintes",
+  toDefine: "À définir en conversation"
+};
