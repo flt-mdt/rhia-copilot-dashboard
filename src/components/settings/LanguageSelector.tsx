@@ -33,7 +33,7 @@ const LanguageSelector = () => {
           <CardTitle>{t('settings.language')}</CardTitle>
         </div>
         <CardDescription>
-          {t('settings.language.description')}
+          {t('settings.languageDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent>

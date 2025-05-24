@@ -1,15 +1,16 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import StarRating from '@/components/settings/StarRating';
 import LanguageSelector from '@/components/settings/LanguageSelector';
-import { Settings as SettingsIcon, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Settings as SettingsIcon, LogOut, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useEvaluationCriteria } from '@/hooks/useEvaluationCriteria';
 import NotificationItem from '@/components/notifications/NotificationItem';
 
 interface CriterionWeight {
@@ -19,50 +20,68 @@ interface CriterionWeight {
   weight: number;
 }
 
+const DEFAULT_CRITERIA: CriterionWeight[] = [
+  {
+    id: "technical-skills",
+    name: "Technical Skills",
+    description: "Programming languages, frameworks, tools, methodologies",
+    weight: 5
+  },
+  {
+    id: "soft-skills",
+    name: "Soft Skills",
+    description: "Communication, teamwork, leadership, problem-solving abilities",
+    weight: 4
+  },
+  {
+    id: "experience",
+    name: "Experience",
+    description: "Relevant work history, projects, industry experience",
+    weight: 5
+  },
+  {
+    id: "education",
+    name: "Education",
+    description: "Degrees, certifications, coursework, academic achievements",
+    weight: 3
+  },
+  {
+    id: "languages",
+    name: "Languages",
+    description: "Language proficiency levels and related certifications",
+    weight: 2
+  },
+  {
+    id: "personality-fit",
+    name: "Personality Fit",
+    description: "Cultural fit, character traits, work style compatibility",
+    weight: 4
+  }
+];
+
 const Settings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { notifications } = useNotifications();
   const { t } = useLanguage();
+  const { criteria: dbCriteria, loading, saveAllCriteria } = useEvaluationCriteria();
   
-  const [criteria, setCriteria] = useState<CriterionWeight[]>([
-    {
-      id: "technical-skills",
-      name: "Technical Skills",
-      description: "Programming languages, frameworks, tools, methodologies",
-      weight: 5
-    },
-    {
-      id: "soft-skills",
-      name: "Soft Skills",
-      description: "Communication, teamwork, leadership, problem-solving abilities",
-      weight: 4
-    },
-    {
-      id: "experience",
-      name: "Experience",
-      description: "Relevant work history, projects, industry experience",
-      weight: 5
-    },
-    {
-      id: "education",
-      name: "Education",
-      description: "Degrees, certifications, coursework, academic achievements",
-      weight: 3
-    },
-    {
-      id: "languages",
-      name: "Languages",
-      description: "Language proficiency levels and related certifications",
-      weight: 2
-    },
-    {
-      id: "personality-fit",
-      name: "Personality Fit",
-      description: "Cultural fit, character traits, work style compatibility",
-      weight: 4
+  const [criteria, setCriteria] = useState<CriterionWeight[]>(DEFAULT_CRITERIA);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  // Sync with database data when it loads
+  useEffect(() => {
+    if (dbCriteria.length > 0) {
+      const mappedCriteria = dbCriteria.map(dbCriterion => ({
+        id: dbCriterion.criterion_id,
+        name: dbCriterion.criterion_name,
+        description: dbCriterion.description,
+        weight: dbCriterion.weight
+      }));
+      setCriteria(mappedCriteria);
+      setHasUnsavedChanges(false);
     }
-  ]);
+  }, [dbCriteria]);
 
   const handleWeightChange = (id: string, newWeight: number) => {
     setCriteria(prevCriteria => 
@@ -70,6 +89,19 @@ const Settings = () => {
         criterion.id === id ? { ...criterion, weight: newWeight } : criterion
       )
     );
+    setHasUnsavedChanges(true);
+  };
+
+  const handleSaveCriteria = async () => {
+    const criteriaToSave = criteria.map(criterion => ({
+      criterion_id: criterion.id,
+      criterion_name: criterion.name,
+      description: criterion.description,
+      weight: criterion.weight
+    }));
+
+    await saveAllCriteria(criteriaToSave);
+    setHasUnsavedChanges(false);
   };
 
   const handleLogout = () => {
@@ -93,9 +125,21 @@ const Settings = () => {
 
         <Card>
           <CardHeader className="pb-3">
-            <div className="flex items-center gap-2">
-              <SettingsIcon className="h-5 w-5 text-primary" />
-              <CardTitle>{t('settings.criteria.title')}</CardTitle>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <SettingsIcon className="h-5 w-5 text-primary" />
+                <CardTitle>{t('settings.criteria.title')}</CardTitle>
+              </div>
+              {hasUnsavedChanges && (
+                <Button 
+                  onClick={handleSaveCriteria}
+                  disabled={loading}
+                  className="flex items-center gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  {loading ? t('common.saving') : t('common.save')}
+                </Button>
+              )}
             </div>
             <CardDescription>
               {t('settings.criteria.description')}
@@ -124,6 +168,14 @@ const Settings = () => {
                 </div>
               ))}
             </div>
+
+            {hasUnsavedChanges && (
+              <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-sm text-amber-800">
+                  Vous avez des modifications non sauvegardées. Cliquez sur "Enregistrer" pour les sauvegarder.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 

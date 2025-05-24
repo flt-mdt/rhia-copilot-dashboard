@@ -211,6 +211,39 @@ export type Database = {
           },
         ]
       }
+      evaluation_criteria: {
+        Row: {
+          created_at: string
+          criterion_id: string
+          criterion_name: string
+          description: string | null
+          id: string
+          updated_at: string
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          criterion_id: string
+          criterion_name: string
+          description?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string
+          criterion_id?: string
+          criterion_name?: string
+          description?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          weight?: number
+        }
+        Relationships: []
+      }
       job_applications: {
         Row: {
           applied_at: string | null
