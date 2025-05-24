@@ -7,8 +7,6 @@ export const authTranslations = {
   or: "Or",
   google: "Sign In with Google",
   linkedin: "Sign In with LinkedIn",
-  signin: "Sign In",
-  signup: "Sign Up",
   signin: {
     title: "Welcome Back!",
     description: "Sign in to continue to your account.",

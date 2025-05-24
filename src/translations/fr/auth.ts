@@ -7,8 +7,6 @@ export const authTranslations = {
   or: "Ou",
   google: "Se connecter avec Google",
   linkedin: "Se connecter avec LinkedIn",
-  signin: "Se connecter",
-  signup: "S'inscrire",
   signin: {
     title: "Bon retour !",
     description: "Connectez-vous pour continuer vers votre compte.",
