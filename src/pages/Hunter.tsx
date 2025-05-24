@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Header from '@/components/layout/Header';
 import SearchForm from '@/components/hunter/SearchForm';
 import ResultsSummary from '@/components/hunter/ResultsSummary';
@@ -10,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const Hunter = () => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [candidates, setCandidates] = useState<HunterCandidate[]>([]);
   const [filters, setFilters] = useState<FilterOptions>({
@@ -130,8 +132,8 @@ const Hunter = () => {
       setIsLoading(false);
       
       toast({
-        title: "Recherche terminée",
-        description: `${mockCandidates.length} candidats trouvés correspondant à vos critères`,
+        title: t('hunter.searchCompleted'),
+        description: t('hunter.candidatesFound').replace('{count}', mockCandidates.length.toString()),
       });
     }, 2000);
   };
@@ -157,7 +159,7 @@ const Hunter = () => {
 
   return (
     <div className="ml-64 p-8 bg-[#F9FAFB]">
-      <Header title="Hunter" />
+      <Header title={t('hunter.title')} />
       
       <div className="max-w-7xl mx-auto">
         <SearchForm onSearch={handleSearch} isLoading={isLoading} />
@@ -183,10 +185,9 @@ const Hunter = () => {
                     ))
                   ) : (
                     <div className="text-center p-8 bg-white rounded-xl shadow-sm max-w-3xl mx-auto">
-                      <h3 className="text-lg font-semibold text-gray-700 mb-2">Aucun résultat</h3>
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('hunter.noResults')}</h3>
                       <p className="text-gray-500">
-                        Aucun candidat ne correspond à vos critères de recherche. 
-                        Essayez de modifier vos filtres ou d'élargir votre recherche.
+                        {t('hunter.noResultsDesc')}
                       </p>
                     </div>
                   )}

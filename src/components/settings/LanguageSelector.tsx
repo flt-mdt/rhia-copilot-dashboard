@@ -12,9 +12,16 @@ const LanguageSelector = () => {
 
   const handleLanguageChange = async (newLanguage: Language) => {
     await setLanguage(newLanguage);
+    
+    const languageNames = {
+      en: 'English selected',
+      fr: 'Français sélectionné',
+      es: 'Español seleccionado'
+    };
+    
     toast({
       title: t('success.languageUpdated'),
-      description: newLanguage === 'fr' ? 'Français sélectionné' : 'Español seleccionado',
+      description: languageNames[newLanguage],
     });
   };
 
@@ -35,6 +42,7 @@ const LanguageSelector = () => {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="en">🇺🇸 English</SelectItem>
             <SelectItem value="fr">🇫🇷 Français</SelectItem>
             <SelectItem value="es">🇪🇸 Español</SelectItem>
           </SelectContent>

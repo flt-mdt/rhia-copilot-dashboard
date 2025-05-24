@@ -8,9 +8,11 @@ import { Briefcase, ChevronDown, Calendar, User, Plus } from 'lucide-react';
 import { useJobPostings, useUpdateJobPosting, useDeleteJobPosting } from '@/hooks/useJobPostings';
 import JobStatusDropdown from '@/components/job/JobStatusDropdown';
 import JobActionsDropdown from '@/components/job/JobActionsDropdown';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const JobPostings = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { data: jobs = [], isLoading, error } = useJobPostings();
   const updateJobMutation = useUpdateJobPosting();
   const deleteJobMutation = useDeleteJobPosting();
@@ -31,7 +33,7 @@ const JobPostings = () => {
   };
 
   const handleDeleteJob = (jobId: string) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette offre d\'emploi ?')) {
+    if (window.confirm(t('jobs.deleteConfirm'))) {
       deleteJobMutation.mutate(jobId);
     }
   };
@@ -43,7 +45,7 @@ const JobPostings = () => {
   if (isLoading) {
     return (
       <div className="ml-64 p-8 bg-[#F9FAFB]">
-        <Header title="Job Postings" />
+        <Header title={t('jobs.title')} />
         <div className="bg-white rounded-lg p-6 border border-gray-100">
           <div className="animate-pulse">
             <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
@@ -61,7 +63,7 @@ const JobPostings = () => {
   if (error) {
     return (
       <div className="ml-64 p-8 bg-[#F9FAFB]">
-        <Header title="Job Postings" />
+        <Header title={t('jobs.title')} />
         <div className="bg-white rounded-lg p-6 border border-gray-100">
           <div className="text-center text-red-600">
             Erreur lors du chargement des offres d'emploi
@@ -73,31 +75,31 @@ const JobPostings = () => {
 
   return (
     <div className="ml-64 p-8 bg-[#F9FAFB]">
-      <Header title="Job Postings" />
+      <Header title={t('jobs.title')} />
       
       <div className="bg-white rounded-lg p-6 border border-gray-100">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">All Job Postings</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t('jobs.allJobs')}</h2>
           <Button className="bg-primary text-white" onClick={handleCreateJob}>
             <Plus className="mr-2 h-4 w-4 bg-white text-primary rounded-full p-[2px]" />
-            Add New Job
+            {t('jobs.addNew')}
           </Button>
         </div>
 
         {jobs.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            Aucune offre d'emploi trouvée. Créez votre première offre !
+            {t('jobs.noJobs')}
           </div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow className="border-b border-gray-100">
-                <TableHead className="text-gray-500 font-medium">POSITION</TableHead>
-                <TableHead className="text-gray-500 font-medium">DEPARTMENT</TableHead>
-                <TableHead className="text-gray-500 font-medium">CANDIDATES</TableHead>
-                <TableHead className="text-gray-500 font-medium">POSTED</TableHead>
-                <TableHead className="text-gray-500 font-medium">STATUS</TableHead>
-                <TableHead className="text-gray-500 font-medium">ACTIONS</TableHead>
+                <TableHead className="text-gray-500 font-medium">{t('jobs.position')}</TableHead>
+                <TableHead className="text-gray-500 font-medium">{t('jobs.department')}</TableHead>
+                <TableHead className="text-gray-500 font-medium">{t('jobs.candidates')}</TableHead>
+                <TableHead className="text-gray-500 font-medium">{t('jobs.posted')}</TableHead>
+                <TableHead className="text-gray-500 font-medium">{t('jobs.status')}</TableHead>
+                <TableHead className="text-gray-500 font-medium">{t('jobs.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -114,11 +116,11 @@ const JobPostings = () => {
                         </div>
                         <div>
                           <div className="font-medium text-gray-900">{job.title}</div>
-                          <div className="text-sm text-gray-500">{job.location || 'Non spécifié'}</div>
+                          <div className="text-sm text-gray-500">{job.location || t('jobs.notSpecified')}</div>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-700">{job.department || 'Non spécifié'}</TableCell>
+                    <TableCell className="text-gray-700">{job.department || t('jobs.notSpecified')}</TableCell>
                     <TableCell>
                       <div className="flex items-center text-gray-700">
                         <User className="h-4 w-4 mr-1 text-gray-500" /> 
@@ -151,7 +153,7 @@ const JobPostings = () => {
                         className="text-gray-500 text-sm"
                         onClick={() => handleJobClick(job.id)}
                       >
-                        Show More <ChevronDown className="ml-1 h-4 w-4" />
+                        {t('jobs.showMore')} <ChevronDown className="ml-1 h-4 w-4" />
                       </Button>
                     </TableCell>
                   </TableRow>

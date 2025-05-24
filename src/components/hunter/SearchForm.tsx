@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SearchFormProps {
   onSearch: (criteria: string) => void;
@@ -12,6 +13,7 @@ interface SearchFormProps {
 }
 
 const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) => {
+  const { t } = useLanguage();
   const [searchCriteria, setSearchCriteria] = useState('');
   const [tags, setTags] = useState<string[]>([]);
 
@@ -62,20 +64,20 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) => {
     <Card className="rounded-xl bg-white shadow-sm max-w-3xl mx-auto">
       <CardHeader className="pb-2">
         <CardTitle className="text-2xl font-bold text-gray-800">
-          🔍 Hunter – Trouver des candidats sur le web
+          {t('hunter.subtitle')}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="search-criteria" className="block text-sm font-medium text-gray-700 mb-2">
-              ✏️ Décrivez les critères du poste
+              {t('hunter.description')}
             </label>
             <Textarea
               id="search-criteria"
               value={searchCriteria}
               onChange={handleChange}
-              placeholder="Ex : Nous cherchons un développeur React senior, à distance, parlant anglais..."
+              placeholder={t('hunter.placeholder')}
               className="rounded-md bg-gray-50 text-sm focus:outline-blue-600 resize-none"
               rows={5}
             />
@@ -106,12 +108,12 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) => {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Recherche en cours...
+                {t('hunter.searching')}
               </>
             ) : (
               <>
                 <Search className="mr-2 h-5 w-5" />
-                Lancer la chasse
+                {t('hunter.searchButton')}
               </>
             )}
           </Button>

@@ -9,9 +9,11 @@ import { Check, Users, Briefcase, Mail } from 'lucide-react';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useCandidates } from '@/hooks/useCandidatesData';
 import { useJobPostings } from '@/hooks/useJobPostings';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
   const { data: candidates = [] } = useCandidates();
   const { data: jobPostings = [] } = useJobPostings();
@@ -35,34 +37,34 @@ const Index = () => {
   
   return (
     <div className="ml-64 p-8">
-      <Header title="Dashboard" />
+      <Header title={t('dashboard.title')} />
       
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
           icon={<Mail className="h-6 w-6" />}
-          title="New Applications"
+          title={t('dashboard.stats.newApplications')}
           value={statsLoading ? "..." : stats?.newApplications || 0}
           change={{ value: stats?.newApplicationsChange || "+0%", positive: true }}
         />
         
         <StatCard
           icon={<Users className="h-6 w-6" />}
-          title="Total Candidates"
+          title={t('dashboard.stats.totalCandidates')}
           value={statsLoading ? "..." : stats?.totalCandidates || 0}
           change={{ value: stats?.totalCandidatesChange || "+0%", positive: true }}
         />
         
         <StatCard
           icon={<Check className="h-6 w-6" />}
-          title="Interview Stage"
+          title={t('dashboard.stats.interviewStage')}
           value={statsLoading ? "..." : stats?.interviewStage || 0}
           change={{ value: stats?.interviewStageChange || "+0%", positive: true }}
         />
         
         <StatCard
           icon={<Briefcase className="h-6 w-6" />}
-          title="Active Jobs"
+          title={t('dashboard.stats.activeJobs')}
           value={statsLoading ? "..." : stats?.activeJobs || 0}
           change={{ value: stats?.activeJobsChange || "0%", positive: false }}
         />
@@ -72,9 +74,9 @@ const Index = () => {
         {/* Top Candidates */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Top Candidates</h2>
+            <h2 className="text-lg font-semibold">{t('dashboard.topCandidates')}</h2>
             <Link to="/candidates" className="text-primary text-sm flex items-center">
-              View all
+              {t('dashboard.viewAll')}
               <svg className="h-4 w-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
                 <polyline points="12 5 19 12 12 19"></polyline>
@@ -99,7 +101,7 @@ const Index = () => {
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-center py-4">Aucun candidat disponible</p>
+              <p className="text-gray-500 text-center py-4">{t('dashboard.noCandidates')}</p>
             )}
           </div>
         </div>
@@ -107,9 +109,9 @@ const Index = () => {
         {/* Active Job Postings */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Active Job Postings</h2>
+            <h2 className="text-lg font-semibold">{t('dashboard.activeJobs')}</h2>
             <Link to="/job-postings" className="text-primary text-sm flex items-center">
-              View all
+              {t('dashboard.viewAll')}
               <svg className="h-4 w-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
                 <polyline points="12 5 19 12 12 19"></polyline>
@@ -131,7 +133,7 @@ const Index = () => {
                 />
               ))
             ) : (
-              <p className="text-gray-500 text-center py-4">Aucune offre active</p>
+              <p className="text-gray-500 text-center py-4">{t('dashboard.noActiveJobs')}</p>
             )}
           </div>
         </div>

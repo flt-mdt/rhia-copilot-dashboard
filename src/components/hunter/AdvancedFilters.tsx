@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AdvancedFiltersProps {
   onFilterChange: (filters: FilterOptions) => void;
@@ -19,6 +20,7 @@ export interface FilterOptions {
 const countries = ['France', 'Remote', 'Europe', 'USA', 'Canada'];
 
 const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onFilterChange }) => {
+  const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
     minMatchScore: 60,
@@ -55,7 +57,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onFilterChange }) => 
         className="flex items-center justify-between w-full text-gray-700 mb-2"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <span>Filtres avancés</span>
+        <span>{t('hunter.advancedFilters')}</span>
         {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
       </Button>
       
@@ -65,7 +67,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onFilterChange }) => 
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  Matching minimum: {filters.minMatchScore}%
+                  {t('hunter.minMatching')}: {filters.minMatchScore}%
                 </label>
                 <Slider
                   defaultValue={[filters.minMatchScore]}
@@ -78,7 +80,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onFilterChange }) => 
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Pays / Localisation</label>
+                <label className="text-sm font-medium mb-2 block">{t('hunter.location')}</label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {countries.map(country => (
                     <div key={country} className="flex items-center space-x-2">
@@ -101,28 +103,28 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onFilterChange }) => 
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Trier par</label>
+                <label className="text-sm font-medium mb-2 block">{t('hunter.sortBy')}</label>
                 <div className="flex space-x-2">
                   <Button 
                     variant={filters.sortBy === 'score' ? 'default' : 'outline'} 
                     size="sm"
                     onClick={() => handleSortChange('score')}
                   >
-                    Score
+                    {t('hunter.score')}
                   </Button>
                   <Button 
                     variant={filters.sortBy === 'date' ? 'default' : 'outline'} 
                     size="sm"
                     onClick={() => handleSortChange('date')}
                   >
-                    Date
+                    {t('hunter.date')}
                   </Button>
                   <Button 
                     variant={filters.sortBy === 'popularity' ? 'default' : 'outline'} 
                     size="sm"
                     onClick={() => handleSortChange('popularity')}
                   >
-                    Popularité
+                    {t('hunter.popularity')}
                   </Button>
                 </div>
               </div>

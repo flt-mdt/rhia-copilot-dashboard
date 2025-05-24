@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Skill {
   name: string;
@@ -29,18 +30,19 @@ interface CandidateCardProps {
 
 const CandidateCard: React.FC<CandidateCardProps> = ({ candidate }) => {
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleSaveCandidate = () => {
     toast({
-      title: "Profil sauvegardé",
-      description: `${candidate.name} a été ajouté à votre shortlist`,
+      title: t('hunter.profileSaved'),
+      description: t('hunter.addedToShortlist').replace('{name}', candidate.name),
     });
   };
 
   const handleImportCandidate = () => {
     toast({
-      title: "Profil importé",
-      description: `${candidate.name} a été importé dans votre base de candidats`,
+      title: t('hunter.profileImported'),
+      description: t('hunter.importedToDatabase').replace('{name}', candidate.name),
     });
   };
 
@@ -52,7 +54,9 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate }) => {
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-bold">{candidate.name}</h3>
               {candidate.isNew && (
-                <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Nouveau</Badge>
+                <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+                  {t('hunter.new')}
+                </Badge>
               )}
             </div>
             <div className="flex items-center gap-2 mt-1">
@@ -64,7 +68,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate }) => {
               </span>
             </div>
             <div className="text-sm text-gray-500 mt-1">
-              Disponibilité: {candidate.availability}
+              {t('hunter.availability')}: {candidate.availability}
             </div>
           </div>
           <div className="bg-green-100 text-green-700 text-sm font-semibold rounded-full w-12 h-12 flex items-center justify-center">
@@ -88,7 +92,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate }) => {
             onClick={() => window.open(candidate.profileUrl, '_blank')}
           >
             <ExternalLink className="mr-1 h-4 w-4" />
-            Voir le profil
+            {t('hunter.viewProfile')}
           </Button>
           <Button 
             size="sm" 
@@ -97,7 +101,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate }) => {
             onClick={handleSaveCandidate}
           >
             <Save className="mr-1 h-4 w-4" />
-            Sauvegarder
+            {t('hunter.save')}
           </Button>
           <Button 
             size="sm" 
@@ -106,7 +110,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate }) => {
             onClick={handleImportCandidate}
           >
             <Download className="mr-1 h-4 w-4" />
-            Importer
+            {t('hunter.import')}
           </Button>
         </div>
       </CardContent>
