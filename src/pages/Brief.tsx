@@ -278,22 +278,22 @@ const Brief = () => {
                 </CardContent>
               </Card>
 
-              {/* Suggestions - Now separated from chat */}
+              {/* Suggestions - Now display only as reference */}
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium text-gray-700 flex items-center">
                     <Lightbulb className="h-4 w-4 mr-2" />
-                    Questions pour vous aider à préciser votre besoin
+                    Questions pour vous aider à réfléchir
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {suggestions.map((suggestion, index) => (
-                      <SuggestionCard
-                        key={index}
-                        suggestion={suggestion}
-                        onClick={handleSuggestionClick}
-                      />
+                      <Card key={index} className="border-gray-200">
+                        <CardContent className="p-3">
+                          <p className="text-sm text-gray-700">{suggestion}</p>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
                 </CardContent>

@@ -25,6 +25,15 @@ const LanguageSelector = () => {
     });
   };
 
+  const getLanguageDisplay = (lang: Language) => {
+    const flags = {
+      en: '🇺🇸',
+      fr: '🇫🇷',
+      es: '🇪🇸'
+    };
+    return flags[lang];
+  };
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -39,12 +48,14 @@ const LanguageSelector = () => {
       <CardContent>
         <Select value={language} onValueChange={handleLanguageChange}>
           <SelectTrigger className="w-full">
-            <SelectValue />
+            <SelectValue>
+              {getLanguageDisplay(language)}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="en">🇺🇸 English</SelectItem>
-            <SelectItem value="fr">🇫🇷 Français</SelectItem>
-            <SelectItem value="es">🇪🇸 Español</SelectItem>
+            <SelectItem value="en">🇺🇸</SelectItem>
+            <SelectItem value="fr">🇫🇷</SelectItem>
+            <SelectItem value="es">🇪🇸</SelectItem>
           </SelectContent>
         </Select>
       </CardContent>
