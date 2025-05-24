@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Login = () => {
@@ -17,6 +18,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { signInWithEmail, signInWithGoogle, signInWithLinkedIn, signUp, user } = useAuth();
+  const { t } = useLanguage();
 
   // Redirect if already logged in
   React.useEffect(() => {
@@ -40,7 +42,7 @@ const Login = () => {
         });
       } else {
         toast({
-          title: "Connexion réussie",
+          title: t('success.loginSuccess'),
           description: "Bienvenue !",
         });
         navigate('/');
@@ -71,7 +73,7 @@ const Login = () => {
         });
       } else {
         toast({
-          title: "Inscription réussie",
+          title: t('success.signupSuccess'),
           description: "Bienvenue dans RHIA Copilot !",
         });
         navigate('/');
@@ -130,26 +132,28 @@ const Login = () => {
       <Card className="w-[400px]">
         <CardHeader>
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded bg-primary flex items-center justify-center">
-              <span className="text-white font-bold">RC</span>
-            </div>
-            <span className="font-semibold text-lg">RHIA Copilot</span>
+            <img 
+              src="/lovable-uploads/12438a1e-9fa5-461d-b064-fd80416fb237.png" 
+              alt="RHIA Copilot Logo" 
+              className="h-10 w-10 object-contain"
+            />
+            <span className="font-semibold text-lg">{t('login.title')}</span>
           </div>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Connexion</TabsTrigger>
-              <TabsTrigger value="signup">Inscription</TabsTrigger>
+              <TabsTrigger value="signin">{t('login.signin')}</TabsTrigger>
+              <TabsTrigger value="signup">{t('login.signup')}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="signin">
-              <CardTitle className="text-2xl mb-2">Se connecter</CardTitle>
-              <CardDescription className="mb-4">Entrez vos identifiants pour accéder à votre compte</CardDescription>
+              <CardTitle className="text-2xl mb-2">{t('login.signin.title')}</CardTitle>
+              <CardDescription className="mb-4">{t('login.signin.description')}</CardDescription>
               
               <form onSubmit={handleEmailSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t('login.email')}</Label>
                   <Input
                     id="email"
                     type="email" 
@@ -160,7 +164,7 @@ const Login = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password">Mot de passe</Label>
+                  <Label htmlFor="password">{t('login.password')}</Label>
                   <Input
                     id="password"
                     type="password"
@@ -170,18 +174,18 @@ const Login = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Connexion...' : 'Se connecter'}
+                  {isLoading ? t('common.loading') : t('login.signin.button')}
                 </Button>
               </form>
             </TabsContent>
             
             <TabsContent value="signup">
-              <CardTitle className="text-2xl mb-2">S'inscrire</CardTitle>
-              <CardDescription className="mb-4">Créez votre compte RHIA Copilot</CardDescription>
+              <CardTitle className="text-2xl mb-2">{t('login.signup.title')}</CardTitle>
+              <CardDescription className="mb-4">{t('login.signup.description')}</CardDescription>
               
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Nom complet</Label>
+                  <Label htmlFor="name">{t('login.name')}</Label>
                   <Input
                     id="name"
                     type="text"
@@ -192,7 +196,7 @@ const Login = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
+                  <Label htmlFor="signup-email">{t('login.email')}</Label>
                   <Input
                     id="signup-email"
                     type="email" 
@@ -203,7 +207,7 @@ const Login = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Mot de passe</Label>
+                  <Label htmlFor="signup-password">{t('login.password')}</Label>
                   <Input
                     id="signup-password"
                     type="password"
@@ -213,7 +217,7 @@ const Login = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Inscription...' : 'S\'inscrire'}
+                  {isLoading ? t('common.loading') : t('login.signup.button')}
                 </Button>
               </form>
             </TabsContent>
@@ -225,7 +229,7 @@ const Login = () => {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Ou continuer avec</span>
+                <span className="bg-background px-2 text-muted-foreground">{t('login.or')}</span>
               </div>
             </div>
             
@@ -253,7 +257,7 @@ const Login = () => {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Google
+                {t('login.google')}
               </Button>
               
               <Button 
@@ -264,7 +268,7 @@ const Login = () => {
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                 </svg>
-                LinkedIn
+                {t('login.linkedin')}
               </Button>
             </div>
           </div>

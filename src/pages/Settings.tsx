@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import StarRating from '@/components/settings/StarRating';
+import LanguageSelector from '@/components/settings/LanguageSelector';
 import { Settings as SettingsIcon, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useLanguage } from '@/contexts/LanguageContext';
 import NotificationItem from '@/components/notifications/NotificationItem';
 
 interface CriterionWeight {
@@ -21,6 +23,8 @@ const Settings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { notifications } = useNotifications();
+  const { t } = useLanguage();
+  
   const [criteria, setCriteria] = useState<CriterionWeight[]>([
     {
       id: "technical-skills",
@@ -69,37 +73,38 @@ const Settings = () => {
   };
 
   const handleLogout = () => {
-    // Clear user data from localStorage
     localStorage.removeItem('user');
     
     toast({
-      title: "Logout successful",
+      title: t('success.logoutSuccess'),
       description: "You have been logged out",
     });
     
-    // Navigate to login page
     navigate('/login');
   };
 
   return (
     <div className="ml-64 p-8 bg-[#F9FAFB]">
-      <Header title="Settings" />
+      <Header title={t('settings.title')} />
       
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* Language Selector */}
+        <LanguageSelector />
+
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <SettingsIcon className="h-5 w-5 text-primary" />
-              <CardTitle>Evaluation Criteria Weights</CardTitle>
+              <CardTitle>{t('settings.criteria.title')}</CardTitle>
             </div>
             <CardDescription>
-              Customize the importance of different criteria used to evaluate candidates
+              {t('settings.criteria.description')}
             </CardDescription>
           </CardHeader>
           
           <CardContent>
             <p className="text-sm text-gray-600 mb-6">
-              Adjust the importance of each criterion by clicking on the stars. Higher ratings will give more weight to that criterion in the overall candidate score.
+              {t('settings.criteria.help')}
             </p>
             
             <div className="space-y-6">
@@ -125,7 +130,7 @@ const Settings = () => {
         {/* Recent Activity Section */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle>Activité récente</CardTitle>
+            <CardTitle>{t('settings.activity.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-1">
@@ -138,7 +143,7 @@ const Settings = () => {
                 ))
               ) : (
                 <div className="py-8 text-center text-gray-500">
-                  <p className="text-sm">Aucune activité récente</p>
+                  <p className="text-sm">{t('settings.activity.empty')}</p>
                 </div>
               )}
             </div>
@@ -148,9 +153,9 @@ const Settings = () => {
         {/* Logout Button */}
         <Card className="border border-red-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-red-600">Déconnexion</CardTitle>
+            <CardTitle className="text-red-600">{t('settings.logout.title')}</CardTitle>
             <CardDescription>
-              Déconnectez-vous de votre compte RHIA Copilot
+              {t('settings.logout.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -160,7 +165,7 @@ const Settings = () => {
               onClick={handleLogout}
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Déconnexion
+              {t('settings.logout.button')}
             </Button>
           </CardContent>
         </Card>

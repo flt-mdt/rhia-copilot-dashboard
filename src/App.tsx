@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Sidebar from "./components/layout/Sidebar";
 import Index from "./pages/Index";
@@ -27,67 +28,69 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/sign-in" element={<Navigate to="/login" replace />} />
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Sidebar />
-                <Index />
-              </ProtectedRoute>
-            } />
-            <Route path="/candidates" element={
-              <ProtectedRoute>
-                <Sidebar />
-                <Candidates />
-              </ProtectedRoute>
-            } />
-            <Route path="/candidates/:candidateId" element={
-              <ProtectedRoute>
-                <Sidebar />
-                <CandidateProfile />
-              </ProtectedRoute>
-            } />
-            <Route path="/job-postings" element={
-              <ProtectedRoute>
-                <Sidebar />
-                <JobPostings />
-              </ProtectedRoute>
-            } />
-            <Route path="/job-postings/create" element={
-              <ProtectedRoute>
-                <Sidebar />
-                <CreateJobForm />
-              </ProtectedRoute>
-            } />
-            <Route path="/job-postings/:jobId" element={
-              <ProtectedRoute>
-                <Sidebar />
-                <JobDetail />
-              </ProtectedRoute>
-            } />
-            <Route path="/settings" element={
-              <ProtectedRoute>
-                <Sidebar />
-                <Settings />
-              </ProtectedRoute>
-            } />
-            <Route path="/hunter" element={
-              <ProtectedRoute>
-                <Sidebar />
-                <Hunter />
-              </ProtectedRoute>
-            } />
-            <Route path="/brief" element={
-              <ProtectedRoute>
-                <Sidebar />
-                <Brief />
-              </ProtectedRoute>
-            } />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <LanguageProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/sign-in" element={<Navigate to="/login" replace />} />
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <Index />
+                </ProtectedRoute>
+              } />
+              <Route path="/candidates" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <Candidates />
+                </ProtectedRoute>
+              } />
+              <Route path="/candidates/:candidateId" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <CandidateProfile />
+                </ProtectedRoute>
+              } />
+              <Route path="/job-postings" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <JobPostings />
+                </ProtectedRoute>
+              } />
+              <Route path="/job-postings/create" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <CreateJobForm />
+                </ProtectedRoute>
+              } />
+              <Route path="/job-postings/:jobId" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <JobDetail />
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <Settings />
+                </ProtectedRoute>
+              } />
+              <Route path="/hunter" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <Hunter />
+                </ProtectedRoute>
+              } />
+              <Route path="/brief" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <Brief />
+                </ProtectedRoute>
+              } />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </LanguageProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
