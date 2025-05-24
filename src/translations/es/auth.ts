@@ -7,6 +7,8 @@ export const authTranslations = {
   or: "O",
   google: "Iniciar sesión con Google",
   linkedin: "Iniciar sesión con LinkedIn",
+  signin: "Iniciar sesión",
+  signup: "Registrarse",
   signin: {
     title: "¡Bienvenido de nuevo!",
     description: "Inicia sesión para continuar a tu cuenta.",
