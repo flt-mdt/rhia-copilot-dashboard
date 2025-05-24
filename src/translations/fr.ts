@@ -121,8 +121,6 @@ export const frTranslations = {
     or: "Ou",
     google: "Se connecter avec Google",
     linkedin: "Se connecter avec LinkedIn",
-    signin: "Se connecter",
-    signup: "S'inscrire",
     signin: {
       title: "Bienvenue !",
       description: "Connectez-vous pour accéder à votre compte.",
