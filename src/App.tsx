@@ -14,6 +14,8 @@ import CandidateProfile from "./pages/CandidateProfile";
 import JobPostings from "./pages/JobPostings";
 import JobDetail from "./pages/JobDetail";
 import CreateJobForm from "./components/job/CreateJobForm";
+import EditJobForm from "./components/job/EditJobForm";
+import DuplicateJobForm from "./components/job/DuplicateJobForm";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
@@ -61,6 +63,18 @@ const App = () => (
                 <ProtectedRoute>
                   <Sidebar />
                   <CreateJobForm />
+                </ProtectedRoute>
+              } />
+              <Route path="/job-postings/:jobId/edit" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <EditJobForm />
+                </ProtectedRoute>
+              } />
+              <Route path="/job-postings/:jobId/duplicate" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <DuplicateJobForm />
                 </ProtectedRoute>
               } />
               <Route path="/job-postings/:jobId" element={

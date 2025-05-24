@@ -133,7 +133,7 @@ const Login = () => {
         <CardHeader>
           <div className="flex items-center gap-3 mb-2">
             <img 
-              src="/lovable-uploads/12438a1e-9fa5-461d-b064-fd80416fb237.png" 
+              src="/lovable-uploads/fdc4d16b-8516-4b74-b559-2340f062242b.png" 
               alt="RHIA Copilot Logo" 
               className="h-10 w-10 object-contain"
             />

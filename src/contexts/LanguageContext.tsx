@@ -1,5 +1,4 @@
-
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
 
@@ -13,512 +12,537 @@ interface LanguageContextType {
 
 const translations = {
   en: {
-    // Navigation
-    'nav.dashboard': 'Dashboard',
-    'nav.candidates': 'Candidates',
-    'nav.jobPostings': 'Job Postings',
-    'nav.hunter': 'Hunter',
-    'nav.brief': 'Brief',
-    'nav.settings': 'Settings',
-    
-    // Settings
-    'settings.title': 'Settings',
-    'settings.language': 'Language',
-    'settings.language.description': 'Select your preferred language',
-    'settings.criteria.title': 'Evaluation Criteria Weighting',
-    'settings.criteria.description': 'Customize the importance of different criteria used to evaluate candidates',
-    'settings.criteria.help': 'Adjust the importance of each criterion by clicking on the stars. Higher ratings will give more weight to that criterion in the candidate\'s overall score.',
-    'settings.activity.title': 'Recent Activity',
-    'settings.activity.empty': 'No recent activity',
-    'settings.logout.title': 'Logout',
-    'settings.logout.description': 'Logout from your RHIA Copilot account',
-    'settings.logout.button': 'Logout',
-    
-    // Login
-    'login.title': 'RHIA Copilot',
-    'login.signin': 'Sign In',
-    'login.signup': 'Sign Up',
-    'login.signin.title': 'Sign In',
-    'login.signin.description': 'Enter your credentials to access your account',
-    'login.signup.title': 'Sign Up',
-    'login.signup.description': 'Create your RHIA Copilot account',
-    'login.email': 'Email',
-    'login.password': 'Password',
-    'login.name': 'Full Name',
-    'login.signin.button': 'Sign In',
-    'login.signup.button': 'Sign Up',
-    'login.or': 'Or continue with',
-    'login.google': 'Google',
-    'login.linkedin': 'LinkedIn',
-    
-    // Dashboard
-    'dashboard.title': 'Dashboard',
-    'dashboard.stats.newApplications': 'New Applications',
-    'dashboard.stats.totalCandidates': 'Total Candidates',
-    'dashboard.stats.interviewStage': 'Interview Stage',
-    'dashboard.stats.activeJobs': 'Active Jobs',
-    'dashboard.topCandidates': 'Top Candidates',
-    'dashboard.activeJobs': 'Active Job Postings',
-    'dashboard.viewAll': 'View all',
-    'dashboard.noCandidates': 'No candidates available',
-    'dashboard.noActiveJobs': 'No active job postings',
-    
-    // Hunter
-    'hunter.title': 'Hunter',
-    'hunter.subtitle': '🔍 Hunter – Find candidates on the web',
-    'hunter.description': '✏️ Describe the job criteria',
-    'hunter.placeholder': 'Ex: We are looking for a senior React developer, remote, speaking English...',
-    'hunter.searchButton': 'Start hunting',
-    'hunter.searching': 'Searching...',
-    'hunter.advancedFilters': 'Advanced filters',
-    'hunter.minMatching': 'Minimum matching',
-    'hunter.location': 'Country / Location',
-    'hunter.sortBy': 'Sort by',
-    'hunter.score': 'Score',
-    'hunter.date': 'Date',
-    'hunter.popularity': 'Popularity',
-    'hunter.resultsFound': 'We found {count} profile{s} closely matching your criteria.',
-    'hunter.highMatching': ' The first {count} have a matching rate above 85%.',
-    'hunter.noResults': 'No results',
-    'hunter.noResultsDesc': 'No candidates match your search criteria. Try modifying your filters or broadening your search.',
-    'hunter.searchCompleted': 'Search completed',
-    'hunter.candidatesFound': '{count} candidates found matching your criteria',
-    'hunter.viewProfile': 'View profile',
-    'hunter.save': 'Save',
-    'hunter.import': 'Import',
-    'hunter.profileSaved': 'Profile saved',
-    'hunter.profileImported': 'Profile imported',
-    'hunter.addedToShortlist': '{name} has been added to your shortlist',
-    'hunter.importedToDatabase': '{name} has been imported to your candidate database',
-    'hunter.availability': 'Availability',
-    'hunter.new': 'New',
-    
-    // Job Postings
-    'jobs.title': 'Job Postings',
-    'jobs.allJobs': 'All Job Postings',
-    'jobs.addNew': 'Add New Job',
-    'jobs.position': 'POSITION',
-    'jobs.department': 'DEPARTMENT',
-    'jobs.candidates': 'CANDIDATES',
-    'jobs.posted': 'POSTED',
-    'jobs.status': 'STATUS',
-    'jobs.actions': 'ACTIONS',
-    'jobs.showMore': 'Show More',
-    'jobs.noJobs': 'No job postings found. Create your first posting!',
-    'jobs.notSpecified': 'Not specified',
-    'jobs.deleteConfirm': 'Are you sure you want to delete this job posting?',
-    
-    // Job Detail
-    'jobDetail.title': 'Job Detail',
-    'jobDetail.myJobs': 'My Job Postings',
-    'jobDetail.backToJobs': '← Back to jobs',
-    'jobDetail.location': 'Location',
-    'jobDetail.salary': 'Salary',
-    'jobDetail.type': 'Type',
-    'jobDetail.publishDate': 'Published',
-    'jobDetail.applications': 'Applications',
-    'jobDetail.analyzed': 'analyzed',
-    'jobDetail.averageScore': 'Average score',
-    'jobDetail.viewCandidates': 'View candidates',
-    'jobDetail.edit': 'Edit',
-    'jobDetail.duplicate': 'Duplicate',
-    'jobDetail.delete': 'Delete',
-    'jobDetail.loading': 'Loading...',
-    'jobDetail.notFound': 'Job posting not found',
-    'jobDetail.actionInProgress': 'Action in progress',
-    'jobDetail.editForm': 'Opening edit form',
-    'jobDetail.duplicated': 'Job posting duplicated',
-    'jobDetail.copyCreated': 'A copy of this job posting has been created',
-    'jobDetail.deleteJob': 'Delete this job posting?',
-    'jobDetail.irreversible': 'This action is irreversible',
-    
-    // Candidates
-    'candidates.title': 'Candidates',
-    
-    // Common
-    'common.loading': 'Loading...',
-    'common.save': 'Save',
-    'common.cancel': 'Cancel',
-    'common.yes': 'Yes',
-    'common.no': 'No',
-    'common.search': 'Search',
-    'common.filter': 'Filter',
-    'common.clear': 'Clear',
-    'common.apply': 'Apply',
-    'common.close': 'Close',
-    'common.open': 'Open',
-    'common.edit': 'Edit',
-    'common.delete': 'Delete',
-    'common.create': 'Create',
-    'common.update': 'Update',
-    
-    // Notifications
-    'notifications.newCandidate': 'New candidate added',
-    'notifications.statusChange': 'Candidate status updated',
-    'notifications.newJob': 'New job posting created',
-    
-    // Success messages
-    'success.languageUpdated': 'Language updated successfully',
-    'success.loginSuccess': 'Login successful',
-    'success.signupSuccess': 'Registration successful',
-    'success.logoutSuccess': 'Logout successful'
+    dashboard: {
+      title: "Dashboard",
+      stats: {
+        newApplications: "New Applications",
+        totalCandidates: "Total Candidates",
+        interviewStage: "Interview Stage",
+        activeJobs: "Active Jobs",
+      },
+      topCandidates: "Top Candidates",
+      activeJobs: "Active Job Postings",
+      viewAll: "View All",
+      noCandidates: "No candidates available",
+      noActiveJobs: "No active jobs available",
+    },
+    candidates: {
+      title: "Candidates",
+      allCandidates: "All Candidates",
+      addNew: "Add New",
+      noCandidates: "No candidates found.",
+      deleteConfirm: "Are you sure you want to delete this candidate?",
+    },
+    candidateProfile: {
+      title: "Candidate Profile",
+      personalInformation: "Personal Information",
+      contactInformation: "Contact Information",
+      skills: "Skills",
+      experience: "Experience",
+      education: "Education",
+      resume: "Resume",
+      notes: "Notes",
+      addNote: "Add Note",
+      saveNote: "Save Note",
+      editNote: "Edit Note",
+      deleteNote: "Delete Note",
+      deleteConfirm: "Are you sure you want to delete this note?",
+      noNotes: "No notes available.",
+    },
+    jobs: {
+      title: "Job Postings",
+      allJobs: "All Job Postings",
+      addNew: "Add New",
+      position: "Position",
+      department: "Department",
+      candidates: "Candidates",
+      posted: "Posted",
+      status: "Status",
+      actions: "Actions",
+      notSpecified: "Not specified",
+      noJobs: "No job postings found.",
+      deleteConfirm: "Are you sure you want to delete this job posting?",
+      showMore: "Show More",
+      editJob: "Edit Job Offer",
+      duplicateJob: "Duplicate Job Offer",
+      deleteConfirmTitle: "Delete Job Offer",
+      deleteConfirmMessage: "Are you sure you want to delete '{jobTitle}'? This action will also remove {candidatesCount} associated candidates.",
+      deleteWarning: "⚠️ This action is irreversible and will:",
+      deleteWarningJob: "Permanently delete the job offer",
+      deleteWarningCandidates: "Remove all associated candidates",
+      deleteWarningData: "Delete all related data and statistics",
+      confirmDelete: "Yes, Delete",
+      createDuplicate: "Create Copy",
+      contractType: "Contract Type",
+      selectContract: "Select contract type",
+      experienceLevel: "Experience Level",
+      selectExperience: "Select experience level",
+      salaryMin: "Minimum Salary (€)",
+      salaryMax: "Maximum Salary (€)",
+    },
+    jobDetail: {
+      title: "Job Detail",
+      myJobs: "My Jobs",
+      backToJobs: "Back to Job Postings",
+      location: "Location",
+      salary: "Salary",
+      type: "Type",
+      publishDate: "Publish Date",
+      applications: "Applications",
+      analyzed: "analyzed",
+      averageScore: "Average Score",
+      viewCandidates: "View Candidates",
+      edit: "Edit",
+      duplicate: "Duplicate",
+      delete: "Delete",
+      actionInProgress: "Action in progress",
+      editForm: "Opening the edit form...",
+      duplicated: "Job duplicated!",
+      copyCreated: "A copy of the job has been created.",
+      deleteJob: "Deleting Job",
+      irreversible: "This action is irreversible.",
+      loading: "Loading job details...",
+      notFound: "Job not found.",
+    },
+    settings: {
+      title: "Settings",
+      language: "Language",
+      languageDescription: "Choose your preferred language",
+      account: "Account",
+      accountDescription: "Manage your account settings",
+    },
+    login: {
+      title: "RHIA Copilot",
+      signin: "Sign In",
+      signup: "Sign Up",
+      email: "Email",
+      password: "Password",
+      name: "Name",
+      or: "Or",
+      google: "Sign In with Google",
+      linkedin: "Sign In with LinkedIn",
+      signinTitle: "Welcome Back!",
+      signinDescription: "Sign in to continue to your account.",
+      signupTitle: "Create Account",
+      signupDescription: "Create an account to get started.",
+      signinButton: "Sign In",
+      signupButton: "Sign Up",
+    },
+    hunter: {
+      title: "Candidate Hunter",
+      description: "Find potential candidates based on job descriptions.",
+      uploadDescription: "Upload a job description to find matching candidates.",
+      dropFileHere: "Drop your file here or click to upload",
+      supportedFormats: "Supported formats: .pdf, .doc, .docx",
+      analyze: "Analyze",
+      analyzing: "Analyzing...",
+      resultsFound: "Found {count} candidate{s}. ",
+      highMatching: "{count} with high matching score{s}.",
+      candidateName: "Candidate Name",
+      candidateScore: "Match Score",
+      candidateExperience: "Experience",
+      candidateSkills: "Skills",
+      candidateEducation: "Education",
+      candidateResume: "Resume",
+      noFileUploaded: "No file uploaded",
+    },
+    brief: {
+      title: "Brief",
+    },
+    success: {
+      loginSuccess: "Login successful!",
+      signupSuccess: "Signup successful!",
+      languageUpdated: "Language updated successfully!",
+    },
+    common: {
+      loading: "Loading...",
+      back: "Back",
+      save: "Save",
+      saving: "Saving...",
+      cancel: "Cancel",
+      creating: "Creating...",
+      deleting: "Deleting...",
+    }
   },
   fr: {
-    // Navigation
-    'nav.dashboard': 'Tableau de bord',
-    'nav.candidates': 'Candidats',
-    'nav.jobPostings': 'Offres d\'emploi',
-    'nav.hunter': 'Hunter',
-    'nav.brief': 'Brief',
-    'nav.settings': 'Paramètres',
-    
-    // Settings
-    'settings.title': 'Paramètres',
-    'settings.language': 'Langue',
-    'settings.language.description': 'Sélectionnez votre langue préférée',
-    'settings.criteria.title': 'Pondération des critères d\'évaluation',
-    'settings.criteria.description': 'Personnalisez l\'importance des différents critères utilisés pour évaluer les candidats',
-    'settings.criteria.help': 'Ajustez l\'importance de chaque critère en cliquant sur les étoiles. Des notes plus élevées donneront plus de poids à ce critère dans le score global du candidat.',
-    'settings.activity.title': 'Activité récente',
-    'settings.activity.empty': 'Aucune activité récente',
-    'settings.logout.title': 'Déconnexion',
-    'settings.logout.description': 'Déconnectez-vous de votre compte RHIA Copilot',
-    'settings.logout.button': 'Déconnexion',
-    
-    // Login
-    'login.title': 'RHIA Copilot',
-    'login.signin': 'Se connecter',
-    'login.signup': 'S\'inscrire',
-    'login.signin.title': 'Se connecter',
-    'login.signin.description': 'Entrez vos identifiants pour accéder à votre compte',
-    'login.signup.title': 'S\'inscrire',
-    'login.signup.description': 'Créez votre compte RHIA Copilot',
-    'login.email': 'Email',
-    'login.password': 'Mot de passe',
-    'login.name': 'Nom complet',
-    'login.signin.button': 'Se connecter',
-    'login.signup.button': 'S\'inscrire',
-    'login.or': 'Ou continuer avec',
-    'login.google': 'Google',
-    'login.linkedin': 'LinkedIn',
-    
-    // Dashboard
-    'dashboard.title': 'Tableau de bord',
-    'dashboard.stats.newApplications': 'Nouvelles candidatures',
-    'dashboard.stats.totalCandidates': 'Total candidats',
-    'dashboard.stats.interviewStage': 'En entretien',
-    'dashboard.stats.activeJobs': 'Postes actifs',
-    'dashboard.topCandidates': 'Top Candidats',
-    'dashboard.activeJobs': 'Offres d\'emploi actives',
-    'dashboard.viewAll': 'Voir tout',
-    'dashboard.noCandidates': 'Aucun candidat disponible',
-    'dashboard.noActiveJobs': 'Aucune offre active',
-    
-    // Hunter
-    'hunter.title': 'Hunter',
-    'hunter.subtitle': '🔍 Hunter – Trouver des candidats sur le web',
-    'hunter.description': '✏️ Décrivez les critères du poste',
-    'hunter.placeholder': 'Ex : Nous cherchons un développeur React senior, à distance, parlant anglais...',
-    'hunter.searchButton': 'Lancer la chasse',
-    'hunter.searching': 'Recherche en cours...',
-    'hunter.advancedFilters': 'Filtres avancés',
-    'hunter.minMatching': 'Matching minimum',
-    'hunter.location': 'Pays / Localisation',
-    'hunter.sortBy': 'Trier par',
-    'hunter.score': 'Score',
-    'hunter.date': 'Date',
-    'hunter.popularity': 'Popularité',
-    'hunter.resultsFound': 'Nous avons trouvé {count} profil{s} correspondant étroitement à vos critères.',
-    'hunter.highMatching': ' Les {count} premier{s} ont un taux de matching supérieur à 85%.',
-    'hunter.noResults': 'Aucun résultat',
-    'hunter.noResultsDesc': 'Aucun candidat ne correspond à vos critères de recherche. Essayez de modifier vos filtres ou d\'élargir votre recherche.',
-    'hunter.searchCompleted': 'Recherche terminée',
-    'hunter.candidatesFound': '{count} candidats trouvés correspondant à vos critères',
-    'hunter.viewProfile': 'Voir le profil',
-    'hunter.save': 'Sauvegarder',
-    'hunter.import': 'Importer',
-    'hunter.profileSaved': 'Profil sauvegardé',
-    'hunter.profileImported': 'Profil importé',
-    'hunter.addedToShortlist': '{name} a été ajouté à votre shortlist',
-    'hunter.importedToDatabase': '{name} a été importé dans votre base de candidats',
-    'hunter.availability': 'Disponibilité',
-    'hunter.new': 'Nouveau',
-    
-    // Job Postings
-    'jobs.title': 'Offres d\'emploi',
-    'jobs.allJobs': 'Toutes les offres d\'emploi',
-    'jobs.addNew': 'Ajouter une nouvelle offre',
-    'jobs.position': 'POSTE',
-    'jobs.department': 'DÉPARTEMENT',
-    'jobs.candidates': 'CANDIDATS',
-    'jobs.posted': 'PUBLIÉ',
-    'jobs.status': 'STATUT',
-    'jobs.actions': 'ACTIONS',
-    'jobs.showMore': 'Voir plus',
-    'jobs.noJobs': 'Aucune offre d\'emploi trouvée. Créez votre première offre !',
-    'jobs.notSpecified': 'Non spécifié',
-    'jobs.deleteConfirm': 'Êtes-vous sûr de vouloir supprimer cette offre d\'emploi ?',
-    
-    // Job Detail
-    'jobDetail.title': 'Détail de l\'offre',
-    'jobDetail.myJobs': 'Mes Offres d\'emploi',
-    'jobDetail.backToJobs': '← Retour aux offres',
-    'jobDetail.location': 'Lieu',
-    'jobDetail.salary': 'Salaire',
-    'jobDetail.type': 'Type',
-    'jobDetail.publishDate': 'Date de publication',
-    'jobDetail.applications': 'Candidatures',
-    'jobDetail.analyzed': 'analysées',
-    'jobDetail.averageScore': 'Moyenne score',
-    'jobDetail.viewCandidates': 'Voir les candidats',
-    'jobDetail.edit': 'Modifier',
-    'jobDetail.duplicate': 'Dupliquer',
-    'jobDetail.delete': 'Supprimer',
-    'jobDetail.loading': 'Chargement...',
-    'jobDetail.notFound': 'Offre non trouvée',
-    'jobDetail.actionInProgress': 'Action en cours',
-    'jobDetail.editForm': 'Ouverture du formulaire de modification',
-    'jobDetail.duplicated': 'Offre dupliquée',
-    'jobDetail.copyCreated': 'Une copie de cette offre a été créée',
-    'jobDetail.deleteJob': 'Supprimer cette offre?',
-    'jobDetail.irreversible': 'Cette action est irréversible',
-    
-    // Candidates
-    'candidates.title': 'Candidats',
-    
-    // Common
-    'common.loading': 'Chargement...',
-    'common.save': 'Enregistrer',
-    'common.cancel': 'Annuler',
-    'common.yes': 'Oui',
-    'common.no': 'Non',
-    'common.search': 'Rechercher',
-    'common.filter': 'Filtrer',
-    'common.clear': 'Effacer',
-    'common.apply': 'Appliquer',
-    'common.close': 'Fermer',
-    'common.open': 'Ouvrir',
-    'common.edit': 'Modifier',
-    'common.delete': 'Supprimer',
-    'common.create': 'Créer',
-    'common.update': 'Mettre à jour',
-    
-    // Notifications
-    'notifications.newCandidate': 'Nouveau candidat ajouté',
-    'notifications.statusChange': 'Statut candidat modifié',
-    'notifications.newJob': 'Nouvelle offre créée',
-    
-    // Success messages
-    'success.languageUpdated': 'Langue mise à jour avec succès',
-    'success.loginSuccess': 'Connexion réussie',
-    'success.signupSuccess': 'Inscription réussie',
-    'success.logoutSuccess': 'Déconnexion réussie'
+    dashboard: {
+      title: "Tableau de bord",
+      stats: {
+        newApplications: "Nouvelles candidatures",
+        totalCandidates: "Total des candidats",
+        interviewStage: "Étape d'entretien",
+        activeJobs: "Offres d'emploi actives",
+      },
+      topCandidates: "Meilleurs candidats",
+      activeJobs: "Offres d'emploi actives",
+      viewAll: "Voir tout",
+      noCandidates: "Aucun candidat disponible",
+      noActiveJobs: "Aucune offre d'emploi active disponible",
+    },
+    candidates: {
+      title: "Candidats",
+      allCandidates: "Tous les candidats",
+      addNew: "Ajouter un nouveau",
+      noCandidates: "Aucun candidat trouvé.",
+      deleteConfirm: "Êtes-vous sûr de vouloir supprimer ce candidat ?",
+    },
+    candidateProfile: {
+      title: "Profil du candidat",
+      personalInformation: "Informations personnelles",
+      contactInformation: "Informations de contact",
+      skills: "Compétences",
+      experience: "Expérience",
+      education: "Éducation",
+      resume: "CV",
+      notes: "Notes",
+      addNote: "Ajouter une note",
+      saveNote: "Enregistrer la note",
+      editNote: "Modifier la note",
+      deleteNote: "Supprimer la note",
+      deleteConfirm: "Êtes-vous sûr de vouloir supprimer cette note ?",
+      noNotes: "Aucune note disponible.",
+    },
+    jobs: {
+      title: "Offres d'emploi",
+      allJobs: "Toutes les offres d'emploi",
+      addNew: "Ajouter une nouvelle",
+      position: "Poste",
+      department: "Département",
+      candidates: "Candidats",
+      posted: "Publié",
+      status: "Statut",
+      actions: "Actions",
+      notSpecified: "Non spécifié",
+      noJobs: "Aucune offre d'emploi trouvée.",
+      deleteConfirm: "Êtes-vous sûr de vouloir supprimer cette offre d'emploi ?",
+      showMore: "Afficher plus",
+      editJob: "Modifier l'offre d'emploi",
+      duplicateJob: "Dupliquer l'offre d'emploi",
+      deleteConfirmTitle: "Supprimer l'offre d'emploi",
+      deleteConfirmMessage: "Êtes-vous sûr de vouloir supprimer '{jobTitle}' ? Cette action supprimera également {candidatesCount} candidats associés.",
+      deleteWarning: "⚠️ Cette action est irréversible et va :",
+      deleteWarningJob: "Supprimer définitivement l'offre d'emploi",
+      deleteWarningCandidates: "Supprimer tous les candidats associés",
+      deleteWarningData: "Supprimer toutes les données et statistiques liées",
+      confirmDelete: "Oui, Supprimer",
+      createDuplicate: "Créer la copie",
+      contractType: "Type de contrat",
+      selectContract: "Sélectionner le type de contrat",
+      experienceLevel: "Niveau d'expérience",
+      selectExperience: "Sélectionner le niveau d'expérience",
+      salaryMin: "Salaire minimum (€)",
+      salaryMax: "Salaire maximum (€)",
+    },
+    jobDetail: {
+      title: "Détail de l'offre d'emploi",
+      myJobs: "Mes offres d'emploi",
+      backToJobs: "Retour aux offres d'emploi",
+      location: "Lieu",
+      salary: "Salaire",
+      type: "Type",
+      publishDate: "Date de publication",
+      applications: "Candidatures",
+      analyzed: "analysés",
+      averageScore: "Score moyen",
+      viewCandidates: "Voir les candidats",
+      edit: "Modifier",
+      duplicate: "Dupliquer",
+      delete: "Supprimer",
+      actionInProgress: "Action en cours",
+      editForm: "Ouverture du formulaire de modification...",
+      duplicated: "Offre d'emploi dupliquée !",
+      copyCreated: "Une copie de l'offre a été créée.",
+      deleteJob: "Suppression de l'offre d'emploi",
+      irreversible: "Cette action est irréversible.",
+      loading: "Chargement des détails de l'offre d'emploi...",
+      notFound: "Offre d'emploi non trouvée.",
+    },
+    settings: {
+      title: "Paramètres",
+      language: "Langue",
+      languageDescription: "Choisissez votre langue préférée",
+      account: "Compte",
+      accountDescription: "Gérer les paramètres de votre compte",
+    },
+    login: {
+      title: "RHIA Copilot",
+      signin: "Se connecter",
+      signup: "S'inscrire",
+      email: "Email",
+      password: "Mot de passe",
+      name: "Nom",
+      or: "Ou",
+      google: "Se connecter avec Google",
+      linkedin: "Se connecter avec LinkedIn",
+      signinTitle: "Bienvenue !",
+      signinDescription: "Connectez-vous pour accéder à votre compte.",
+      signupTitle: "Créer un compte",
+      signupDescription: "Créez un compte pour commencer.",
+      signinButton: "Se connecter",
+      signupButton: "S'inscrire",
+    },
+    hunter: {
+      title: "Chasseur de candidats",
+      description: "Trouvez des candidats potentiels en fonction des descriptions de poste.",
+      uploadDescription: "Téléchargez une description de poste pour trouver les candidats correspondants.",
+      dropFileHere: "Déposez votre fichier ici ou cliquez pour télécharger",
+      supportedFormats: "Formats pris en charge : .pdf, .doc, .docx",
+      analyze: "Analyser",
+      analyzing: "Analyse en cours...",
+      resultsFound: "Trouvé {count} candidat{s}. ",
+      highMatching: "{count} avec un score de correspondance élevé{s}.",
+      candidateName: "Nom du candidat",
+      candidateScore: "Score de correspondance",
+      candidateExperience: "Expérience",
+      candidateSkills: "Compétences",
+      candidateEducation: "Éducation",
+      candidateResume: "CV",
+      noFileUploaded: "Aucun fichier téléchargé",
+    },
+    brief: {
+      title: "Brief",
+    },
+    success: {
+      loginSuccess: "Connexion réussie !",
+      signupSuccess: "Inscription réussie !",
+      languageUpdated: "Langue mise à jour avec succès !",
+    },
+    common: {
+      loading: "Chargement...",
+      back: "Retour",
+      save: "Enregistrer",
+      saving: "Enregistrement...",
+      cancel: "Annuler",
+      creating: "Création...",
+      deleting: "Suppression...",
+    }
   },
   es: {
-    // Navigation
-    'nav.dashboard': 'Panel de control',
-    'nav.candidates': 'Candidatos',
-    'nav.jobPostings': 'Ofertas de empleo',
-    'nav.hunter': 'Hunter',
-    'nav.brief': 'Brief',
-    'nav.settings': 'Configuración',
-    
-    // Settings
-    'settings.title': 'Configuración',
-    'settings.language': 'Idioma',
-    'settings.language.description': 'Selecciona tu idioma preferido',
-    'settings.criteria.title': 'Ponderación de criterios de evaluación',
-    'settings.criteria.description': 'Personaliza la importancia de los diferentes criterios utilizados para evaluar candidatos',
-    'settings.criteria.help': 'Ajusta la importancia de cada criterio haciendo clic en las estrellas. Calificaciones más altas darán más peso a ese criterio en la puntuación general del candidato.',
-    'settings.activity.title': 'Actividad reciente',
-    'settings.activity.empty': 'No hay actividad reciente',
-    'settings.logout.title': 'Cerrar sesión',
-    'settings.logout.description': 'Cierra sesión de tu cuenta RHIA Copilot',
-    'settings.logout.button': 'Cerrar sesión',
-    
-    // Login
-    'login.title': 'RHIA Copilot',
-    'login.signin': 'Iniciar sesión',
-    'login.signup': 'Registrarse',
-    'login.signin.title': 'Iniciar sesión',
-    'login.signin.description': 'Ingresa tus credenciales para acceder a tu cuenta',
-    'login.signup.title': 'Registrarse',
-    'login.signup.description': 'Crea tu cuenta RHIA Copilot',
-    'login.email': 'Correo electrónico',
-    'login.password': 'Contraseña',
-    'login.name': 'Nombre completo',
-    'login.signin.button': 'Iniciar sesión',
-    'login.signup.button': 'Registrarse',
-    'login.or': 'O continuar con',
-    'login.google': 'Google',
-    'login.linkedin': 'LinkedIn',
-    
-    // Dashboard
-    'dashboard.title': 'Panel de control',
-    'dashboard.stats.newApplications': 'Nuevas candidaturas',
-    'dashboard.stats.totalCandidates': 'Total candidatos',
-    'dashboard.stats.interviewStage': 'En entrevista',
-    'dashboard.stats.activeJobs': 'Puestos activos',
-    'dashboard.topCandidates': 'Top Candidatos',
-    'dashboard.activeJobs': 'Ofertas de empleo activas',
-    'dashboard.viewAll': 'Ver todo',
-    'dashboard.noCandidates': 'No hay candidatos disponibles',
-    'dashboard.noActiveJobs': 'No hay ofertas activas',
-    
-    // Hunter
-    'hunter.title': 'Hunter',
-    'hunter.subtitle': '🔍 Hunter – Encontrar candidatos en la web',
-    'hunter.description': '✏️ Describe los criterios del puesto',
-    'hunter.placeholder': 'Ej: Buscamos un desarrollador React senior, remoto, que hable inglés...',
-    'hunter.searchButton': 'Iniciar búsqueda',
-    'hunter.searching': 'Buscando...',
-    'hunter.advancedFilters': 'Filtros avanzados',
-    'hunter.minMatching': 'Coincidencia mínima',
-    'hunter.location': 'País / Ubicación',
-    'hunter.sortBy': 'Ordenar por',
-    'hunter.score': 'Puntuación',
-    'hunter.date': 'Fecha',
-    'hunter.popularity': 'Popularidad',
-    'hunter.resultsFound': 'Encontramos {count} perfil{s} que coinciden estrechamente con tus criterios.',
-    'hunter.highMatching': ' Los primeros {count} tienen una tasa de coincidencia superior al 85%.',
-    'hunter.noResults': 'Sin resultados',
-    'hunter.noResultsDesc': 'Ningún candidato coincide con tus criterios de búsqueda. Intenta modificar tus filtros o ampliar tu búsqueda.',
-    'hunter.searchCompleted': 'Búsqueda completada',
-    'hunter.candidatesFound': '{count} candidatos encontrados que coinciden con tus criterios',
-    'hunter.viewProfile': 'Ver perfil',
-    'hunter.save': 'Guardar',
-    'hunter.import': 'Importar',
-    'hunter.profileSaved': 'Perfil guardado',
-    'hunter.profileImported': 'Perfil importado',
-    'hunter.addedToShortlist': '{name} ha sido añadido a tu lista corta',
-    'hunter.importedToDatabase': '{name} ha sido importado a tu base de datos de candidatos',
-    'hunter.availability': 'Disponibilidad',
-    'hunter.new': 'Nuevo',
-    
-    // Job Postings
-    'jobs.title': 'Ofertas de empleo',
-    'jobs.allJobs': 'Todas las ofertas de empleo',
-    'jobs.addNew': 'Añadir nueva oferta',
-    'jobs.position': 'POSICIÓN',
-    'jobs.department': 'DEPARTAMENTO',
-    'jobs.candidates': 'CANDIDATOS',
-    'jobs.posted': 'PUBLICADO',
-    'jobs.status': 'ESTADO',
-    'jobs.actions': 'ACCIONES',
-    'jobs.showMore': 'Mostrar más',
-    'jobs.noJobs': 'No se encontraron ofertas de empleo. ¡Crea tu primera oferta!',
-    'jobs.notSpecified': 'No especificado',
-    'jobs.deleteConfirm': '¿Estás seguro de que quieres eliminar esta oferta de empleo?',
-    
-    // Job Detail
-    'jobDetail.title': 'Detalle de la oferta',
-    'jobDetail.myJobs': 'Mis ofertas de empleo',
-    'jobDetail.backToJobs': '← Volver a ofertas',
-    'jobDetail.location': 'Ubicación',
-    'jobDetail.salary': 'Salario',
-    'jobDetail.type': 'Tipo',
-    'jobDetail.publishDate': 'Fecha de publicación',
-    'jobDetail.applications': 'Candidaturas',
-    'jobDetail.analyzed': 'analizadas',
-    'jobDetail.averageScore': 'Puntuación promedio',
-    'jobDetail.viewCandidates': 'Ver candidatos',
-    'jobDetail.edit': 'Editar',
-    'jobDetail.duplicate': 'Duplicar',
-    'jobDetail.delete': 'Eliminar',
-    'jobDetail.loading': 'Cargando...',
-    'jobDetail.notFound': 'Oferta no encontrada',
-    'jobDetail.actionInProgress': 'Acción en progreso',
-    'jobDetail.editForm': 'Abriendo formulario de edición',
-    'jobDetail.duplicated': 'Oferta duplicada',
-    'jobDetail.copyCreated': 'Se ha creado una copia de esta oferta',
-    'jobDetail.deleteJob': '¿Eliminar esta oferta?',
-    'jobDetail.irreversible': 'Esta acción es irreversible',
-    
-    // Candidates
-    'candidates.title': 'Candidatos',
-    
-    // Common
-    'common.loading': 'Cargando...',
-    'common.save': 'Guardar',
-    'common.cancel': 'Cancelar',
-    'common.yes': 'Sí',
-    'common.no': 'No',
-    'common.search': 'Buscar',
-    'common.filter': 'Filtrar',
-    'common.clear': 'Limpiar',
-    'common.apply': 'Aplicar',
-    'common.close': 'Cerrar',
-    'common.open': 'Abrir',
-    'common.edit': 'Editar',
-    'common.delete': 'Eliminar',
-    'common.create': 'Crear',
-    'common.update': 'Actualizar',
-    
-    // Notifications
-    'notifications.newCandidate': 'Nuevo candidato añadido',
-    'notifications.statusChange': 'Estado de candidato modificado',
-    'notifications.newJob': 'Nueva oferta creada',
-    
-    // Success messages
-    'success.languageUpdated': 'Idioma actualizado exitosamente',
-    'success.loginSuccess': 'Inicio de sesión exitoso',
-    'success.signupSuccess': 'Registro exitoso',
-    'success.logoutSuccess': 'Cierre de sesión exitoso'
+    dashboard: {
+      title: "Panel de control",
+      stats: {
+        newApplications: "Nuevas aplicaciones",
+        totalCandidates: "Total de candidatos",
+        interviewStage: "Etapa de entrevista",
+        activeJobs: "Ofertas de trabajo activas",
+      },
+      topCandidates: "Mejores candidatos",
+      activeJobs: "Ofertas de empleo activas",
+      viewAll: "Ver todo",
+      noCandidates: "No hay candidatos disponibles",
+      noActiveJobs: "No hay ofertas de trabajo activas disponibles",
+    },
+    candidates: {
+      title: "Candidatos",
+      allCandidates: "Todos los candidatos",
+      addNew: "Agregar nuevo",
+      noCandidates: "No se encontraron candidatos.",
+      deleteConfirm: "¿Estás seguro de que quieres eliminar este candidato?",
+    },
+    candidateProfile: {
+      title: "Perfil del candidato",
+      personalInformation: "Información personal",
+      contactInformation: "Información de contacto",
+      skills: "Habilidades",
+      experience: "Experiencia",
+      education: "Educación",
+      resume: "Currículum",
+      notes: "Notas",
+      addNote: "Agregar nota",
+      saveNote: "Guardar nota",
+      editNote: "Editar nota",
+      deleteNote: "Eliminar nota",
+      deleteConfirm: "¿Estás seguro de que quieres eliminar esta nota?",
+      noNotes: "No hay notas disponibles.",
+    },
+    jobs: {
+      title: "Ofertas de trabajo",
+      allJobs: "Todas las ofertas de trabajo",
+      addNew: "Agregar nueva",
+      position: "Posición",
+      department: "Departamento",
+      candidates: "Candidatos",
+      posted: "Publicado",
+      status: "Estado",
+      actions: "Acciones",
+      notSpecified: "No especificado",
+      noJobs: "No se encontraron ofertas de trabajo.",
+      deleteConfirm: "¿Estás seguro de que quieres eliminar esta oferta de trabajo?",
+      showMore: "Mostrar más",
+      editJob: "Editar Oferta de Trabajo",
+      duplicateJob: "Duplicar Oferta de Trabajo",
+      deleteConfirmTitle: "Eliminar Oferta de Trabajo",
+      deleteConfirmMessage: "¿Estás seguro de que quieres eliminar '{jobTitle}'? Esta acción también eliminará {candidatesCount} candidatos asociados.",
+      deleteWarning: "⚠️ Esta acción es irreversible y:",
+      deleteWarningJob: "Eliminará permanentemente la oferta de trabajo",
+      deleteWarningCandidates: "Eliminará todos los candidatos asociados",
+      deleteWarningData: "Eliminará todos los datos y estadísticas relacionados",
+      confirmDelete: "Sí, Eliminar",
+      createDuplicate: "Crear Copia",
+      contractType: "Tipo de contrato",
+      selectContract: "Seleccionar tipo de contrato",
+      experienceLevel: "Nivel de experiencia",
+      selectExperience: "Seleccionar nivel de experiencia",
+      salaryMin: "Salario mínimo (€)",
+      salaryMax: "Salario máximo (€)",
+    },
+    jobDetail: {
+      title: "Detalle de la oferta de trabajo",
+      myJobs: "Mis ofertas de trabajo",
+      backToJobs: "Volver a las ofertas de trabajo",
+      location: "Ubicación",
+      salary: "Salario",
+      type: "Tipo",
+      publishDate: "Fecha de publicación",
+      applications: "Aplicaciones",
+      analyzed: "analizados",
+      averageScore: "Puntuación media",
+      viewCandidates: "Ver candidatos",
+      edit: "Editar",
+      duplicate: "Duplicar",
+      delete: "Eliminar",
+      actionInProgress: "Acción en curso",
+      editForm: "Abriendo el formulario de edición...",
+      duplicated: "¡Oferta de trabajo duplicada!",
+      copyCreated: "Se ha creado una copia de la oferta.",
+      deleteJob: "Eliminando la oferta de trabajo",
+      irreversible: "Esta acción es irreversible.",
+      loading: "Cargando detalles de la oferta de trabajo...",
+      notFound: "Oferta de trabajo no encontrada.",
+    },
+    settings: {
+      title: "Ajustes",
+      language: "Idioma",
+      languageDescription: "Elige tu idioma preferido",
+      account: "Cuenta",
+      accountDescription: "Administra la configuración de tu cuenta",
+    },
+    login: {
+      title: "RHIA Copilot",
+      signin: "Iniciar sesión",
+      signup: "Registrarse",
+      email: "Correo electrónico",
+      password: "Contraseña",
+      name: "Nombre",
+      or: "O",
+      google: "Iniciar sesión con Google",
+      linkedin: "Iniciar sesión con LinkedIn",
+      signinTitle: "¡Bienvenido de nuevo!",
+      signinDescription: "Inicia sesión para continuar a tu cuenta.",
+      signupTitle: "Crear cuenta",
+      signupDescription: "Crea una cuenta para empezar.",
+      signinButton: "Iniciar sesión",
+      signupButton: "Registrarse",
+    },
+    hunter: {
+      title: "Cazador de candidatos",
+      description: "Encuentra candidatos potenciales basados en descripciones de trabajo.",
+      uploadDescription: "Carga una descripción de trabajo para encontrar candidatos que coincidan.",
+      dropFileHere: "Arrastra tu archivo aquí o haz clic para subirlo",
+      supportedFormats: "Formatos admitidos: .pdf, .doc, .docx",
+      analyze: "Analizar",
+      analyzing: "Analizando...",
+      resultsFound: "Encontrados {count} candidato{s}. ",
+      highMatching: "{count} con alta puntuación de coincidencia{s}.",
+      candidateName: "Nombre del candidato",
+      candidateScore: "Puntuación de coincidencia",
+      candidateExperience: "Experiencia",
+      candidateSkills: "Habilidades",
+      candidateEducation: "Educación",
+      candidateResume: "Currículum",
+      noFileUploaded: "Ningún archivo subido",
+    },
+    brief: {
+      title: "Brief",
+    },
+    success: {
+      loginSuccess: "¡Inicio de sesión exitoso!",
+      signupSuccess: "¡Registro exitoso!",
+      languageUpdated: "¡Idioma actualizado con éxito!",
+    },
+    common: {
+      loading: "Cargando...",
+      back: "Atrás",
+      save: "Guardar",
+      saving: "Guardando...",
+      cancel: "Cancelar",
+      creating: "Creando...",
+      deleting: "Eliminando...",
+    }
   }
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export const useLanguage = () => {
-  const context = useContext(LanguageContext);
-  if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
-};
-
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language>('en');
+  const [language, setLanguage] = useState<Language>((localStorage.getItem('language') as Language) || 'fr');
   const { user } = useAuth();
 
   useEffect(() => {
-    const loadUserLanguage = async () => {
+    localStorage.setItem('language', language);
+  }, [language]);
+
+  useEffect(() => {
+    const fetchUserLanguage = async () => {
       if (user) {
-        const { data: profile } = await supabase
+        const { data, error } = await supabase
           .from('profiles')
           .select('language')
           .eq('id', user.id)
           .single();
-        
-        if (profile?.language) {
-          setLanguageState(profile.language as Language);
+
+        if (error) {
+          console.error('Error fetching user language:', error);
+        }
+
+        if (data?.language) {
+          setLanguage(data.language);
         }
       }
     };
 
-    loadUserLanguage();
+    fetchUserLanguage();
   }, [user]);
 
-  const setLanguage = async (lang: Language) => {
-    setLanguageState(lang);
-    
+  const setLanguageAndUpdate = async (lang: Language) => {
+    setLanguage(lang);
+
     if (user) {
-      await supabase
+      const { error } = await supabase
         .from('profiles')
         .update({ language: lang })
         .eq('id', user.id);
+
+      if (error) {
+        console.error('Error updating user language:', error);
+      }
     }
   };
 
   const t = (key: string): string => {
-    return translations[language][key] || key;
+    const keys = key.split('.');
+    let value: any = translations[language];
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        return key;
+      }
+    }
+    return typeof value === 'string' ? value : key;
   };
 
-  const value = {
-    language,
-    setLanguage,
-    t
-  };
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage: setLanguageAndUpdate, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
 
-  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+export const useLanguage = () => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
+  }
+  return context;
 };

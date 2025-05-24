@@ -18,89 +18,56 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Progress } from '@/components/ui/progress';
-
-interface Job {
-  id: number;
-  title: string;
-  location: string;
-  department: string;
-  salary: string;
-  type: string;
-  postedDate: string;
-  candidates: number;
-  analyzedCandidates: number;
-  averageScore: number;
-  status: 'Active' | 'Draft';
-}
+import { useJobPosting, useDeleteJobPosting } from '@/hooks/useJobPostings';
+import { useCandidates } from '@/hooks/useCandidatesData';
+import DeleteJobDialog from '@/components/job/DeleteJobDialog';
 
 const JobDetail = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
-  const [job, setJob] = useState<Job | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: job, isLoading } = useJobPosting(jobId!);
+  const { data: candidates = [] } = useCandidates();
+  const deleteJobMutation = useDeleteJobPosting();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  useEffect(() => {
-    // Mock API call to get job details
-    const fetchJobDetail = () => {
-      setLoading(true);
-      // This would be replaced with a real API call
-      setTimeout(() => {
-        // Mock data
-        const jobData: Job = {
-          id: Number(jobId),
-          title: "Développeur Full Stack",
-          location: "Paris",
-          department: "Engineering",
-          salary: "45k-55k",
-          type: "CDI",
-          postedDate: "12 juin 2025",
-          candidates: 12,
-          analyzedCandidates: 10,
-          averageScore: 82,
-          status: "Active"
-        };
-        
-        setJob(jobData);
-        setLoading(false);
-      }, 500);
-    };
-
-    fetchJobDetail();
-  }, [jobId]);
+  // Get candidates for this job
+  const jobCandidates = candidates.filter(c => c.target_job_id === jobId);
+  const candidatesCount = jobCandidates.length;
+  const analyzedCandidates = jobCandidates.filter(c => c.ai_status === 'completed').length;
+  const averageScore = jobCandidates.length > 0 
+    ? Math.round(jobCandidates.reduce((sum, c) => sum + (c.ai_score || 0), 0) / jobCandidates.length)
+    : 0;
 
   const handleViewCandidates = () => {
-    // This would navigate to a candidates page filtered by this job
     navigate(`/candidates?job=${jobId}`);
   };
 
   const handleEdit = () => {
-    toast({
-      title: t('jobDetail.actionInProgress'),
-      description: t('jobDetail.editForm'),
-    });
-    // This would open an edit form
+    navigate(`/job-postings/${jobId}/edit`);
   };
 
   const handleDuplicate = () => {
-    toast({
-      title: t('jobDetail.duplicated'),
-      description: t('jobDetail.copyCreated'),
-    });
-    // This would duplicate the job posting
+    navigate(`/job-postings/${jobId}/duplicate`);
   };
 
   const handleDelete = () => {
-    toast({
-      title: t('jobDetail.deleteJob'),
-      description: t('jobDetail.irreversible'),
-      variant: "destructive",
-    });
-    // This would show a confirmation dialog
+    setShowDeleteDialog(true);
   };
 
-  if (loading) {
+  const confirmDelete = async () => {
+    try {
+      await deleteJobMutation.mutateAsync(jobId!);
+      navigate('/job-postings');
+    } catch (error) {
+      console.error('Error deleting job:', error);
+    } finally {
+      setShowDeleteDialog(false);
+    }
+  };
+
+  if (isLoading) {
     return (
       <div className="ml-64 p-8 bg-[#F9FAFB] min-h-screen">
         <Header title={t('jobDetail.title')} />
@@ -167,52 +134,62 @@ const JobDetail = () => {
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-gray-500" />
               <span>{t('jobDetail.location')} : <span className="font-medium">{job.location}</span></span>
-              <span className="text-gray-500">&mdash;</span>
-              <span>{t('jobDetail.salary')} : <span className="font-medium">{job.salary}</span></span>
+              {job.salary_min && job.salary_max && (
+                <>
+                  <span className="text-gray-500">&mdash;</span>
+                  <span>{t('jobDetail.salary')} : <span className="font-medium">{job.salary_min}k-{job.salary_max}k</span></span>
+                </>
+              )}
             </div>
             
             <div className="flex items-center gap-2">
               <BriefcaseBusiness className="h-4 w-4 text-gray-500" />
               <span>{t('jobDetail.type')} : </span>
               <Badge variant="outline" className="bg-gray-100 text-gray-700">
-                {job.type}
+                {job.contract_type}
               </Badge>
             </div>
             
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-gray-500" />
-              <span>{t('jobDetail.publishDate')}: <span className="font-medium">{job.postedDate}</span></span>
+              <span>{t('jobDetail.publishDate')}: <span className="font-medium">{job.created_at ? new Date(job.created_at).toLocaleDateString('fr-FR') : 'N/A'}</span></span>
             </div>
             
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-gray-500" />
               <span>{t('jobDetail.applications')}: </span>
               <Badge className="bg-blue-100 text-blue-800">
-                {job.candidates}
+                {candidatesCount}
               </Badge>
             </div>
           </div>
           
           {/* Candidates Analysis */}
-          <div className="space-y-3 pt-3 border-t border-gray-100">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">
-                {job.analyzedCandidates}/{job.candidates} {t('jobDetail.analyzed')}
-              </span>
-              <span className="text-xs text-gray-400">{Math.round((job.analyzedCandidates / job.candidates) * 100)}%</span>
-            </div>
-            <Progress 
-              value={(job.analyzedCandidates / job.candidates) * 100} 
-              className="h-2"
-            />
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <span className="text-gray-700">{t('jobDetail.averageScore')} : </span>
-            <Badge className="bg-green-100 text-green-800 px-3 py-1 rounded-full">
-              {job.averageScore}%
-            </Badge>
-          </div>
+          {candidatesCount > 0 && (
+            <>
+              <div className="space-y-3 pt-3 border-t border-gray-100">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">
+                    {analyzedCandidates}/{candidatesCount} {t('jobDetail.analyzed')}
+                  </span>
+                  <span className="text-xs text-gray-400">{Math.round((analyzedCandidates / candidatesCount) * 100)}%</span>
+                </div>
+                <Progress 
+                  value={(analyzedCandidates / candidatesCount) * 100} 
+                  className="h-2"
+                />
+              </div>
+              
+              {averageScore > 0 && (
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-700">{t('jobDetail.averageScore')} : </span>
+                  <Badge className="bg-green-100 text-green-800 px-3 py-1 rounded-full">
+                    {averageScore}%
+                  </Badge>
+                </div>
+              )}
+            </>
+          )}
           
           {/* Action Buttons */}
           <div className="flex gap-4 pt-4">
@@ -251,6 +228,15 @@ const JobDetail = () => {
           </div>
         </div>
       </Card>
+
+      <DeleteJobDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={confirmDelete}
+        jobTitle={job.title}
+        candidatesCount={candidatesCount}
+        isDeleting={deleteJobMutation.isPending}
+      />
     </div>
   );
 };
