@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
@@ -496,7 +497,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
 
         if (data?.language) {
-          setLanguage(data.language);
+          // Validate that the language from database is a valid Language type
+          const validLanguages: Language[] = ['en', 'fr', 'es'];
+          if (validLanguages.includes(data.language as Language)) {
+            setLanguage(data.language as Language);
+          }
         }
       }
     };
