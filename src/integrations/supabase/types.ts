@@ -12,33 +12,51 @@ export type Database = {
       ai_briefs: {
         Row: {
           brief_summary: Json | null
+          constraints: string[] | null
           conversation_data: Json | null
           created_at: string | null
           generated_job_posting_id: string | null
+          hard_skills: string[] | null
           id: string
           is_complete: boolean | null
+          location: string | null
+          missions: string[] | null
+          project_context: string | null
+          soft_skills: string[] | null
           title: string | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
           brief_summary?: Json | null
+          constraints?: string[] | null
           conversation_data?: Json | null
           created_at?: string | null
           generated_job_posting_id?: string | null
+          hard_skills?: string[] | null
           id?: string
           is_complete?: boolean | null
+          location?: string | null
+          missions?: string[] | null
+          project_context?: string | null
+          soft_skills?: string[] | null
           title?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
           brief_summary?: Json | null
+          constraints?: string[] | null
           conversation_data?: Json | null
           created_at?: string | null
           generated_job_posting_id?: string | null
+          hard_skills?: string[] | null
           id?: string
           is_complete?: boolean | null
+          location?: string | null
+          missions?: string[] | null
+          project_context?: string | null
+          soft_skills?: string[] | null
           title?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -286,6 +304,65 @@ export type Database = {
           },
         ]
       }
+      job_offers_drafts: {
+        Row: {
+          contract_type: string | null
+          created_at: string | null
+          description: string | null
+          hard_skills: string[] | null
+          id: string
+          location: string | null
+          missions: string[] | null
+          requirements: string[] | null
+          salary_range: string | null
+          soft_skills: string[] | null
+          source_brief_id: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          contract_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          hard_skills?: string[] | null
+          id?: string
+          location?: string | null
+          missions?: string[] | null
+          requirements?: string[] | null
+          salary_range?: string | null
+          soft_skills?: string[] | null
+          source_brief_id?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          contract_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          hard_skills?: string[] | null
+          id?: string
+          location?: string | null
+          missions?: string[] | null
+          requirements?: string[] | null
+          salary_range?: string | null
+          soft_skills?: string[] | null
+          source_brief_id?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_offers_drafts_source_brief_id_fkey"
+            columns: ["source_brief_id"]
+            isOneToOne: false
+            referencedRelation: "ai_briefs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_postings: {
         Row: {
           benefits: string[] | null
@@ -347,6 +424,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      job_templates_public: {
+        Row: {
+          created_at: string | null
+          department: string | null
+          description: string | null
+          experience_level: string | null
+          hard_skills: string[] | null
+          id: string
+          is_featured: boolean | null
+          missions: string[] | null
+          requirements: string[] | null
+          soft_skills: string[] | null
+          title: string
+          usage_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          department?: string | null
+          description?: string | null
+          experience_level?: string | null
+          hard_skills?: string[] | null
+          id?: string
+          is_featured?: boolean | null
+          missions?: string[] | null
+          requirements?: string[] | null
+          soft_skills?: string[] | null
+          title: string
+          usage_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          department?: string | null
+          description?: string | null
+          experience_level?: string | null
+          hard_skills?: string[] | null
+          id?: string
+          is_featured?: boolean | null
+          missions?: string[] | null
+          requirements?: string[] | null
+          soft_skills?: string[] | null
+          title?: string
+          usage_count?: number | null
+        }
+        Relationships: []
       }
       notifications: {
         Row: {

@@ -33,7 +33,7 @@ export const useJobDrafts = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('job_offers_drafts' as any)
+        .from('job_offers_drafts')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });

@@ -27,7 +27,7 @@ export const useJobTemplates = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('job_templates_public' as any)
+        .from('job_templates_public')
         .select('*')
         .order('is_featured', { ascending: false })
         .order('usage_count', { ascending: false });
@@ -69,7 +69,7 @@ export const useJobTemplates = () => {
       const newUsageCount = (template?.usage_count || 0) + 1;
 
       const { error } = await supabase
-        .from('job_templates_public' as any)
+        .from('job_templates_public')
         .update({ usage_count: newUsageCount })
         .eq('id', templateId);
 
