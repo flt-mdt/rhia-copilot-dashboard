@@ -85,3 +85,68 @@ export const useCreateJobPosting = () => {
     },
   });
 };
+
+export const useUpdateJobPosting = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<JobPosting> }) => {
+      const { data, error } = await supabase
+        .from('job_postings')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['job-postings'] });
+      toast({
+        title: "Succès",
+        description: "L'offre d'emploi a été mise à jour",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la mise à jour de l'offre",
+        variant: "destructive",
+      });
+      console.error('Error updating job posting:', error);
+    },
+  });
+};
+
+export const useDeleteJobPosting = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('job_postings')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['job-postings'] });
+      toast({
+        title: "Succès",
+        description: "L'offre d'emploi a été supprimée",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la suppression de l'offre",
+        variant: "destructive",
+      });
+      console.error('Error deleting job posting:', error);
+    },
+  });
+};
