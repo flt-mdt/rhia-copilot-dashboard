@@ -34,7 +34,7 @@ export const useAIBriefs = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('ai_briefs')
+        .from('ai_briefs' as any)
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
@@ -42,7 +42,7 @@ export const useAIBriefs = () => {
       if (error) throw error;
 
       // Transformer les données pour correspondre à notre interface
-      const transformedData: AIBrief[] = (data || []).map(item => ({
+      const transformedData: AIBrief[] = (data || []).map((item: any) => ({
         id: item.id,
         user_id: item.user_id || '',
         title: item.title,
@@ -78,7 +78,7 @@ export const useAIBriefs = () => {
 
     try {
       const { data, error } = await supabase
-        .from('ai_briefs')
+        .from('ai_briefs' as any)
         .upsert({
           user_id: user.id,
           ...briefData
@@ -127,7 +127,7 @@ export const useAIBriefs = () => {
       };
 
       const { data, error } = await supabase
-        .from('job_offers_drafts')
+        .from('job_offers_drafts' as any)
         .insert(jobPostingData)
         .select()
         .single();
@@ -136,7 +136,7 @@ export const useAIBriefs = () => {
 
       // Update brief with generated job posting ID
       await supabase
-        .from('ai_briefs')
+        .from('ai_briefs' as any)
         .update({ generated_job_posting_id: data.id })
         .eq('id', briefId);
 

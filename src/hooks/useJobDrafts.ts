@@ -33,7 +33,7 @@ export const useJobDrafts = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('job_offers_drafts')
+        .from('job_offers_drafts' as any)
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
@@ -41,7 +41,7 @@ export const useJobDrafts = () => {
       if (error) throw error;
 
       // Transformer les données pour correspondre à notre interface
-      const transformedData: JobDraft[] = (data || []).map(item => ({
+      const transformedData: JobDraft[] = (data || []).map((item: any) => ({
         id: item.id,
         user_id: item.user_id || '',
         title: item.title || '',

@@ -27,7 +27,7 @@ export const useJobTemplates = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('job_templates_public')
+        .from('job_templates_public' as any)
         .select('*')
         .order('is_featured', { ascending: false })
         .order('usage_count', { ascending: false });
@@ -35,7 +35,7 @@ export const useJobTemplates = () => {
       if (error) throw error;
 
       // Transformer les données pour correspondre à notre interface
-      const transformedData: JobTemplate[] = (data || []).map(item => ({
+      const transformedData: JobTemplate[] = (data || []).map((item: any) => ({
         id: item.id,
         title: item.title || '',
         description: item.description,
@@ -69,7 +69,7 @@ export const useJobTemplates = () => {
       const newUsageCount = (template?.usage_count || 0) + 1;
 
       const { error } = await supabase
-        .from('job_templates_public')
+        .from('job_templates_public' as any)
         .update({ usage_count: newUsageCount })
         .eq('id', templateId);
 
