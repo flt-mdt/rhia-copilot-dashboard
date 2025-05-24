@@ -2,13 +2,13 @@
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "react-router-dom";
-import { useState } from "react";
 import { 
   Popover,
   PopoverContent,
   PopoverTrigger 
 } from "@/components/ui/popover";
-import ActivityItem from "@/components/activity/ActivityItem";
+import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from "@/hooks/useNotifications";
+import NotificationItem from "@/components/notifications/NotificationItem";
 
 interface HeaderProps {
   title: string;
@@ -17,33 +17,16 @@ interface HeaderProps {
 const Header = ({ title }: HeaderProps) => {
   const location = useLocation();
   const isSettingsPage = location.pathname === "/settings";
-  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(true);
+  const { notifications, unreadCount } = useNotifications();
+  const markAsReadMutation = useMarkNotificationAsRead();
+  const markAllAsReadMutation = useMarkAllNotificationsAsRead();
 
-  const recentActivities = [
-    {
-      type: 'upload' as const,
-      message: 'New CV uploaded for Senior AI Engineer',
-      timestamp: '2 hours ago'
-    },
-    {
-      type: 'document' as const,
-      message: 'CV analysis completed for Thomas Dubois',
-      timestamp: '3 hours ago'
-    },
-    {
-      type: 'transition' as const,
-      message: 'Emma Bernard moved to interview stage',
-      timestamp: '5 hours ago'
-    },
-    {
-      type: 'event' as const,
-      message: 'Interview scheduled with Sophie Martin',
-      timestamp: '1 day ago'
-    }
-  ];
+  const handleNotificationClick = (notificationId: string) => {
+    markAsReadMutation.mutate(notificationId);
+  };
 
-  const handleNotificationClick = () => {
-    setHasUnreadNotifications(false);
+  const handleMarkAllAsRead = () => {
+    markAllAsReadMutation.mutate();
   };
 
   return (
@@ -75,35 +58,44 @@ const Header = ({ title }: HeaderProps) => {
         )}
         <Popover>
           <PopoverTrigger asChild>
-            <button 
-              className="relative p-2 rounded-full hover:bg-gray-100 group"
-              onClick={handleNotificationClick}
-            >
+            <button className="relative p-2 rounded-full hover:bg-gray-100 group">
               <Bell className="h-6 w-6 text-gray-500 group-hover:text-blue-600" />
-              {hasUnreadNotifications && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-500 rounded-full"></span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
               )}
             </button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-80 p-0">
-            <div className="py-2 px-3 border-b border-gray-100">
-              <h3 className="font-medium text-sm">Recent Notifications</h3>
+            <div className="py-2 px-3 border-b border-gray-100 flex justify-between items-center">
+              <h3 className="font-medium text-sm">Notifications</h3>
+              {unreadCount > 0 && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleMarkAllAsRead}
+                  className="text-xs"
+                >
+                  Tout marquer comme lu
+                </Button>
+              )}
             </div>
             <div className="max-h-80 overflow-y-auto">
-              {recentActivities.map((activity, index) => (
-                <div key={index} className="px-2">
-                  <ActivityItem
-                    type={activity.type}
-                    message={activity.message}
-                    timestamp={activity.timestamp}
+              {notifications.length > 0 ? (
+                notifications.map((notification) => (
+                  <NotificationItem
+                    key={notification.id}
+                    notification={notification}
+                    onClick={() => handleNotificationClick(notification.id)}
                   />
+                ))
+              ) : (
+                <div className="py-8 text-center text-gray-500">
+                  <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Aucune notification</p>
                 </div>
-              ))}
-            </div>
-            <div className="py-2 px-3 border-t border-gray-100 text-center">
-              <button className="text-sm text-blue-600 hover:underline">
-                View all notifications
-              </button>
+              )}
             </div>
           </PopoverContent>
         </Popover>

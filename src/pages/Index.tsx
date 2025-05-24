@@ -5,18 +5,33 @@ import Header from '@/components/layout/Header';
 import StatCard from '@/components/dashboard/StatCard';
 import CandidateCard from '@/components/dashboard/CandidateCard';
 import JobCard from '@/components/dashboard/JobCard';
-import { Check } from 'lucide-react';
+import { Check, Users, Briefcase, Mail } from 'lucide-react';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
+import { useCandidates } from '@/hooks/useCandidatesData';
+import { useJobPostings } from '@/hooks/useJobPostings';
 
 const Index = () => {
   const navigate = useNavigate();
+  const { data: stats, isLoading: statsLoading } = useDashboardStats();
+  const { data: candidates = [] } = useCandidates();
+  const { data: jobPostings = [] } = useJobPostings();
   
-  const handleCandidateClick = (id: number) => {
+  const handleCandidateClick = (id: string) => {
     navigate(`/candidates/${id}`);
   };
   
-  const handleJobClick = (id: number) => {
+  const handleJobClick = (id: string) => {
     navigate(`/job-postings/${id}`);
   };
+
+  // Get top candidates (highest AI scores)
+  const topCandidates = candidates
+    .filter(c => c.ai_score !== null)
+    .sort((a, b) => (b.ai_score || 0) - (a.ai_score || 0))
+    .slice(0, 3);
+
+  // Get active job postings
+  const activeJobs = jobPostings.filter(job => job.is_active).slice(0, 2);
   
   return (
     <div className="ml-64 p-8">
@@ -25,43 +40,31 @@ const Index = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
-          icon={
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          }
+          icon={<Mail className="h-6 w-6" />}
           title="New Applications"
-          value="1"
-          change={{ value: "+12%", positive: true }}
+          value={statsLoading ? "..." : stats?.newApplications || 0}
+          change={{ value: stats?.newApplicationsChange || "+0%", positive: true }}
         />
         
         <StatCard
-          icon={
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          }
+          icon={<Users className="h-6 w-6" />}
           title="Total Candidates"
-          value="3"
-          change={{ value: "+5%", positive: true }}
+          value={statsLoading ? "..." : stats?.totalCandidates || 0}
+          change={{ value: stats?.totalCandidatesChange || "+0%", positive: true }}
         />
         
         <StatCard
           icon={<Check className="h-6 w-6" />}
           title="Interview Stage"
-          value="1"
-          change={{ value: "+2%", positive: true }}
+          value={statsLoading ? "..." : stats?.interviewStage || 0}
+          change={{ value: stats?.interviewStageChange || "+0%", positive: true }}
         />
         
         <StatCard
-          icon={
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          }
+          icon={<Briefcase className="h-6 w-6" />}
           title="Active Jobs"
-          value="2"
-          change={{ value: "0%", positive: false }}
+          value={statsLoading ? "..." : stats?.activeJobs || 0}
+          change={{ value: stats?.activeJobsChange || "0%", positive: false }}
         />
       </div>
       
@@ -79,34 +82,25 @@ const Index = () => {
             </Link>
           </div>
           
-          <div onClick={() => handleCandidateClick(1)} className="cursor-pointer">
-            <CandidateCard 
-              initials="EB" 
-              name="Emma Bernard" 
-              position="Product Manager"
-              applied="20/06/2023" 
-              score={{ rating: "4.7/5", percentage: 94 }}
-            />
-          </div>
-          
-          <div onClick={() => handleCandidateClick(2)} className="cursor-pointer">
-            <CandidateCard 
-              initials="SM" 
-              name="Sophie Martin" 
-              position="Senior AI Engineer"
-              applied="15/06/2023" 
-              score={{ rating: "4.6/5", percentage: 92 }}
-            />
-          </div>
-          
-          <div onClick={() => handleCandidateClick(3)} className="cursor-pointer">
-            <CandidateCard 
-              initials="TD" 
-              name="Thomas Dubois" 
-              position="Senior AI Engineer"
-              applied="18/06/2023" 
-              score={{ rating: "4.1/5", percentage: 82 }}
-            />
+          <div className="space-y-4">
+            {topCandidates.length > 0 ? (
+              topCandidates.map((candidate) => (
+                <div key={candidate.id} onClick={() => handleCandidateClick(candidate.id)} className="cursor-pointer">
+                  <CandidateCard 
+                    initials={candidate.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                    name={candidate.name} 
+                    position={candidate.job_postings?.title || candidate.current_position || "N/A"}
+                    applied={new Date(candidate.created_at || '').toLocaleDateString('fr-FR')}
+                    score={{ 
+                      rating: `${((candidate.ai_score || 0) / 20).toFixed(1)}/5`, 
+                      percentage: candidate.ai_score || 0 
+                    }}
+                  />
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center py-4">Aucun candidat disponible</p>
+            )}
           </div>
         </div>
         
@@ -123,23 +117,23 @@ const Index = () => {
             </Link>
           </div>
           
-          <JobCard 
-            title="Senior AI Engineer" 
-            department="Engineering" 
-            location="Paris, France"
-            postedDate="01/06/2023"
-            candidates={12}
-            onClick={() => handleJobClick(1)}
-          />
-          
-          <JobCard 
-            title="Product Manager" 
-            department="Product" 
-            location="Lyon, France"
-            postedDate="05/06/2023"
-            candidates={8}
-            onClick={() => handleJobClick(2)}
-          />
+          <div className="space-y-4">
+            {activeJobs.length > 0 ? (
+              activeJobs.map((job) => (
+                <JobCard 
+                  key={job.id}
+                  title={job.title} 
+                  department={job.department || "N/A"} 
+                  location={job.location || "N/A"}
+                  postedDate={new Date(job.created_at || '').toLocaleDateString('fr-FR')}
+                  candidates={candidates.filter(c => c.target_job_id === job.id).length}
+                  onClick={() => handleJobClick(job.id)}
+                />
+              ))
+            ) : (
+              <p className="text-gray-500 text-center py-4">Aucune offre active</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

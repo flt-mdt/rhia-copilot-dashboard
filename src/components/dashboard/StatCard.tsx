@@ -25,7 +25,7 @@ const StatCard = ({ icon, title, value, change }: StatCardProps) => {
           </div>
         </div>
         {change && (
-          <div className={`text-sm font-medium ${change.positive ? "text-success" : "text-warning"}`}>
+          <div className={`text-sm font-medium ${change.positive ? "text-green-600" : "text-red-600"}`}>
             {change.value}
           </div>
         )}

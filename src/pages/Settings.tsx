@@ -5,9 +5,10 @@ import Header from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import StarRating from '@/components/settings/StarRating';
 import { Settings as SettingsIcon, LogOut } from 'lucide-react';
-import ActivityItem from '@/components/activity/ActivityItem';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
+import NotificationItem from '@/components/notifications/NotificationItem';
 
 interface CriterionWeight {
   id: string;
@@ -19,6 +20,7 @@ interface CriterionWeight {
 const Settings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { notifications } = useNotifications();
   const [criteria, setCriteria] = useState<CriterionWeight[]>([
     {
       id: "technical-skills",
@@ -57,29 +59,6 @@ const Settings = () => {
       weight: 4
     }
   ]);
-
-  const recentActivities = [
-    {
-      type: 'upload' as const,
-      message: 'New CV uploaded for Senior AI Engineer',
-      timestamp: '2 hours ago'
-    },
-    {
-      type: 'document' as const,
-      message: 'CV analysis completed for Thomas Dubois',
-      timestamp: '3 hours ago'
-    },
-    {
-      type: 'transition' as const,
-      message: 'Emma Bernard moved to interview stage',
-      timestamp: '5 hours ago'
-    },
-    {
-      type: 'event' as const,
-      message: 'Interview scheduled with Sophie Martin',
-      timestamp: '1 day ago'
-    }
-  ];
 
   const handleWeightChange = (id: string, newWeight: number) => {
     setCriteria(prevCriteria => 
@@ -146,18 +125,22 @@ const Settings = () => {
         {/* Recent Activity Section */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle>Activité récente</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {recentActivities.map((activity, index) => (
-                <ActivityItem
-                  key={index}
-                  type={activity.type}
-                  message={activity.message}
-                  timestamp={activity.timestamp}
-                />
-              ))}
+            <div className="space-y-1">
+              {notifications.length > 0 ? (
+                notifications.slice(0, 10).map((notification) => (
+                  <NotificationItem
+                    key={notification.id}
+                    notification={notification}
+                  />
+                ))
+              ) : (
+                <div className="py-8 text-center text-gray-500">
+                  <p className="text-sm">Aucune activité récente</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
