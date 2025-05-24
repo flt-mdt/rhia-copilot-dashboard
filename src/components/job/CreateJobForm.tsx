@@ -1,21 +1,24 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText } from "lucide-react";
+import { FileText, Import } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateJobPosting } from "@/hooks/useJobPostings";
 import { useAuth } from "@/contexts/AuthContext";
+import { useJobDrafts } from "@/hooks/useJobDrafts";
+import { useJobTemplates } from "@/hooks/useJobTemplates";
 
 const CreateJobForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
   const createJobMutation = useCreateJobPosting();
+  const { drafts } = useJobDrafts();
+  const { templates, incrementUsage } = useJobTemplates();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -28,6 +31,32 @@ const CreateJobForm = () => {
     salary_max: ''
   });
   const [fileUploaded, setFileUploaded] = useState<File | null>(null);
+
+  // Check for template data in localStorage on component mount
+  useEffect(() => {
+    const savedTemplate = localStorage.getItem('selectedJobTemplate');
+    if (savedTemplate) {
+      try {
+        const templateData = JSON.parse(savedTemplate);
+        setFormData(prev => ({
+          ...prev,
+          title: templateData.title || '',
+          description: templateData.description || '',
+          department: templateData.department || '',
+          experience_level: templateData.experienceLevel || ''
+        }));
+        
+        localStorage.removeItem('selectedJobTemplate');
+        
+        toast({
+          title: "Modèle importé",
+          description: "Les données du modèle ont été appliquées au formulaire"
+        });
+      } catch (error) {
+        console.error('Error parsing template data:', error);
+      }
+    }
+  }, [toast]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -46,6 +75,50 @@ const CreateJobForm = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFileUploaded(e.target.files[0]);
+    }
+  };
+
+  const handleImportDraft = (draftId: string) => {
+    const draft = drafts.find(d => d.id === draftId);
+    if (draft) {
+      setFormData({
+        title: draft.title,
+        location: draft.location || '',
+        contract_type: draft.contract_type || '',
+        department: '', // Not in draft schema
+        description: draft.description || '',
+        experience_level: '',
+        salary_min: '',
+        salary_max: ''
+      });
+      
+      toast({
+        title: "Brouillon importé",
+        description: "Les données du brouillon ont été appliquées au formulaire"
+      });
+    }
+  };
+
+  const handleImportTemplate = (templateId: string) => {
+    const template = templates.find(t => t.id === templateId);
+    if (template) {
+      setFormData({
+        title: template.title,
+        location: '',
+        contract_type: '',
+        department: template.department || '',
+        description: template.description || '',
+        experience_level: template.experience_level || '',
+        salary_min: '',
+        salary_max: ''
+      });
+      
+      incrementUsage(templateId);
+      
+      toast({
+        title: "Modèle importé",
+        description: "Les données du modèle ont été appliquées au formulaire"
+      });
     }
   };
 
@@ -76,6 +149,43 @@ const CreateJobForm = () => {
     <div className="ml-64 p-8 bg-[#F9FAFB]">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-center">Créer une offre d'emploi</h1>
+        
+        {/* Import Section */}
+        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="import-draft">Importer un brouillon existant</Label>
+              <Select onValueChange={handleImportDraft}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner un brouillon" />
+                </SelectTrigger>
+                <SelectContent>
+                  {drafts.map((draft) => (
+                    <SelectItem key={draft.id} value={draft.id}>
+                      {draft.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="import-template">Importer un modèle public</Label>
+              <Select onValueChange={handleImportTemplate}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner un modèle" />
+                </SelectTrigger>
+                <SelectContent>
+                  {templates.map((template) => (
+                    <SelectItem key={template.id} value={template.id}>
+                      {template.title} {template.is_featured && "⭐"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
         
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
           <form onSubmit={handleSubmit}>

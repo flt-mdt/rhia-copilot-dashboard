@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Hunter from "./pages/Hunter";
 import Brief from "./pages/Brief";
+import JobTemplatesLibrary from "./pages/JobTemplatesLibrary";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +100,12 @@ const App = () => (
                 <ProtectedRoute>
                   <Sidebar />
                   <Brief />
+                </ProtectedRoute>
+              } />
+              <Route path="/job-templates" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <JobTemplatesLibrary />
                 </ProtectedRoute>
               } />
               <Route path="*" element={<NotFound />} />

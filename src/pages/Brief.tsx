@@ -1,12 +1,15 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Lightbulb, FileText, Briefcase } from 'lucide-react';
+import { Send, Lightbulb, FileText, Briefcase, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import BriefSummary from '@/components/brief/BriefSummary';
+import { useNavigate } from 'react-router-dom';
+import InteractiveBriefSummary from '@/components/brief/InteractiveBriefSummary';
 import ChatMessage from '@/components/brief/ChatMessage';
 import SuggestionCard from '@/components/brief/SuggestionCard';
+import { useAIBriefs } from '@/hooks/useAIBriefs';
+import { useToast } from '@/hooks/use-toast';
 
 interface Message {
   id: string;
@@ -24,7 +27,20 @@ interface BriefData {
   constraints: string[];
 }
 
+interface BriefCompletionState {
+  missions: boolean;
+  hardSkills: boolean;
+  softSkills: boolean;
+  context: boolean;
+  location: boolean;
+  constraints: boolean;
+}
+
 const Brief = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { saveBrief, generateJobPosting } = useAIBriefs();
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -36,6 +52,8 @@ const Brief = () => {
   
   const [currentMessage, setCurrentMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [currentBriefId, setCurrentBriefId] = useState<string | null>(null);
+  
   const [briefData, setBriefData] = useState<BriefData>({
     missions: [],
     hardSkills: [],
@@ -43,6 +61,15 @@ const Brief = () => {
     context: '',
     location: '',
     constraints: []
+  });
+
+  const [completionState, setCompletionState] = useState<BriefCompletionState>({
+    missions: false,
+    hardSkills: false,
+    softSkills: false,
+    context: false,
+    location: false,
+    constraints: false
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -61,6 +88,13 @@ const Brief = () => {
     "Devons-nous explorer plusieurs scénarios de profils ?",
     "Quel est le contexte du projet ou de l'équipe ?"
   ];
+
+  const handleCompletionChange = (section: keyof BriefCompletionState, completed: boolean) => {
+    setCompletionState(prev => ({
+      ...prev,
+      [section]: completed
+    }));
+  };
 
   const handleSendMessage = async () => {
     if (!currentMessage.trim()) return;
@@ -138,7 +172,41 @@ const Brief = () => {
     }
   };
 
-  const isBriefComplete = briefData.missions.length > 0 && briefData.hardSkills.length > 0;
+  const isBriefComplete = Object.values(completionState).every(Boolean);
+
+  const handleSaveBrief = async () => {
+    const briefToSave = {
+      id: currentBriefId,
+      title: briefData.missions[0] || 'Nouveau brief',
+      missions: briefData.missions,
+      hard_skills: briefData.hardSkills,
+      soft_skills: briefData.softSkills,
+      project_context: briefData.context,
+      location: briefData.location,
+      constraints: briefData.constraints,
+      conversation_data: messages,
+      brief_summary: completionState,
+      is_complete: isBriefComplete
+    };
+
+    const savedBrief = await saveBrief(briefToSave);
+    if (savedBrief) {
+      setCurrentBriefId(savedBrief.id);
+    }
+  };
+
+  const handleGenerateJobPosting = async () => {
+    if (!currentBriefId) {
+      await handleSaveBrief();
+    }
+
+    if (currentBriefId) {
+      const jobPosting = await generateJobPosting(currentBriefId);
+      if (jobPosting) {
+        navigate('/job-postings');
+      }
+    }
+  };
 
   return (
     <div className="ml-64 min-h-screen bg-bgLight">
@@ -230,7 +298,11 @@ const Brief = () => {
 
           {/* Brief Summary */}
           <div className="space-y-6">
-            <BriefSummary briefData={briefData} />
+            <InteractiveBriefSummary 
+              briefData={briefData}
+              completionState={completionState}
+              onCompletionChange={handleCompletionChange}
+            />
             
             {/* Tools */}
             <Card>
@@ -241,7 +313,13 @@ const Brief = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="outline" size="sm" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-start"
+                  onClick={() => navigate('/job-templates')}
+                >
+                  <BookOpen className="h-4 w-4 mr-2" />
                   📚 Bibliothèque de postes types
                 </Button>
                 <Button variant="outline" size="sm" className="w-full justify-start">
@@ -253,15 +331,27 @@ const Brief = () => {
               </CardContent>
             </Card>
 
-            {/* Generate Button */}
-            <Button 
-              className="w-full" 
-              size="lg"
-              disabled={!isBriefComplete}
-            >
-              <FileText className="h-5 w-5 mr-2" />
-              Générer la fiche de poste
-            </Button>
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              <Button 
+                onClick={handleSaveBrief}
+                variant="outline"
+                className="w-full"
+                size="lg"
+              >
+                💾 Sauvegarder le brief
+              </Button>
+              
+              <Button 
+                className="w-full" 
+                size="lg"
+                disabled={!isBriefComplete}
+                onClick={handleGenerateJobPosting}
+              >
+                <FileText className="h-5 w-5 mr-2" />
+                Générer la fiche de poste
+              </Button>
+            </div>
           </div>
         </div>
       </div>
