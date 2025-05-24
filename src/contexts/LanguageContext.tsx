@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
@@ -113,8 +114,6 @@ const translations = {
     },
     login: {
       title: "RHIA Copilot",
-      signin: "Sign In",
-      signup: "Sign Up",
       email: "Email",
       password: "Password",
       name: "Name",
@@ -270,8 +269,6 @@ const translations = {
     },
     login: {
       title: "RHIA Copilot",
-      signin: "Se connecter",
-      signup: "S'inscrire",
       email: "Email",
       password: "Mot de passe",
       name: "Nom",
@@ -427,8 +424,6 @@ const translations = {
     },
     login: {
       title: "RHIA Copilot",
-      signin: "Iniciar sesión",
-      signup: "Registrarse",
       email: "Correo electrónico",
       password: "Contraseña",
       name: "Nombre",
