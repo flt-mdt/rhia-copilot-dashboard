@@ -3,49 +3,33 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-interface User {
-  name: string;
-  email: string;
-  role: string;
-  isAuthenticated: boolean;
-}
+import { useAuth } from "@/contexts/AuthContext";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [user, setUser] = useState<User | null>(null);
-  
-  useEffect(() => {
-    // Check for user auth on component mount
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error("Failed to parse user data", error);
-      }
-    }
-  }, []);
+  const { user, signOut } = useAuth();
   
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
-  const handleLogout = () => {
-    // Clear user data from localStorage
-    localStorage.removeItem('user');
-    setUser(null);
-    
-    toast({
-      title: "Logout successful",
-      description: "You have been logged out",
-    });
-    
-    // Navigate to login page
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté",
+      });
+      navigate('/login');
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la déconnexion",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -154,12 +138,15 @@ const Sidebar = () => {
             <div className="flex items-center gap-3 mb-3">
               <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
                 <span className="text-gray-600 font-medium">
-                  {user.name.split(' ').map(n => n[0]).join('')}
+                  {user.user_metadata?.name?.split(' ').map((n: string) => n[0]).join('') || 
+                   user.email?.substring(0, 2).toUpperCase()}
                 </span>
               </div>
               <div>
-                <div className="text-sm font-medium">{user.name}</div>
-                <div className="text-xs text-gray-500">{user.role}</div>
+                <div className="text-sm font-medium">
+                  {user.user_metadata?.name || user.email}
+                </div>
+                <div className="text-xs text-gray-500">HR Manager</div>
               </div>
             </div>
             <button 

@@ -8,18 +8,25 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useCreateJobPosting } from "@/hooks/useJobPostings";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CreateJobForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const createJobMutation = useCreateJobPosting();
+  
   const [formData, setFormData] = useState({
     title: '',
     location: '',
-    contractType: '',
+    contract_type: '',
     department: '',
-    description: ''
+    description: '',
+    experience_level: '',
+    salary_min: '',
+    salary_max: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [fileUploaded, setFileUploaded] = useState<File | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -44,32 +51,24 @@ const CreateJobForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     
     try {
-      // Here you would normally submit to an API or backend
-      console.log("Job posting data:", formData);
-      console.log("File uploaded:", fileUploaded);
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Offre créée",
-        description: "L'offre d'emploi a été créée avec succès.",
-      });
-      
-      // Navigate back to job postings page
+      const jobData = {
+        title: formData.title,
+        location: formData.location,
+        contract_type: formData.contract_type as any,
+        department: formData.department as any,
+        description: formData.description,
+        experience_level: formData.experience_level,
+        salary_min: formData.salary_min ? parseInt(formData.salary_min) : undefined,
+        salary_max: formData.salary_max ? parseInt(formData.salary_max) : undefined,
+        created_by: user?.id
+      };
+
+      await createJobMutation.mutateAsync(jobData);
       navigate('/job-postings');
     } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la création de l'offre.",
-        variant: "destructive",
-      });
       console.error("Error creating job:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -107,10 +106,10 @@ const CreateJobForm = () => {
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="contractType">Type de contrat</Label>
+                  <Label htmlFor="contract_type">Type de contrat</Label>
                   <Select
-                    value={formData.contractType}
-                    onValueChange={(value) => handleSelectChange('contractType', value)}
+                    value={formData.contract_type}
+                    onValueChange={(value) => handleSelectChange('contract_type', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Sélectionner" />
@@ -145,13 +144,56 @@ const CreateJobForm = () => {
                   </Select>
                 </div>
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="salary_min">Salaire minimum (€)</Label>
+                  <Input 
+                    id="salary_min"
+                    name="salary_min"
+                    type="number"
+                    placeholder="40000"
+                    value={formData.salary_min}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="salary_max">Salaire maximum (€)</Label>
+                  <Input 
+                    id="salary_max"
+                    name="salary_max"
+                    type="number"
+                    placeholder="60000"
+                    value={formData.salary_max}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="experience_level">Niveau d'expérience</Label>
+                <Select
+                  value={formData.experience_level}
+                  onValueChange={(value) => handleSelectChange('experience_level', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Junior (0-2 ans)">Junior (0-2 ans)</SelectItem>
+                    <SelectItem value="Confirmé (3-5 ans)">Confirmé (3-5 ans)</SelectItem>
+                    <SelectItem value="Senior (5+ ans)">Senior (5+ ans)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
                 <Textarea 
                   id="description"
                   name="description"
-                  placeholder="Glissez-les missionnss, les compétences requises, etc."
+                  placeholder="Décrivez les missions, les compétences requises, etc."
                   value={formData.description}
                   onChange={handleInputChange}
                   className="min-h-[120px]"
@@ -178,9 +220,9 @@ const CreateJobForm = () => {
                 <Button 
                   type="submit" 
                   className="bg-emerald-600 hover:bg-emerald-700 text-white w-32"
-                  disabled={isLoading}
+                  disabled={createJobMutation.isPending}
                 >
-                  {isLoading ? "Création..." : "Créer"}
+                  {createJobMutation.isPending ? "Création..." : "Créer"}
                 </Button>
               </div>
             </div>

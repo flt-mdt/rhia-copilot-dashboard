@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Sidebar from "./components/layout/Sidebar";
 import Index from "./pages/Index";
 import Candidates from "./pages/Candidates";
@@ -24,23 +26,69 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Sidebar />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/candidates" element={<Candidates />} />
-          <Route path="/candidates/:candidateId" element={<CandidateProfile />} />
-          <Route path="/job-postings" element={<JobPostings />} />
-          <Route path="/job-postings/create" element={<CreateJobForm />} />
-          <Route path="/job-postings/:jobId" element={<JobDetail />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/hunter" element={<Hunter />} />
-          <Route path="/brief" element={<Brief />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/sign-in" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/sign-in" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Sidebar />
+                <Index />
+              </ProtectedRoute>
+            } />
+            <Route path="/candidates" element={
+              <ProtectedRoute>
+                <Sidebar />
+                <Candidates />
+              </ProtectedRoute>
+            } />
+            <Route path="/candidates/:candidateId" element={
+              <ProtectedRoute>
+                <Sidebar />
+                <CandidateProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/job-postings" element={
+              <ProtectedRoute>
+                <Sidebar />
+                <JobPostings />
+              </ProtectedRoute>
+            } />
+            <Route path="/job-postings/create" element={
+              <ProtectedRoute>
+                <Sidebar />
+                <CreateJobForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/job-postings/:jobId" element={
+              <ProtectedRoute>
+                <Sidebar />
+                <JobDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Sidebar />
+                <Settings />
+              </ProtectedRoute>
+            } />
+            <Route path="/hunter" element={
+              <ProtectedRoute>
+                <Sidebar />
+                <Hunter />
+              </ProtectedRoute>
+            } />
+            <Route path="/brief" element={
+              <ProtectedRoute>
+                <Sidebar />
+                <Brief />
+              </ProtectedRoute>
+            } />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
