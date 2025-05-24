@@ -22,6 +22,7 @@ import Login from "./pages/Login";
 import Hunter from "./pages/Hunter";
 import Brief from "./pages/Brief";
 import JobTemplatesLibrary from "./pages/JobTemplatesLibrary";
+import Subscription from "./pages/Subscription";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/subscription" element={<Subscription />} />
               <Route path="/sign-in" element={<Navigate to="/login" replace />} />
               <Route path="/" element={
                 <ProtectedRoute>
