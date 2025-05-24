@@ -23,6 +23,7 @@ import Hunter from "./pages/Hunter";
 import Brief from "./pages/Brief";
 import JobTemplatesLibrary from "./pages/JobTemplatesLibrary";
 import Subscription from "./pages/Subscription";
+import RootRedirect from "./components/RootRedirect";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +36,7 @@ const App = () => (
         <LanguageProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Subscription />} />
+              <Route path="/" element={<RootRedirect />} />
               <Route path="/subscription" element={<Subscription />} />
               <Route path="/login" element={<Login />} />
               <Route path="/sign-in" element={<Navigate to="/login" replace />} />

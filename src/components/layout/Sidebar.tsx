@@ -47,15 +47,15 @@ const Sidebar = () => {
         <ul className="space-y-1">
           <li>
             <Link 
-              to="/" 
+              to="/dashboard" 
               className={`flex items-center gap-3 px-4 py-3 ${
-                isActive("/") 
+                isActive("/dashboard") 
                 ? "bg-blue-50 text-primary font-medium" 
                 : "text-textGray hover:bg-gray-100"
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" 
-                stroke={isActive("/") ? "#2563EB" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                stroke={isActive("/dashboard") ? "#2563EB" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="3" width="7" height="7"></rect>
                 <rect x="14" y="3" width="7" height="7"></rect>
                 <rect x="14" y="14" width="7" height="7"></rect>
