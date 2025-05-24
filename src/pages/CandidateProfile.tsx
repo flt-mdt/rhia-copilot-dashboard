@@ -205,10 +205,14 @@ const CandidateProfile = () => {
     });
   };
 
-  const handleFileUpload = (name: string, files: File[]) => {
+  const handleFileUpload = (candidateData: {
+    name: string;
+    jobPostingId: string;
+    files: File[];
+  }) => {
     toast({
       title: "Files Uploaded",
-      description: `${files.length} files uploaded for ${name || candidate?.name}. AI analysis started.`,
+      description: `${candidateData.files.length} files uploaded for ${candidateData.name || candidate?.name}. AI analysis started.`,
     });
     setShowUploadDialog(false);
   };
