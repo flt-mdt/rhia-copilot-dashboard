@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
@@ -122,12 +121,16 @@ const translations = {
       or: "Or",
       google: "Sign In with Google",
       linkedin: "Sign In with LinkedIn",
-      signinTitle: "Welcome Back!",
-      signinDescription: "Sign in to continue to your account.",
-      signupTitle: "Create Account",
-      signupDescription: "Create an account to get started.",
-      signinButton: "Sign In",
-      signupButton: "Sign Up",
+      signin: {
+        title: "Welcome Back!",
+        description: "Sign in to continue to your account.",
+        button: "Sign In"
+      },
+      signup: {
+        title: "Create Account",
+        description: "Create an account to get started.",
+        button: "Sign Up"
+      }
     },
     hunter: {
       title: "Candidate Hunter",
@@ -275,12 +278,16 @@ const translations = {
       or: "Ou",
       google: "Se connecter avec Google",
       linkedin: "Se connecter avec LinkedIn",
-      signinTitle: "Bienvenue !",
-      signinDescription: "Connectez-vous pour accéder à votre compte.",
-      signupTitle: "Créer un compte",
-      signupDescription: "Créez un compte pour commencer.",
-      signinButton: "Se connecter",
-      signupButton: "S'inscrire",
+      signin: {
+        title: "Bienvenue !",
+        description: "Connectez-vous pour accéder à votre compte.",
+        button: "Se connecter"
+      },
+      signup: {
+        title: "Créer un compte",
+        description: "Créez un compte pour commencer.",
+        button: "S'inscrire"
+      }
     },
     hunter: {
       title: "Chasseur de candidats",
@@ -428,12 +435,16 @@ const translations = {
       or: "O",
       google: "Iniciar sesión con Google",
       linkedin: "Iniciar sesión con LinkedIn",
-      signinTitle: "¡Bienvenido de nuevo!",
-      signinDescription: "Inicia sesión para continuar a tu cuenta.",
-      signupTitle: "Crear cuenta",
-      signupDescription: "Crea una cuenta para empezar.",
-      signinButton: "Iniciar sesión",
-      signupButton: "Registrarse",
+      signin: {
+        title: "¡Bienvenido de nuevo!",
+        description: "Inicia sesión para continuar a tu cuenta.",
+        button: "Iniciar sesión"
+      },
+      signup: {
+        title: "Crear cuenta",
+        description: "Crea una cuenta para empezar.",
+        button: "Registrarse"
+      }
     },
     hunter: {
       title: "Cazador de candidatos",
