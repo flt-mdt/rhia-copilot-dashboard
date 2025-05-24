@@ -40,7 +40,25 @@ export const useJobDrafts = () => {
 
       if (error) throw error;
 
-      setDrafts(data || []);
+      // Transformer les données pour correspondre à notre interface
+      const transformedData: JobDraft[] = (data || []).map(item => ({
+        id: item.id,
+        user_id: item.user_id || '',
+        title: item.title || '',
+        description: item.description,
+        requirements: item.requirements || [],
+        missions: item.missions || [],
+        hard_skills: item.hard_skills || [],
+        soft_skills: item.soft_skills || [],
+        location: item.location,
+        contract_type: item.contract_type,
+        salary_range: item.salary_range,
+        source_brief_id: item.source_brief_id,
+        created_at: item.created_at || new Date().toISOString(),
+        updated_at: item.updated_at || new Date().toISOString()
+      }));
+
+      setDrafts(transformedData);
     } catch (error) {
       console.error('Error fetching drafts:', error);
       toast({

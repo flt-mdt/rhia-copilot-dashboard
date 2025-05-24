@@ -41,7 +41,26 @@ export const useAIBriefs = () => {
 
       if (error) throw error;
 
-      setBriefs(data || []);
+      // Transformer les données pour correspondre à notre interface
+      const transformedData: AIBrief[] = (data || []).map(item => ({
+        id: item.id,
+        user_id: item.user_id || '',
+        title: item.title,
+        missions: item.missions || [],
+        hard_skills: item.hard_skills || [],
+        soft_skills: item.soft_skills || [],
+        project_context: item.project_context,
+        location: item.location,
+        constraints: item.constraints || [],
+        conversation_data: item.conversation_data,
+        brief_summary: item.brief_summary,
+        is_complete: item.is_complete || false,
+        generated_job_posting_id: item.generated_job_posting_id,
+        created_at: item.created_at || new Date().toISOString(),
+        updated_at: item.updated_at || new Date().toISOString()
+      }));
+
+      setBriefs(transformedData);
     } catch (error) {
       console.error('Error fetching briefs:', error);
       toast({

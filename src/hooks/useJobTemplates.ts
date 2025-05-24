@@ -34,7 +34,23 @@ export const useJobTemplates = () => {
 
       if (error) throw error;
 
-      setTemplates(data || []);
+      // Transformer les données pour correspondre à notre interface
+      const transformedData: JobTemplate[] = (data || []).map(item => ({
+        id: item.id,
+        title: item.title || '',
+        description: item.description,
+        requirements: item.requirements || [],
+        missions: item.missions || [],
+        hard_skills: item.hard_skills || [],
+        soft_skills: item.soft_skills || [],
+        department: item.department,
+        experience_level: item.experience_level,
+        is_featured: item.is_featured || false,
+        usage_count: item.usage_count || 0,
+        created_at: item.created_at || new Date().toISOString()
+      }));
+
+      setTemplates(transformedData);
     } catch (error) {
       console.error('Error fetching templates:', error);
       toast({
@@ -49,12 +65,22 @@ export const useJobTemplates = () => {
 
   const incrementUsage = async (templateId: string) => {
     try {
+      const template = templates.find(t => t.id === templateId);
+      const newUsageCount = (template?.usage_count || 0) + 1;
+
       const { error } = await supabase
         .from('job_templates_public')
-        .update({ usage_count: templates.find(t => t.id === templateId)?.usage_count + 1 || 1 })
+        .update({ usage_count: newUsageCount })
         .eq('id', templateId);
 
       if (error) throw error;
+
+      // Mettre à jour localement
+      setTemplates(prev => prev.map(t => 
+        t.id === templateId 
+          ? { ...t, usage_count: newUsageCount }
+          : t
+      ));
     } catch (error) {
       console.error('Error incrementing usage:', error);
     }
