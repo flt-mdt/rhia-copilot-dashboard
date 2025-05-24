@@ -111,6 +111,11 @@ const translations = {
       languageDescription: "Choose your preferred language",
       account: "Account",
       accountDescription: "Manage your account settings",
+      criteria: {
+        title: "Evaluation Criteria",
+        description: "Configure evaluation criteria for candidates",
+        help: "Define the criteria used to evaluate candidates"
+      }
     },
     login: {
       title: "RHIA Copilot",
@@ -266,6 +271,11 @@ const translations = {
       languageDescription: "Choisissez votre langue préférée",
       account: "Compte",
       accountDescription: "Gérer les paramètres de votre compte",
+      criteria: {
+        title: "Critères d'évaluation",
+        description: "Configurer les critères d'évaluation pour les candidats",
+        help: "Définir les critères utilisés pour évaluer les candidats"
+      }
     },
     login: {
       title: "RHIA Copilot",
@@ -421,6 +431,11 @@ const translations = {
       languageDescription: "Elige tu idioma preferido",
       account: "Cuenta",
       accountDescription: "Administra la configuración de tu cuenta",
+      criteria: {
+        title: "Criterios de evaluación",
+        description: "Configurar criterios de evaluación para candidatos",
+        help: "Definir los criterios utilizados para evaluar candidatos"
+      }
     },
     login: {
       title: "RHIA Copilot",
