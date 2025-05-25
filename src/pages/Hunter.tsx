@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -14,6 +13,7 @@ const Hunter = () => {
   const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [candidates, setCandidates] = useState<HunterCandidate[]>([]);
+  const [currentSearchQuery, setCurrentSearchQuery] = useState<string>('');
   const [filters, setFilters] = useState<FilterOptions>({
     minMatchScore: 60,
     countries: [],
@@ -24,6 +24,7 @@ const Hunter = () => {
   const handleSearch = (criteria: string) => {
     setIsLoading(true);
     setHasSearched(true);
+    setCurrentSearchQuery(criteria);
     
     // Simulate API call with a timeout
     setTimeout(() => {
@@ -181,7 +182,11 @@ const Hunter = () => {
                 <div className="space-y-6 mt-8">
                   {filteredCandidates.length > 0 ? (
                     filteredCandidates.map(candidate => (
-                      <CandidateCard key={candidate.id} candidate={candidate} />
+                      <CandidateCard 
+                        key={candidate.id} 
+                        candidate={candidate} 
+                        searchQuery={currentSearchQuery}
+                      />
                     ))
                   ) : (
                     <div className="text-center p-8 bg-white rounded-xl shadow-sm max-w-3xl mx-auto">

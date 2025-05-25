@@ -1,11 +1,12 @@
 
-import React from 'react';
-import { ExternalLink, Save, Download } from 'lucide-react';
+import React, { useState } from 'react';
+import { ExternalLink, Save, Download, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useHunterProfiles } from '@/hooks/useHunterProfiles';
 
 interface Skill {
   name: string;
@@ -26,17 +27,31 @@ export interface HunterCandidate {
 
 interface CandidateCardProps {
   candidate: HunterCandidate;
+  searchQuery?: string;
 }
 
-const CandidateCard: React.FC<CandidateCardProps> = ({ candidate }) => {
+const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, searchQuery }) => {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { saveProfile, isSaving, profiles } = useHunterProfiles();
+  const [isSaved, setIsSaved] = useState(false);
+
+  // Vérifier si le profil est déjà sauvegardé
+  const isAlreadySaved = profiles.some(profile => 
+    profile.profile_url === candidate.profileUrl && profile.name === candidate.name
+  );
 
   const handleSaveCandidate = () => {
-    toast({
-      title: t('hunter.profileSaved'),
-      description: t('hunter.addedToShortlist').replace('{name}', candidate.name),
-    });
+    if (isAlreadySaved) {
+      toast({
+        title: 'Profil déjà sauvegardé',
+        description: 'Ce profil est déjà dans votre liste sauvegardée',
+      });
+      return;
+    }
+
+    saveProfile({ candidate, searchQuery });
+    setIsSaved(true);
   };
 
   const handleImportCandidate = () => {
@@ -56,6 +71,12 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate }) => {
               {candidate.isNew && (
                 <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
                   {t('hunter.new')}
+                </Badge>
+              )}
+              {(isAlreadySaved || isSaved) && (
+                <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                  <Check className="mr-1 h-3 w-3" />
+                  Sauvegardé
                 </Badge>
               )}
             </div>
@@ -97,11 +118,20 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate }) => {
           <Button 
             size="sm" 
             variant="outline" 
-            className="bg-gray-200 hover:bg-gray-300 border-0"
+            className={`border-0 ${
+              isAlreadySaved || isSaved 
+                ? 'bg-green-100 text-green-800 hover:bg-green-200' 
+                : 'bg-gray-200 hover:bg-gray-300'
+            }`}
             onClick={handleSaveCandidate}
+            disabled={isSaving || isAlreadySaved || isSaved}
           >
-            <Save className="mr-1 h-4 w-4" />
-            {t('hunter.save')}
+            {(isAlreadySaved || isSaved) ? (
+              <Check className="mr-1 h-4 w-4" />
+            ) : (
+              <Save className="mr-1 h-4 w-4" />
+            )}
+            {(isAlreadySaved || isSaved) ? 'Sauvegardé' : t('hunter.save')}
           </Button>
           <Button 
             size="sm" 

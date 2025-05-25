@@ -24,4 +24,13 @@ export const hunterTranslations = {
   noFileUploaded: "Aucun fichier téléchargé",
   noResults: "Aucun candidat trouvé",
   noResultsDesc: "Essayez d'ajuster vos critères de recherche ou filtres.",
+  profileSaved: "Profil sauvegardé",
+  addedToShortlist: "{name} a été ajouté à votre liste sauvegardée",
+  profileImported: "Profil importé",
+  importedToDatabase: "{name} a été importé dans votre base de données",
+  viewProfile: "Voir profil",
+  save: "Sauvegarder",
+  import: "Importer",
+  availability: "Disponibilité",
+  new: "Nouveau",
 };

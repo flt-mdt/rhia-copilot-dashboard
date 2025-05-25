@@ -262,6 +262,63 @@ export type Database = {
         }
         Relationships: []
       }
+      hunter_profiles: {
+        Row: {
+          availability: string | null
+          created_at: string
+          id: string
+          is_contacted: boolean | null
+          is_shortlisted: boolean | null
+          languages: string[] | null
+          location: string | null
+          match_score: number | null
+          name: string
+          notes: string | null
+          profile_url: string
+          search_query: string | null
+          skills: string[] | null
+          source: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          availability?: string | null
+          created_at?: string
+          id?: string
+          is_contacted?: boolean | null
+          is_shortlisted?: boolean | null
+          languages?: string[] | null
+          location?: string | null
+          match_score?: number | null
+          name: string
+          notes?: string | null
+          profile_url: string
+          search_query?: string | null
+          skills?: string[] | null
+          source: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          availability?: string | null
+          created_at?: string
+          id?: string
+          is_contacted?: boolean | null
+          is_shortlisted?: boolean | null
+          languages?: string[] | null
+          location?: string | null
+          match_score?: number | null
+          name?: string
+          notes?: string | null
+          profile_url?: string
+          search_query?: string | null
+          skills?: string[] | null
+          source?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       job_applications: {
         Row: {
           applied_at: string | null

@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +20,7 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Hunter from "./pages/Hunter";
+import SavedProfiles from "./pages/SavedProfiles";
 import Brief from "./pages/Brief";
 import JobTemplatesLibrary from "./pages/JobTemplatesLibrary";
 import Subscription from "./pages/Subscription";
@@ -100,6 +102,12 @@ const App = () => (
                 <ProtectedRoute>
                   <Sidebar />
                   <Hunter />
+                </ProtectedRoute>
+              } />
+              <Route path="/saved-profiles" element={
+                <ProtectedRoute>
+                  <Sidebar />
+                  <SavedProfiles />
                 </ProtectedRoute>
               } />
               <Route path="/brief" element={
