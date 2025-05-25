@@ -6,16 +6,21 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
+import api from "@/api/api";
 
 interface SearchFormProps {
   onSearch: (criteria: string) => void;
+  onResults?: (candidates: any[]) => void;
   isLoading: boolean;
+  userId: string; // <-- ajout ici
 }
 
-const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) => {
+const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading, userId }) => {
   const { t } = useLanguage();
   const [searchCriteria, setSearchCriteria] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [searchId, setSearchId] = useState<string | null>(null);
+  const [status, setStatus] = useState<"idle" | "pending" | "done">("idle");
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setSearchCriteria(e.target.value);
@@ -55,10 +60,55 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch(searchCriteria);
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setStatus("pending");
+
+  try {
+    const res = await api.post("/search", {
+      user_id: userId, 
+      brief_text: searchCriteria,
+      language: "fr",
+      platforms: ["linkedin", "github", "welcometothejungle"],
+      max_candidates: 10
+    });
+
+    const id = res.data.search_id;
+    setSearchId(id);
+    pollSearchStatus(id);
+  } catch (err) {
+    console.error("Erreur API:", err);
+    setStatus("idle");
+  }
+};
+
+  const pollSearchStatus = async (id: string) => {
+  try {
+    const res = await api.get(`/search/${id}/status`);
+    if (res.data.status === "done") {
+      fetchResults();
+    } else {
+      setTimeout(() => pollSearchStatus(id), 3000);
+    }
+  } catch (err) {
+    console.error("Polling error:", err);
+    setStatus("idle");
+  }
+};
+
+const fetchResults = async () => {
+  try {
+    const res = await api.get(`/results/${userId}?min_score=80&limit=10`);
+    if (res.data.candidates && typeof onResults === "function") {
+      onResults(res.data.candidates);
+    }
+    setStatus("done");
+  } catch (err) {
+    console.error("Fetch error:", err);
+    setStatus("idle");
+  }
+};
+
 
   return (
     <Card className="rounded-xl bg-white shadow-sm max-w-3xl mx-auto">
