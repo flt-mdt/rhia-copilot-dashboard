@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,108 +28,116 @@ import Subscription from "./pages/Subscription";
 import RootRedirect from "./components/RootRedirect";
 import Presentation from "./pages/Presentation";
 
-const queryClient = new QueryClient();
+const App: React.FC = () => {
+  const [queryClient] = React.useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60 * 1000,
+      },
+    },
+  }));
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <LanguageProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Presentation />} />
-              <Route path="/presentation" element={<Presentation />} />
-              <Route path="/dashboard-redirect" element={<RootRedirect />} />
-              <Route path="/subscription" element={<Subscription />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/sign-in" element={<Navigate to="/login" replace />} />
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <Index />
-                </ProtectedRoute>
-              } />
-              <Route path="/candidates" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <Candidates />
-                </ProtectedRoute>
-              } />
-              <Route path="/candidates/:candidateId" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <CandidateProfile />
-                </ProtectedRoute>
-              } />
-              <Route path="/job-postings" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <JobPostings />
-                </ProtectedRoute>
-              } />
-              <Route path="/job-postings/create" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <CreateJobForm />
-                </ProtectedRoute>
-              } />
-              <Route path="/job-postings/:jobId/edit" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <EditJobForm />
-                </ProtectedRoute>
-              } />
-              <Route path="/job-postings/:jobId/duplicate" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <DuplicateJobForm />
-                </ProtectedRoute>
-              } />
-              <Route path="/job-postings/:jobId" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <JobDetail />
-                </ProtectedRoute>
-              } />
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <Settings />
-                </ProtectedRoute>
-              } />
-              <Route path="/hunter" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <Hunter />
-                </ProtectedRoute>
-              } />
-              <Route path="/saved-profiles" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <SavedProfiles />
-                </ProtectedRoute>
-              } />
-              <Route path="/brief" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <Brief />
-                </ProtectedRoute>
-              } />
-              <Route path="/job-templates" element={
-                <ProtectedRoute>
-                  <Sidebar />
-                  <JobTemplatesLibrary />
-                </ProtectedRoute>
-              } />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </LanguageProvider>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <AuthProvider>
+          <LanguageProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Presentation />} />
+                <Route path="/presentation" element={<Presentation />} />
+                <Route path="/dashboard-redirect" element={<RootRedirect />} />
+                <Route path="/subscription" element={<Subscription />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/sign-in" element={<Navigate to="/login" replace />} />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <Index />
+                  </ProtectedRoute>
+                } />
+                <Route path="/candidates" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <Candidates />
+                  </ProtectedRoute>
+                } />
+                <Route path="/candidates/:candidateId" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <CandidateProfile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/job-postings" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <JobPostings />
+                  </ProtectedRoute>
+                } />
+                <Route path="/job-postings/create" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <CreateJobForm />
+                  </ProtectedRoute>
+                } />
+                <Route path="/job-postings/:jobId/edit" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <EditJobForm />
+                  </ProtectedRoute>
+                } />
+                <Route path="/job-postings/:jobId/duplicate" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <DuplicateJobForm />
+                  </ProtectedRoute>
+                } />
+                <Route path="/job-postings/:jobId" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <JobDetail />
+                  </ProtectedRoute>
+                } />
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <Settings />
+                  </ProtectedRoute>
+                } />
+                <Route path="/hunter" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <Hunter />
+                  </ProtectedRoute>
+                } />
+                <Route path="/saved-profiles" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <SavedProfiles />
+                  </ProtectedRoute>
+                } />
+                <Route path="/brief" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <Brief />
+                  </ProtectedRoute>
+                } />
+                <Route path="/job-templates" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <JobTemplatesLibrary />
+                  </ProtectedRoute>
+                } />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </LanguageProvider>
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
