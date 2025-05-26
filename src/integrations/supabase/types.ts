@@ -272,6 +272,7 @@ export type Database = {
           languages: string[] | null
           location: string | null
           match_score: number | null
+          matching_level: string | null
           name: string
           notes: string | null
           profile_url: string
@@ -290,6 +291,7 @@ export type Database = {
           languages?: string[] | null
           location?: string | null
           match_score?: number | null
+          matching_level?: string | null
           name: string
           notes?: string | null
           profile_url: string
@@ -308,6 +310,7 @@ export type Database = {
           languages?: string[] | null
           location?: string | null
           match_score?: number | null
+          matching_level?: string | null
           name?: string
           notes?: string | null
           profile_url?: string
