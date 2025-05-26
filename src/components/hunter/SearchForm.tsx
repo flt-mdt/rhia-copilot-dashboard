@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
-import api from "@/api/api";
+import api from '@/api/api';
 
 interface SearchFormProps {
   onSearch: (criteria: string) => void;
   onResults?: (candidates: any[]) => void;
   isLoading: boolean;
-  userId: string; // <-- ajout ici
+  userId: string;
 }
 
 const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading, userId }) => {
@@ -20,95 +19,94 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
   const [searchCriteria, setSearchCriteria] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [searchId, setSearchId] = useState<string | null>(null);
-  const [status, setStatus] = useState<"idle" | "pending" | "done">("idle");
+  const [status, setStatus] = useState<'idle' | 'pending' | 'done'>('idle');
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setSearchCriteria(e.target.value);
-    
-    // Simple tag extraction logic
+
     if (e.target.value.length > 10) {
       const extractedTags: string[] = [];
-      
-      // Extract potential skills from the text
+
       const techSkills = ['React', 'JavaScript', 'TypeScript', 'Node.js', 'Python', 'Java', 'AWS', 'DevOps'];
-      techSkills.forEach(skill => {
-        if (e.target.value.toLowerCase().includes(skill.toLowerCase())) {
-          extractedTags.push(skill);
-        }
-      });
-      
-      // Extract potential locations
       const locations = ['Paris', 'Lyon', 'Remote', 'France', 'Europe'];
-      locations.forEach(location => {
-        if (e.target.value.toLowerCase().includes(location.toLowerCase())) {
-          extractedTags.push(location);
-        }
-      });
-      
-      // Extract potential job levels
       const levels = ['Senior', 'Junior', 'Lead', 'Manager', 'CTO'];
-      levels.forEach(level => {
-        if (e.target.value.toLowerCase().includes(level.toLowerCase())) {
-          extractedTags.push(level);
+
+      [...techSkills, ...locations, ...levels].forEach(term => {
+        if (e.target.value.toLowerCase().includes(term.toLowerCase())) {
+          extractedTags.push(term);
         }
       });
-      
-      // Deduplicate tags
+
       setTags([...new Set(extractedTags)]);
     } else {
       setTags([]);
     }
   };
 
+  const normalizeCandidates = (apiCandidates: any[]) => {
+    return apiCandidates.map(c => ({
+      id: c.id ?? c.profile_url,
+      name: c.name,
+      source: c.source,
+      location: c.location,
+      languages: c.languages || [],
+      availability: c.availability,
+      profileUrl: c.profile_url,
+      matchScore: c.match_score ?? c.score ?? 0,
+      skills: (c.skills || []).map((s: string) => ({ name: s }))
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setStatus("pending");
+    e.preventDefault();
+    setStatus('pending');
 
-  try {
-    const res = await api.post("/search", {
-      user_id: userId, 
-      brief_text: searchCriteria,
-      language: "fr",
-      platforms: ["linkedin", "github", "welcometothejungle"],
-      max_candidates: 10
-    });
+    try {
+      const res = await api.post('/search', {
+        user_id: userId,
+        brief_text: searchCriteria,
+        language: 'fr',
+        platforms: ['linkedin', 'github', 'welcometothejungle'],
+        max_candidates: 10
+      });
 
-    const id = res.data.search_id;
-    setSearchId(id);
-    pollSearchStatus(id);
-  } catch (err) {
-    console.error("Erreur API:", err);
-    setStatus("idle");
-  }
-};
+      const id = res.data.search_id;
+      setSearchId(id);
+      pollSearchStatus(id);
+      onSearch(searchCriteria);
+    } catch (err) {
+      console.error('Erreur API:', err);
+      setStatus('idle');
+    }
+  };
 
   const pollSearchStatus = async (id: string) => {
-  try {
-    const res = await api.get(`/search/${id}/status`);
-    if (res.data.status === "done") {
-      fetchResults();
-    } else {
-      setTimeout(() => pollSearchStatus(id), 3000);
+    try {
+      const res = await api.get(`/search/${id}/status`);
+      if (res.data.status === 'done') {
+        fetchResults();
+      } else {
+        setTimeout(() => pollSearchStatus(id), 3000);
+      }
+    } catch (err) {
+      console.error('Polling error:', err);
+      setStatus('idle');
     }
-  } catch (err) {
-    console.error("Polling error:", err);
-    setStatus("idle");
-  }
-};
+  };
 
-const fetchResults = async () => {
-  try {
-    const res = await api.get(`/results/${userId}?min_score=80&limit=10`);
-    if (res.data.candidates && typeof onResults === "function") {
-      onResults(res.data.candidates);
+  const fetchResults = async () => {
+    try {
+      const res = await api.get(`/results/${userId}?min_score=80&limit=10`);
+      const candidates = normalizeCandidates(res.data.candidates);
+      if (typeof onResults === 'function') {
+        onResults(candidates);
+      }
+      setStatus('done');
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setStatus('idle');
     }
-    setStatus("done");
-  } catch (err) {
-    console.error("Fetch error:", err);
-    setStatus("idle");
-  }
-};
-
+  };
 
   return (
     <Card className="rounded-xl bg-white shadow-sm max-w-3xl mx-auto">
@@ -132,13 +130,13 @@ const fetchResults = async () => {
               rows={5}
             />
           </div>
-          
+
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {tags.map((tag, index) => (
-                <Badge 
-                  key={index} 
-                  variant="outline" 
+                <Badge
+                  key={index}
+                  variant="outline"
                   className="bg-blue-50 text-blue-600 hover:bg-blue-50 border-0"
                 >
                   {tag}
@@ -146,17 +144,33 @@ const fetchResults = async () => {
               ))}
             </div>
           )}
-          
-          <Button 
-            type="submit" 
+
+          <Button
+            type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md w-full md:w-auto"
             disabled={isLoading || searchCriteria.trim().length < 10}
           >
             {isLoading ? (
               <>
-                <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 {t('hunter.searching')}
               </>
