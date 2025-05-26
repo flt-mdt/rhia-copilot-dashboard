@@ -1,11 +1,11 @@
-
 import { useContext } from 'react';
 import { AuthContext } from '@/contexts/AuthContext';
+import type { User } from '@supabase/supabase-js';
 
-export const useUser = () => {
+export const useUser = (): User => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useUser must be used within an AuthProvider');
+  if (!context || !context.user) {
+    throw new Error('No authenticated user found.');
   }
   return context.user;
 };
