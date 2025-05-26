@@ -8,7 +8,7 @@ import CandidateCard, { HunterCandidate } from '@/components/hunter/CandidateCar
 import AdvancedFilters from '@/components/hunter/AdvancedFilters';
 import type { FilterOptions } from '@/components/hunter/AdvancedFilters';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useUser } from '@/hooks/useUser.ts';
+import { useUser } from '@/hooks/useUser';
 
 const Hunter = () => {
   const { toast } = useToast();
