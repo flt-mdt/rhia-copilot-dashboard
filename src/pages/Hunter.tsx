@@ -13,7 +13,7 @@ import { useUser } from '@/hooks/useUser';
 const Hunter = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
-  const { user } = useUser();
+  const user = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const [candidates, setCandidates] = useState<HunterCandidate[]>([]);
   const [rawCandidates, setRawCandidates] = useState<HunterCandidate[]>([]);
