@@ -145,7 +145,7 @@ const Presentation = () => {
               variant="outline" 
               size="lg"
               onClick={() => navigate('/subscription')}
-              className="px-8 py-4 text-lg font-semibold"
+              className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 text-lg font-semibold"
             >
               Voir les plans tarifaires
             </Button>
@@ -316,6 +316,7 @@ const Presentation = () => {
               variant="outline" 
               size="lg"
               className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold"
+              onClick={() => navigate('/subscription')}
             >
               Planifier une démo
             </Button>
