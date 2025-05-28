@@ -349,7 +349,9 @@ const Presentation = () => {
               Connexion
             </button>
             <span>Contact</span>
-            <span>Confidentialité</span>
+            <button onClick={() => navigate('/privacy')} className="hover:text-white">
+              Confidentialité
+            </button>
           </div>
         </div>
       </footer>
