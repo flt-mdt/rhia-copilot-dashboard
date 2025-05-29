@@ -70,7 +70,15 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
         max_candidates: 10
       });
 
-      const id = res.data.search_id;
+      const id = res.data?.search_id;
+
+      if (!id) {
+        console.error('❌ search_id manquant dans la réponse API');
+        setStatus('idle');
+        return;
+      }
+
+      console.log(`✅ search_id reçu : ${id}`);
       setSearchId(id);
       pollSearchStatus(id);
       onSearch(searchCriteria);
