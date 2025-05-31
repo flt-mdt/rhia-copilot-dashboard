@@ -24,6 +24,7 @@ import Hunter from "./pages/Hunter";
 import Collection from "./pages/Collection";
 import SavedProfiles from "./pages/SavedProfiles";
 import Brief from "./pages/Brief";
+import BriefDetail from "./pages/BriefDetail";
 import JobTemplatesLibrary from "./pages/JobTemplatesLibrary";
 import Subscription from "./pages/Subscription";
 import RootRedirect from "./components/RootRedirect";
@@ -131,6 +132,12 @@ const App: React.FC = () => {
                   <ProtectedRoute>
                     <Sidebar />
                     <Brief />
+                  </ProtectedRoute>
+                } />
+                <Route path="/brief/:briefId" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <BriefDetail />
                   </ProtectedRoute>
                 } />
                 <Route path="/job-templates" element={

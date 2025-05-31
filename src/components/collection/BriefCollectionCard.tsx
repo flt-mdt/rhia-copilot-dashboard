@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,12 @@ interface BriefCollectionCardProps {
 }
 
 const BriefCollectionCard: React.FC<BriefCollectionCardProps> = ({ brief, viewMode }) => {
+  const navigate = useNavigate();
   const formattedDate = format(new Date(brief.created_at), 'dd MMM yyyy', { locale: fr });
+
+  const handleViewBrief = () => {
+    navigate(`/brief/${brief.id}`);
+  };
 
   if (viewMode === 'list') {
     return (
@@ -46,7 +52,7 @@ const BriefCollectionCard: React.FC<BriefCollectionCardProps> = ({ brief, viewMo
             </div>
             
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline">
+              <Button size="sm" variant="outline" onClick={handleViewBrief}>
                 Voir le brief
               </Button>
             </div>
@@ -112,6 +118,7 @@ const BriefCollectionCard: React.FC<BriefCollectionCardProps> = ({ brief, viewMo
           size="sm" 
           variant="outline" 
           className="w-full text-xs"
+          onClick={handleViewBrief}
         >
           <FileText className="h-3 w-3 mr-1" />
           Voir le brief
