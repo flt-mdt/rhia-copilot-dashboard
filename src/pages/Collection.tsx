@@ -53,15 +53,15 @@ const Collection = () => {
   const filteredItems = () => {
     let allItems: any[] = [];
     
-    if (selectedCategory === 'all' || selectedCategory === 'candidates') {
-      allItems = [...allItems, ...profiles.map(profile => ({ ...profile, type: 'candidate' }))];
+    // Only show items based on selected category
+    if (selectedCategory === 'candidates') {
+      allItems = profiles.map(profile => ({ ...profile, type: 'candidate' }));
+    } else if (selectedCategory === 'briefs') {
+      allItems = briefs.map(brief => ({ ...brief, type: 'brief' }));
     }
-    
-    if (selectedCategory === 'all' || selectedCategory === 'briefs') {
-      allItems = [...allItems, ...briefs.map(brief => ({ ...brief, type: 'brief' }))];
-    }
+    // When selectedCategory is 'all', don't show individual items, only collection cards
 
-    if (searchTerm) {
+    if (searchTerm && selectedCategory !== 'all') {
       allItems = allItems.filter(item => {
         if (item.type === 'candidate') {
           return item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -146,7 +146,7 @@ const Collection = () => {
           </div>
         </div>
 
-        {/* Collections Overview */}
+        {/* Collections Overview - Only shown when "all" is selected */}
         {selectedCategory === 'all' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {collections.map((collection) => (
@@ -167,8 +167,8 @@ const Collection = () => {
           </div>
         )}
 
-        {/* Items Grid/List */}
-        {!isLoading && (
+        {/* Items Grid/List - Only shown when a specific category is selected */}
+        {!isLoading && selectedCategory !== 'all' && (
           <div className={`${viewMode === 'grid' 
             ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
             : 'space-y-4'
@@ -192,16 +192,24 @@ const Collection = () => {
         )}
 
         {/* Empty State */}
-        {!isLoading && filteredItems().length === 0 && (
+        {!isLoading && selectedCategory !== 'all' && filteredItems().length === 0 && (
           <div className="text-center py-12">
             <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-              <FileText className="h-8 w-8 text-gray-400" />
+              {selectedCategory === 'candidates' ? (
+                <Users className="h-8 w-8 text-gray-400" />
+              ) : (
+                <FileText className="h-8 w-8 text-gray-400" />
+              )}
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun élément trouvé</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {selectedCategory === 'candidates' ? 'Aucun candidat trouvé' : 'Aucun brief trouvé'}
+            </h3>
             <p className="text-gray-500 mb-4">
               {searchTerm 
                 ? "Aucun résultat ne correspond à votre recherche" 
-                : "Commencez par sauvegarder des candidats depuis Hunter ou créer des briefs avec l'IA"
+                : selectedCategory === 'candidates'
+                  ? "Commencez par sauvegarder des candidats depuis Hunter"
+                  : "Commencez par créer des briefs avec l'IA"
               }
             </p>
             {searchTerm && (
@@ -218,6 +226,7 @@ const Collection = () => {
             <h4 className="font-semibold mb-2">Debug Information:</h4>
             <p>Profiles: {profiles.length}</p>
             <p>Briefs: {briefs.length}</p>
+            <p>Selected category: {selectedCategory}</p>
             <p>Filtered items: {filteredItems().length}</p>
             <p>Loading: {isLoading ? 'Yes' : 'No'}</p>
           </div>
