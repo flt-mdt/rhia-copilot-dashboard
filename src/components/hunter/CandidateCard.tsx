@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useHunterProfiles } from '@/hooks/useHunterProfiles';
 
 interface Skill {
   name: string;
@@ -32,13 +33,11 @@ interface CandidateCardProps {
 const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, searchQuery }) => {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { saveProfile, isSaving } = useHunterProfiles();
   const [isSaved, setIsSaved] = useState(false);
 
   const handleSaveCandidate = () => {
-    toast({
-      title: t('hunter.profileSaved'),
-      description: t('hunter.addedToShortlist').replace('{name}', candidate.name),
-    });
+    saveProfile({ candidate, searchQuery });
     setIsSaved(true);
   };
 
@@ -110,7 +109,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, searchQuery })
               isSaved ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-gray-200 hover:bg-gray-300'
             }`}
             onClick={handleSaveCandidate}
-            disabled={isSaved}
+            disabled={isSaved || isSaving}
           >
             {isSaved ? (
               <><Check className="mr-1 h-4 w-4" /> {t('hunter.saved')}</>

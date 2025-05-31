@@ -24,22 +24,32 @@ export interface AIBrief {
 
 export const useAIBriefs = () => {
   const [briefs, setBriefs] = useState<AIBrief[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { toast } = useToast();
 
   const fetchBriefs = async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     try {
+      console.log('Fetching briefs for user:', user.id);
+      
       const { data, error } = await supabase
         .from('ai_briefs')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching briefs:', error);
+        throw error;
+      }
+
+      console.log('Fetched briefs data:', data);
 
       // Transformer les données pour correspondre à notre interface
       const transformedData: AIBrief[] = (data || []).map((item: any) => ({
@@ -60,6 +70,7 @@ export const useAIBriefs = () => {
         updated_at: item.updated_at || new Date().toISOString()
       }));
 
+      console.log('Transformed briefs:', transformedData);
       setBriefs(transformedData);
     } catch (error) {
       console.error('Error fetching briefs:', error);
@@ -77,16 +88,47 @@ export const useAIBriefs = () => {
     if (!user) return null;
 
     try {
-      const { data, error } = await supabase
-        .from('ai_briefs')
-        .upsert({
-          user_id: user.id,
-          ...briefData
-        })
-        .select()
-        .single();
+      console.log('Saving brief:', briefData);
+      
+      const dataToInsert = {
+        user_id: user.id,
+        title: briefData.title,
+        missions: briefData.missions || [],
+        hard_skills: briefData.hard_skills || [],
+        soft_skills: briefData.soft_skills || [],
+        project_context: briefData.project_context,
+        location: briefData.location,
+        constraints: briefData.constraints || [],
+        conversation_data: briefData.conversation_data,
+        brief_summary: briefData.brief_summary,
+        is_complete: briefData.is_complete || false,
+        generated_job_posting_id: briefData.generated_job_posting_id
+      };
 
-      if (error) throw error;
+      let result;
+      if (briefData.id) {
+        // Update existing brief
+        const { data, error } = await supabase
+          .from('ai_briefs')
+          .update(dataToInsert)
+          .eq('id', briefData.id)
+          .eq('user_id', user.id)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        result = data;
+      } else {
+        // Insert new brief
+        const { data, error } = await supabase
+          .from('ai_briefs')
+          .insert(dataToInsert)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        result = data;
+      }
 
       await fetchBriefs();
       
@@ -95,7 +137,7 @@ export const useAIBriefs = () => {
         description: "Brief sauvegardé avec succès"
       });
 
-      return data;
+      return result;
     } catch (error) {
       console.error('Error saving brief:', error);
       toast({
@@ -139,6 +181,8 @@ export const useAIBriefs = () => {
         .from('ai_briefs')
         .update({ generated_job_posting_id: data.id })
         .eq('id', briefId);
+
+      await fetchBriefs();
 
       toast({
         title: "Succès",

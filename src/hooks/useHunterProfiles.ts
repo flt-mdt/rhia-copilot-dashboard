@@ -30,37 +30,55 @@ export const useHunterProfiles = () => {
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ['hunter-profiles'],
     queryFn: async () => {
+      console.log('Fetching hunter profiles...');
+      
       const { data, error } = await supabase
         .from('hunter_profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching hunter profiles:', error);
+        throw error;
+      }
+      
+      console.log('Fetched hunter profiles:', data);
       return data as SavedHunterProfile[];
     },
   });
 
   const saveProfileMutation = useMutation({
     mutationFn: async ({ candidate, searchQuery }: { candidate: HunterCandidate; searchQuery?: string }) => {
+      console.log('Saving hunter profile:', candidate);
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      const profileData = {
+        user_id: user.id,
+        name: candidate.name,
+        source: candidate.source,
+        profile_url: candidate.profileUrl,
+        location: candidate.location,
+        languages: candidate.languages,
+        availability: candidate.availability,
+        skills: candidate.skills.map(skill => skill.name),
+        match_score: candidate.matchScore,
+        search_query: searchQuery || null,
+      };
+
+      console.log('Profile data to save:', profileData);
+
       const { error } = await supabase
         .from('hunter_profiles')
-        .insert({
-          user_id: user.id,
-          name: candidate.name,
-          source: candidate.source,
-          profile_url: candidate.profileUrl,
-          location: candidate.location,
-          languages: candidate.languages,
-          availability: candidate.availability,
-          skills: candidate.skills.map(skill => skill.name),
-          match_score: candidate.matchScore,
-          search_query: searchQuery,
-        });
+        .insert(profileData);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving hunter profile:', error);
+        throw error;
+      }
+      
+      console.log('Hunter profile saved successfully');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hunter-profiles'] });
@@ -70,23 +88,28 @@ export const useHunterProfiles = () => {
       });
     },
     onError: (error) => {
+      console.error('Save profile mutation error:', error);
       toast({
         title: 'Erreur',
         description: 'Impossible de sauvegarder le profil',
         variant: 'destructive',
       });
-      console.error('Error saving profile:', error);
     },
   });
 
   const updateProfileMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<SavedHunterProfile> }) => {
+      console.log('Updating hunter profile:', id, updates);
+      
       const { error } = await supabase
         .from('hunter_profiles')
         .update(updates)
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating hunter profile:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hunter-profiles'] });
@@ -95,12 +118,17 @@ export const useHunterProfiles = () => {
 
   const deleteProfileMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.log('Deleting hunter profile:', id);
+      
       const { error } = await supabase
         .from('hunter_profiles')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting hunter profile:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hunter-profiles'] });

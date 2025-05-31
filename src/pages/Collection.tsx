@@ -21,6 +21,9 @@ const Collection = () => {
   const { profiles, isLoading: profilesLoading } = useHunterProfiles();
   const { briefs, loading: briefsLoading } = useAIBriefs();
 
+  console.log('Profiles loaded:', profiles.length);
+  console.log('Briefs loaded:', briefs.length);
+
   const collections = [
     {
       id: 'candidates',
@@ -74,6 +77,8 @@ const Collection = () => {
     return allItems;
   };
 
+  const isLoading = profilesLoading || briefsLoading;
+
   return (
     <div className="min-h-screen bg-gray-50 ml-64">
       <div className="p-6">
@@ -110,7 +115,7 @@ const Collection = () => {
                 size="sm"
               >
                 <Users className="h-4 w-4 mr-1" />
-                Candidats
+                Candidats ({profiles.length})
               </Button>
               <Button
                 variant={selectedCategory === 'briefs' ? 'default' : 'outline'}
@@ -118,7 +123,7 @@ const Collection = () => {
                 size="sm"
               >
                 <FileText className="h-4 w-4 mr-1" />
-                Briefs
+                Briefs ({briefs.length})
               </Button>
             </div>
 
@@ -154,30 +159,40 @@ const Collection = () => {
           </div>
         )}
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-500">Chargement des collections...</p>
+          </div>
+        )}
+
         {/* Items Grid/List */}
-        <div className={`${viewMode === 'grid' 
-          ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
-          : 'space-y-4'
-        }`}>
-          {filteredItems().map((item, index) => (
-            item.type === 'candidate' ? (
-              <CandidateCollectionCard
-                key={`candidate-${item.id}`}
-                candidate={item}
-                viewMode={viewMode}
-              />
-            ) : (
-              <BriefCollectionCard
-                key={`brief-${item.id}`}
-                brief={item}
-                viewMode={viewMode}
-              />
-            )
-          ))}
-        </div>
+        {!isLoading && (
+          <div className={`${viewMode === 'grid' 
+            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
+            : 'space-y-4'
+          }`}>
+            {filteredItems().map((item, index) => (
+              item.type === 'candidate' ? (
+                <CandidateCollectionCard
+                  key={`candidate-${item.id}`}
+                  candidate={item}
+                  viewMode={viewMode}
+                />
+              ) : (
+                <BriefCollectionCard
+                  key={`brief-${item.id}`}
+                  brief={item}
+                  viewMode={viewMode}
+                />
+              )
+            ))}
+          </div>
+        )}
 
         {/* Empty State */}
-        {filteredItems().length === 0 && !profilesLoading && !briefsLoading && (
+        {!isLoading && filteredItems().length === 0 && (
           <div className="text-center py-12">
             <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
               <FileText className="h-8 w-8 text-gray-400" />
@@ -194,6 +209,17 @@ const Collection = () => {
                 Effacer la recherche
               </Button>
             )}
+          </div>
+        )}
+
+        {/* Debug Information */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mt-8 p-4 bg-gray-100 rounded-lg">
+            <h4 className="font-semibold mb-2">Debug Information:</h4>
+            <p>Profiles: {profiles.length}</p>
+            <p>Briefs: {briefs.length}</p>
+            <p>Filtered items: {filteredItems().length}</p>
+            <p>Loading: {isLoading ? 'Yes' : 'No'}</p>
           </div>
         )}
       </div>
