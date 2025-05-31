@@ -76,18 +76,24 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
   };
 
   const pollSearchStatus = async (id: string) => {
-    try {
-      const res = await api.get(`/search/${id}/status`);
-      if (res.data.status === 'done') {
-        fetchResults();
-      } else {
-        setTimeout(() => pollSearchStatus(id), 3000);
-      }
-    } catch (err) {
-      console.error('Polling error:', err);
+  try {
+    const res = await api.get(`/search/${id}/status`);
+    const { status, is_terminal } = res.data;
+
+    if (status === 'done') {
+      fetchResults();
+    } else if (is_terminal) {
       setStatus('idle');
+      // Optionnel : afficher un message d’erreur ou “aucun résultat”
+    } else {
+      setTimeout(() => pollSearchStatus(id), 3000);
     }
-  };
+  } catch (err) {
+    console.error('Polling error:', err);
+    setStatus('idle');
+  }
+};
+
 
   const fetchResults = async () => {
     try {
