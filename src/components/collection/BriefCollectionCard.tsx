@@ -4,22 +4,44 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FileText, Calendar, CheckCircle, Clock } from 'lucide-react';
+import { FileText, Calendar, CheckCircle, Trash2 } from 'lucide-react';
 import { AIBrief } from '@/hooks/useAIBriefs';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface BriefCollectionCardProps {
   brief: AIBrief;
   viewMode: 'grid' | 'list';
+  onDelete?: (id: string) => void;
 }
 
-const BriefCollectionCard: React.FC<BriefCollectionCardProps> = ({ brief, viewMode }) => {
+const BriefCollectionCard: React.FC<BriefCollectionCardProps> = ({ 
+  brief, 
+  viewMode, 
+  onDelete 
+}) => {
   const navigate = useNavigate();
   const formattedDate = format(new Date(brief.created_at), 'dd MMM yyyy', { locale: fr });
 
   const handleViewBrief = () => {
     navigate(`/brief/${brief.id}`);
+  };
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(brief.id);
+    }
   };
 
   if (viewMode === 'list') {
@@ -36,15 +58,10 @@ const BriefCollectionCard: React.FC<BriefCollectionCardProps> = ({ brief, viewMo
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                   <Calendar className="h-3 w-3" />
                   <span>{formattedDate}</span>
-                  {brief.is_complete ? (
+                  {brief.is_complete && (
                     <Badge className="bg-green-100 text-green-800 text-xs">
                       <CheckCircle className="h-3 w-3 mr-1" />
                       Terminé
-                    </Badge>
-                  ) : (
-                    <Badge variant="outline" className="text-xs">
-                      <Clock className="h-3 w-3 mr-1" />
-                      En cours
                     </Badge>
                   )}
                 </div>
@@ -55,6 +72,29 @@ const BriefCollectionCard: React.FC<BriefCollectionCardProps> = ({ brief, viewMo
               <Button size="sm" variant="outline" onClick={handleViewBrief}>
                 Voir le brief
               </Button>
+              {onDelete && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Supprimer le brief</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Êtes-vous sûr de vouloir supprimer ce brief ? Cette action est irréversible.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                        Supprimer
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </div>
           </div>
         </CardContent>
@@ -69,17 +109,37 @@ const BriefCollectionCard: React.FC<BriefCollectionCardProps> = ({ brief, viewMo
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white">
             <FileText className="h-5 w-5" />
           </div>
-          {brief.is_complete ? (
-            <Badge className="bg-green-100 text-green-800 text-xs">
-              <CheckCircle className="h-3 w-3 mr-1" />
-              Terminé
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="text-xs">
-              <Clock className="h-3 w-3 mr-1" />
-              En cours
-            </Badge>
-          )}
+          <div className="flex items-center gap-1">
+            {brief.is_complete && (
+              <Badge className="bg-green-100 text-green-800 text-xs">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                Terminé
+              </Badge>
+            )}
+            {onDelete && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button size="sm" variant="ghost" className="text-red-600 hover:text-red-700 h-6 w-6 p-0">
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Supprimer le brief</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Êtes-vous sûr de vouloir supprimer ce brief ? Cette action est irréversible.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                      Supprimer
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+                </AlertDialog>
+              )}
+          </div>
         </div>
         
         <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">

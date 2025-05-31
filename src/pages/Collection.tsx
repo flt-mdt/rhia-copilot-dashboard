@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,8 +18,8 @@ const Collection = () => {
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'candidates' | 'briefs'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
-  const { profiles, isLoading: profilesLoading } = useHunterProfiles();
-  const { briefs, loading: briefsLoading } = useAIBriefs();
+  const { profiles, isLoading: profilesLoading, deleteProfile } = useHunterProfiles();
+  const { briefs, loading: briefsLoading, deleteBrief } = useAIBriefs();
 
   console.log('Profiles loaded:', profiles.length);
   console.log('Briefs loaded:', briefs.length);
@@ -240,12 +239,14 @@ const Collection = () => {
                   key={`candidate-${item.id}`}
                   candidate={item}
                   viewMode={viewMode}
+                  onDelete={deleteProfile}
                 />
               ) : (
                 <BriefCollectionCard
                   key={`brief-${item.id}`}
                   brief={item}
                   viewMode={viewMode}
+                  onDelete={deleteBrief}
                 />
               )
             ))}
@@ -286,49 +287,42 @@ const Collection = () => {
           </div>
         )}
 
-        {/* Collection Statistics - Only shown in development */}
-        {process.env.NODE_ENV === 'development' && (
-          <Card className="mt-8">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <BarChart3 className="h-5 w-5 text-blue-500" />
-                <h4 className="text-lg font-semibold text-gray-900">Statistiques des collections</h4>
+        {/* Collection Statistics */}
+        <Card className="mt-8">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <BarChart3 className="h-5 w-5 text-blue-500" />
+              <h4 className="text-lg font-semibold text-gray-900">Aperçu des collections</h4>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">{profiles.length}</div>
+                <div className="text-sm text-gray-600">Candidats sauvegardés</div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{profiles.length}</div>
-                  <div className="text-sm text-gray-600">Candidats sauvegardés</div>
-                </div>
-                
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">{briefs.length}</div>
-                  <div className="text-sm text-gray-600">Briefs IA créés</div>
-                </div>
-                
-                <div className="text-center p-4 bg-purple-50 rounded-lg">
-                  <div className="text-2xl font-bold text-purple-600">{filteredItems().length}</div>
-                  <div className="text-sm text-gray-600">Éléments visibles</div>
-                </div>
-                
-                <div className="text-center p-4 bg-orange-50 rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600">{selectedCategory}</div>
-                  <div className="text-sm text-gray-600">Catégorie active</div>
-                </div>
+              <div className="text-center p-4 bg-green-50 rounded-lg">
+                <div className="text-2xl font-bold text-green-600">{briefs.length}</div>
+                <div className="text-sm text-gray-600">Briefs IA créés</div>
               </div>
               
-              {searchTerm && (
-                <>
-                  <Separator className="my-4" />
-                  <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>Recherche active :</span>
-                    <Badge variant="outline">"{searchTerm}"</Badge>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        )}
+              <div className="text-center p-4 bg-purple-50 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600">{filteredItems().length}</div>
+                <div className="text-sm text-gray-600">Éléments visibles</div>
+              </div>
+            </div>
+            
+            {searchTerm && (
+              <>
+                <Separator className="my-4" />
+                <div className="flex items-center justify-between text-sm text-gray-600">
+                  <span>Recherche active :</span>
+                  <Badge variant="outline">"{searchTerm}"</Badge>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

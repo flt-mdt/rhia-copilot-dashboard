@@ -149,6 +149,36 @@ export const useAIBriefs = () => {
     }
   };
 
+  const deleteBrief = async (briefId: string) => {
+    if (!user) return;
+
+    try {
+      console.log('Deleting brief:', briefId);
+      
+      const { error } = await supabase
+        .from('ai_briefs')
+        .delete()
+        .eq('id', briefId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      await fetchBriefs();
+      
+      toast({
+        title: "Succès",
+        description: "Brief supprimé avec succès"
+      });
+    } catch (error) {
+      console.error('Error deleting brief:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le brief",
+        variant: "destructive"
+      });
+    }
+  };
+
   const generateJobPosting = async (briefId: string) => {
     if (!user) return null;
 
@@ -209,6 +239,7 @@ export const useAIBriefs = () => {
     briefs,
     loading,
     saveBrief,
+    deleteBrief,
     generateJobPosting,
     refetch: fetchBriefs
   };
