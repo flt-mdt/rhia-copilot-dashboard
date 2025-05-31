@@ -1,4 +1,5 @@
 
+import api from '@/api/api';
 import React, { useState } from 'react';
 import { ExternalLink, Save, Download, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -33,13 +34,29 @@ interface CandidateCardProps {
 const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, searchQuery }) => {
   const { toast } = useToast();
   const { t } = useLanguage();
-  const { saveProfile, isSaving } = useHunterProfiles();
+  const { isSaving } = useHunterProfiles();
   const [isSaved, setIsSaved] = useState(false);
 
-  const handleSaveCandidate = () => {
-    saveProfile({ candidate, searchQuery });
+  const handleSaveCandidate = async () => {
+  try {
+    await api.patch(`/results/${candidate.id}`, {
+      is_shortlisted: true
+    });
     setIsSaved(true);
-  };
+    toast({
+      title: t('hunter.saved'),
+      description: t('hunter.profileMarkedAsSaved'),
+    });
+  } catch (error) {
+    console.error('Erreur API PATCH:', error);
+    toast({
+      title: t('hunter.saveError'),
+      description: t('hunter.profileSaveFailed'),
+      variant: 'destructive',
+    });
+  }
+};
+
 
   const handleImportCandidate = () => {
     toast({
