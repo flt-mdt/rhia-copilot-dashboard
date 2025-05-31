@@ -33,4 +33,5 @@ export const hunterTranslations = {
   import: "Importer",
   availability: "Disponibilité",
   new: "Nouveau",
+  saved: "Sauvegardé",
 };

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ExternalLink, Save, Download, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -36,7 +37,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, searchQuery })
   const handleSaveCandidate = () => {
     toast({
       title: t('hunter.profileSaved'),
-      description: `${candidate.name} a été ajouté à vos favoris.`,
+      description: t('hunter.addedToShortlist').replace('{name}', candidate.name),
     });
     setIsSaved(true);
   };
@@ -63,7 +64,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, searchQuery })
               {isSaved && (
                 <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
                   <Check className="mr-1 h-3 w-3" />
-                  Sauvegardé
+                  {t('hunter.saved')}
                 </Badge>
               )}
             </div>
@@ -112,7 +113,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, searchQuery })
             disabled={isSaved}
           >
             {isSaved ? (
-              <><Check className="mr-1 h-4 w-4" /> Sauvegardé</>
+              <><Check className="mr-1 h-4 w-4" /> {t('hunter.saved')}</>
             ) : (
               <><Save className="mr-1 h-4 w-4" /> {t('hunter.save')}</>
             )}
