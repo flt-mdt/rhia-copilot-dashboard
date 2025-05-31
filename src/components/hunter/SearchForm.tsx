@@ -43,20 +43,6 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
     }
   };
 
-  const normalizeCandidates = (apiCandidates: any[]) => {
-    return apiCandidates.map(c => ({
-      id: c.id ?? c.profile_url,
-      name: c.name,
-      source: c.source,
-      location: c.location,
-      languages: c.languages || [],
-      availability: c.availability,
-      profileUrl: c.profile_url,
-      matchScore: c.match_score ?? c.score ?? 0,
-      skills: (c.skills || []).map((s: string) => ({ name: s }))
-    }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('pending');
