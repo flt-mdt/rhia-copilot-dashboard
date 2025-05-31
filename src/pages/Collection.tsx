@@ -5,7 +5,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Users, FileText, Grid, List, Filter } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Search, Users, FileText, Grid, List, Filter, BarChart3 } from 'lucide-react';
 import { useHunterProfiles } from '@/hooks/useHunterProfiles';
 import { useAIBriefs } from '@/hooks/useAIBriefs';
 import CollectionCard from '@/components/collection/CollectionCard';
@@ -220,16 +221,48 @@ const Collection = () => {
           </div>
         )}
 
-        {/* Debug Information */}
+        {/* Collection Statistics - Only shown in development */}
         {process.env.NODE_ENV === 'development' && (
-          <div className="mt-8 p-4 bg-gray-100 rounded-lg">
-            <h4 className="font-semibold mb-2">Debug Information:</h4>
-            <p>Profiles: {profiles.length}</p>
-            <p>Briefs: {briefs.length}</p>
-            <p>Selected category: {selectedCategory}</p>
-            <p>Filtered items: {filteredItems().length}</p>
-            <p>Loading: {isLoading ? 'Yes' : 'No'}</p>
-          </div>
+          <Card className="mt-8">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="h-5 w-5 text-blue-500" />
+                <h4 className="text-lg font-semibold text-gray-900">Statistiques des collections</h4>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">{profiles.length}</div>
+                  <div className="text-sm text-gray-600">Candidats sauvegardés</div>
+                </div>
+                
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">{briefs.length}</div>
+                  <div className="text-sm text-gray-600">Briefs IA créés</div>
+                </div>
+                
+                <div className="text-center p-4 bg-purple-50 rounded-lg">
+                  <div className="text-2xl font-bold text-purple-600">{filteredItems().length}</div>
+                  <div className="text-sm text-gray-600">Éléments visibles</div>
+                </div>
+                
+                <div className="text-center p-4 bg-orange-50 rounded-lg">
+                  <div className="text-2xl font-bold text-orange-600">{selectedCategory}</div>
+                  <div className="text-sm text-gray-600">Catégorie active</div>
+                </div>
+              </div>
+              
+              {searchTerm && (
+                <>
+                  <Separator className="my-4" />
+                  <div className="flex items-center justify-between text-sm text-gray-600">
+                    <span>Recherche active :</span>
+                    <Badge variant="outline">"{searchTerm}"</Badge>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>
