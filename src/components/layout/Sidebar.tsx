@@ -105,6 +105,24 @@ const Sidebar = () => {
           </li>
           <li>
             <Link 
+              to="/collection" 
+              className={`flex items-center gap-3 px-4 py-3 ${
+                isActive("/collection") 
+                ? "bg-blue-50 text-primary font-medium" 
+                : "text-textGray hover:bg-gray-100"
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" 
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="m5 15-4-4 3-3 4 4"></path>
+                <path d="m6 18-4-4-4-4"></path>
+              </svg>
+              Collection
+            </Link>
+          </li>
+          <li>
+            <Link 
               to="/brief" 
               className={`flex items-center gap-3 px-4 py-3 ${
                 isActive("/brief") 
