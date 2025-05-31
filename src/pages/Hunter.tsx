@@ -25,20 +25,6 @@ const Hunter = () => {
   });
   const [hasSearched, setHasSearched] = useState(false);
 
-  const normalizeCandidates = (apiCandidates: any[]): HunterCandidate[] => {
-    return apiCandidates.map(c => ({
-      id: c.id ?? c.profile_url,
-      name: c.name,
-      source: c.source,
-      location: c.location,
-      languages: c.languages || [],
-      availability: c.availability,
-      profileUrl: c.profile_url,
-      matchScore: c.match_score ?? c.score ?? 0,
-      skills: (c.skills || []).map((s: string) => ({ name: s }))
-    }));
-  };
-
   const handleSearch = (criteria: string) => {
     setIsLoading(true);
     setHasSearched(true);
