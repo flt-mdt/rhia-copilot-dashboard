@@ -115,6 +115,12 @@ const App: React.FC = () => {
                     <Hunter />
                   </ProtectedRoute>
                 } />
+                <Route path="/collection" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <Collection />
+                  </ProtectedRoute>
+                } />
                 <Route path="/saved-profiles" element={
                   <ProtectedRoute>
                     <Sidebar />
