@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -91,9 +92,8 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
   const fetchResults = async () => {
     try {
       const res = await api.get(`/results/${userId}?min_score=80&limit=10`);
-      const candidates = normalizeCandidates(res.data.candidates);
       if (typeof onResults === 'function') {
-        onResults(candidates);
+        onResults(res.data.candidates);
       }
       setStatus('done');
     } catch (err) {

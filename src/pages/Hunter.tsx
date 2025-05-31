@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -32,14 +33,13 @@ const Hunter = () => {
   };
 
   const handleResults = (apiCandidates: any[]) => {
-    const normalized = normalizeCandidates(apiCandidates);
-    setRawCandidates(normalized);
-    applyFilters(filters, normalized);
+    setRawCandidates(apiCandidates);
+    applyFilters(filters, apiCandidates);
     setIsLoading(false);
 
     toast({
       title: t('hunter.searchCompleted'),
-      description: t('hunter.candidatesFound').replace('{count}', normalized.length.toString()),
+      description: t('hunter.candidatesFound').replace('{count}', apiCandidates.length.toString()),
     });
   };
 
