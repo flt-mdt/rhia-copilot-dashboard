@@ -1,7 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare } from "lucide-react";
+import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare, Folders } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -112,12 +111,7 @@ const Sidebar = () => {
                 : "text-textGray hover:bg-gray-100"
               }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" 
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="m5 15-4-4 3-3 4 4"></path>
-                <path d="m6 18-4-4-4-4"></path>
-              </svg>
+              <Folders size={20} />
               Collection
             </Link>
           </li>
