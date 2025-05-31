@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Trash2, ExternalLink, MessageSquare, Eye, Search } from 'lucide-react';
+import { Trash2, ExternalLink, MessageSquare, Eye, Search, Filter, SortAsc, SortDesc } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Header from '@/components/layout/Header';
 import { useHunterProfiles, SavedHunterProfile } from '@/hooks/useHunterProfiles';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,12 +19,59 @@ const SavedProfiles = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProfile, setSelectedProfile] = useState<SavedHunterProfile | null>(null);
   const [notes, setNotes] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'contacted' | 'shortlisted' | 'none'>('all');
+  const [sourceFilter, setSourceFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'name' | 'created_at' | 'match_score'>('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  const filteredProfiles = profiles.filter(profile =>
-    profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    profile.source.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    profile.location?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  console.log('Search term:', searchTerm);
+  console.log('Status filter:', statusFilter);
+  console.log('Source filter:', sourceFilter);
+  console.log('Sort by:', sortBy, sortOrder);
+
+  // Get unique sources for filter
+  const uniqueSources = Array.from(new Set(profiles.map(profile => profile.source))).filter(Boolean);
+
+  const filteredProfiles = profiles.filter(profile => {
+    const searchLower = searchTerm.toLowerCase();
+    
+    // Search filter
+    const matchesSearch = !searchTerm || (
+      profile.name.toLowerCase().includes(searchLower) ||
+      profile.source.toLowerCase().includes(searchLower) ||
+      profile.location?.toLowerCase().includes(searchLower) ||
+      profile.skills?.some(skill => skill.toLowerCase().includes(searchLower)) ||
+      profile.search_query?.toLowerCase().includes(searchLower) ||
+      profile.notes?.toLowerCase().includes(searchLower)
+    );
+
+    // Status filter
+    const matchesStatus = statusFilter === 'all' || 
+      (statusFilter === 'contacted' && profile.is_contacted) ||
+      (statusFilter === 'shortlisted' && profile.is_shortlisted) ||
+      (statusFilter === 'none' && !profile.is_contacted && !profile.is_shortlisted);
+
+    // Source filter
+    const matchesSource = sourceFilter === 'all' || profile.source === sourceFilter;
+
+    return matchesSearch && matchesStatus && matchesSource;
+  }).sort((a, b) => {
+    let comparison = 0;
+    
+    switch (sortBy) {
+      case 'name':
+        comparison = a.name.localeCompare(b.name);
+        break;
+      case 'created_at':
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        break;
+      case 'match_score':
+        comparison = (a.match_score || 0) - (b.match_score || 0);
+        break;
+    }
+    
+    return sortOrder === 'asc' ? comparison : -comparison;
+  });
 
   const handleUpdateNotes = (profile: SavedHunterProfile) => {
     updateProfile({
@@ -48,6 +96,16 @@ const SavedProfiles = () => {
     });
   };
 
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('all');
+    setSourceFilter('all');
+    setSortBy('created_at');
+    setSortOrder('desc');
+  };
+
+  const hasActiveFilters = searchTerm || statusFilter !== 'all' || sourceFilter !== 'all';
+
   if (isLoading) {
     return (
       <div className="ml-64 p-8 bg-[#F9FAFB]">
@@ -66,30 +124,138 @@ const SavedProfiles = () => {
       <Header title="Profils sauvegardés" />
       
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Rechercher par nom, source ou localisation..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+        {/* Advanced Search and Filters */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            {/* Search */}
+            <div className="lg:col-span-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Rechercher par nom, source, localisation, compétence..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+                {searchTerm && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                  >
+                    ×
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Status Filter */}
+            <div className="lg:col-span-2">
+              <Select value={statusFilter} onValueChange={(value: any) => setStatusFilter(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Statut" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les statuts</SelectItem>
+                  <SelectItem value="contacted">Contactés</SelectItem>
+                  <SelectItem value="shortlisted">Shortlistés</SelectItem>
+                  <SelectItem value="none">Sans statut</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Source Filter */}
+            <div className="lg:col-span-2">
+              <Select value={sourceFilter} onValueChange={setSourceFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Source" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes les sources</SelectItem>
+                  {uniqueSources.map(source => (
+                    <SelectItem key={source} value={source}>
+                      {source}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Sort */}
+            <div className="lg:col-span-2">
+              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Trier par" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="created_at">Date d'ajout</SelectItem>
+                  <SelectItem value="name">Nom</SelectItem>
+                  <SelectItem value="match_score">Score de match</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Sort Order & Clear */}
+            <div className="lg:col-span-2 flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                className="flex-1"
+              >
+                {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+              </Button>
+              {hasActiveFilters && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClearFilters}
+                  className="flex-1"
+                >
+                  Effacer
+                </Button>
+              )}
+            </div>
           </div>
+
+          {/* Results Info */}
+          {(hasActiveFilters || profiles.length > 0) && (
+            <div className="mt-4 pt-4 border-t">
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <span>
+                  {filteredProfiles.length} / {profiles.length} profil(s) affiché(s)
+                </span>
+                {hasActiveFilters && (
+                  <div className="flex items-center gap-2">
+                    <span>Filtres actifs:</span>
+                    {searchTerm && <Badge variant="outline">"{searchTerm}"</Badge>}
+                    {statusFilter !== 'all' && <Badge variant="outline">{statusFilter}</Badge>}
+                    {sourceFilter !== 'all' && <Badge variant="outline">{sourceFilter}</Badge>}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {filteredProfiles.length === 0 ? (
           <Card className="text-center p-8">
             <CardContent>
               <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                {searchTerm ? 'Aucun profil trouvé' : 'Aucun profil sauvegardé'}
+                {hasActiveFilters ? 'Aucun profil trouvé' : 'Aucun profil sauvegardé'}
               </h3>
-              <p className="text-gray-500">
-                {searchTerm 
-                  ? 'Essayez avec d\'autres mots-clés de recherche.'
+              <p className="text-gray-500 mb-4">
+                {hasActiveFilters 
+                  ? 'Essayez de modifier vos critères de recherche ou effacez les filtres.'
                   : 'Commencez par sauvegarder des profils depuis la page Hunter.'
                 }
               </p>
+              {hasActiveFilters && (
+                <Button variant="outline" onClick={handleClearFilters}>
+                  Effacer tous les filtres
+                </Button>
+              )}
             </CardContent>
           </Card>
         ) : (

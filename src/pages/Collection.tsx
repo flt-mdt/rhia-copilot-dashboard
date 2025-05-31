@@ -24,6 +24,8 @@ const Collection = () => {
 
   console.log('Profiles loaded:', profiles.length);
   console.log('Briefs loaded:', briefs.length);
+  console.log('Search term:', searchTerm);
+  console.log('Selected category:', selectedCategory);
 
   const collections = [
     {
@@ -60,22 +62,46 @@ const Collection = () => {
     } else if (selectedCategory === 'briefs') {
       allItems = briefs.map(brief => ({ ...brief, type: 'brief' }));
     }
-    // When selectedCategory is 'all', don't show individual items, only collection cards
 
+    // Apply search filter when a specific category is selected and there's a search term
     if (searchTerm && selectedCategory !== 'all') {
       allItems = allItems.filter(item => {
+        const searchLower = searchTerm.toLowerCase();
+        
         if (item.type === 'candidate') {
-          return item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                 item.skills?.some((skill: string) => skill.toLowerCase().includes(searchTerm.toLowerCase()));
+          return (
+            item.name?.toLowerCase().includes(searchLower) ||
+            item.location?.toLowerCase().includes(searchLower) ||
+            item.source?.toLowerCase().includes(searchLower) ||
+            item.skills?.some((skill: string) => skill.toLowerCase().includes(searchLower)) ||
+            item.search_query?.toLowerCase().includes(searchLower)
+          );
         } else if (item.type === 'brief') {
-          return item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                 item.hard_skills?.some((skill: string) => skill.toLowerCase().includes(searchTerm.toLowerCase()));
+          return (
+            item.title?.toLowerCase().includes(searchLower) ||
+            item.project_context?.toLowerCase().includes(searchLower) ||
+            item.location?.toLowerCase().includes(searchLower) ||
+            item.hard_skills?.some((skill: string) => skill.toLowerCase().includes(searchLower)) ||
+            item.soft_skills?.some((skill: string) => skill.toLowerCase().includes(searchLower)) ||
+            item.missions?.some((mission: string) => mission.toLowerCase().includes(searchLower))
+          );
         }
         return false;
       });
     }
 
+    console.log('Filtered items:', allItems.length);
     return allItems;
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm('');
+  };
+
+  const handleCategoryChange = (category: 'all' | 'candidates' | 'briefs') => {
+    setSelectedCategory(category);
+    // Clear search when changing category
+    setSearchTerm('');
   };
 
   const isLoading = profilesLoading || briefsLoading;
@@ -95,24 +121,41 @@ const Collection = () => {
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                placeholder="Rechercher dans vos collections..."
+                placeholder={
+                  selectedCategory === 'candidates' 
+                    ? "Rechercher candidats par nom, compétence, localisation..."
+                    : selectedCategory === 'briefs'
+                    ? "Rechercher briefs par titre, compétence, mission..."
+                    : "Sélectionnez une catégorie pour rechercher..."
+                }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
+                disabled={selectedCategory === 'all'}
               />
+              {searchTerm && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearSearch}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                >
+                  ×
+                </Button>
+              )}
             </div>
             
             <div className="flex gap-2">
               <Button
                 variant={selectedCategory === 'all' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('all')}
+                onClick={() => handleCategoryChange('all')}
                 size="sm"
               >
                 Tout
               </Button>
               <Button
                 variant={selectedCategory === 'candidates' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('candidates')}
+                onClick={() => handleCategoryChange('candidates')}
                 size="sm"
               >
                 <Users className="h-4 w-4 mr-1" />
@@ -120,7 +163,7 @@ const Collection = () => {
               </Button>
               <Button
                 variant={selectedCategory === 'briefs' ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory('briefs')}
+                onClick={() => handleCategoryChange('briefs')}
                 size="sm"
               >
                 <FileText className="h-4 w-4 mr-1" />
@@ -128,23 +171,40 @@ const Collection = () => {
               </Button>
             </div>
 
-            <div className="flex gap-1">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'outline'}
-                onClick={() => setViewMode('grid')}
-                size="sm"
-              >
-                <Grid className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'outline'}
-                onClick={() => setViewMode('list')}
-                size="sm"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
+            {selectedCategory !== 'all' && (
+              <div className="flex gap-1">
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'outline'}
+                  onClick={() => setViewMode('grid')}
+                  size="sm"
+                >
+                  <Grid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'outline'}
+                  onClick={() => setViewMode('list')}
+                  size="sm"
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
+
+          {/* Search Results Info */}
+          {searchTerm && selectedCategory !== 'all' && (
+            <div className="mt-4 pt-4 border-t">
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <span>
+                  {filteredItems().length} résultat(s) trouvé(s) pour "{searchTerm}"
+                  {selectedCategory === 'candidates' ? ' dans les candidats' : ' dans les briefs'}
+                </span>
+                <Button variant="outline" size="sm" onClick={handleClearSearch}>
+                  Effacer la recherche
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Collections Overview - Only shown when "all" is selected */}
@@ -203,18 +263,23 @@ const Collection = () => {
               )}
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {selectedCategory === 'candidates' ? 'Aucun candidat trouvé' : 'Aucun brief trouvé'}
+              {searchTerm 
+                ? 'Aucun résultat trouvé' 
+                : selectedCategory === 'candidates' 
+                  ? 'Aucun candidat trouvé' 
+                  : 'Aucun brief trouvé'
+              }
             </h3>
             <p className="text-gray-500 mb-4">
               {searchTerm 
-                ? "Aucun résultat ne correspond à votre recherche" 
+                ? "Essayez avec d'autres mots-clés ou effacez la recherche" 
                 : selectedCategory === 'candidates'
                   ? "Commencez par sauvegarder des candidats depuis Hunter"
                   : "Commencez par créer des briefs avec l'IA"
               }
             </p>
             {searchTerm && (
-              <Button variant="outline" onClick={() => setSearchTerm('')}>
+              <Button variant="outline" onClick={handleClearSearch}>
                 Effacer la recherche
               </Button>
             )}
