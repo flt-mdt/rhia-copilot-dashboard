@@ -628,6 +628,36 @@ export type Database = {
         }
         Relationships: []
       }
+      searches: {
+        Row: {
+          brief_text: string
+          created_at: string | null
+          id: string
+          language: string
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          brief_text: string
+          created_at?: string | null
+          id?: string
+          language: string
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          brief_text?: string
+          created_at?: string | null
+          id?: string
+          language?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       skills: {
         Row: {
           category: string | null
