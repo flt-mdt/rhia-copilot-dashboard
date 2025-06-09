@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
@@ -22,11 +21,21 @@ export interface AIBrief {
   updated_at: string;
 }
 
+const API_BASE = process.env.REACT_APP_API_BASE || 'https://hunter-backend-w5ju.onrender.com/api';
+
 export const useAIBriefs = () => {
   const [briefs, setBriefs] = useState<AIBrief[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { toast } = useToast();
+
+  const getHeaders = () => {
+    const token = user?.access_token;
+    return {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    };
+  };
 
   const fetchBriefs = async () => {
     if (!user) {
@@ -36,26 +45,25 @@ export const useAIBriefs = () => {
 
     setLoading(true);
     try {
-      console.log('Fetching briefs for user:', user.id);
+      console.log('Fetching briefs from API:', `${API_BASE}/brief`);
       
-      const { data, error } = await supabase
-        .from('ai_briefs')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+      const response = await fetch(`${API_BASE}/brief`, {
+        method: 'GET',
+        headers: getHeaders()
+      });
 
-      if (error) {
-        console.error('Error fetching briefs:', error);
-        throw error;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      const data = await response.json();
       console.log('Fetched briefs data:', data);
 
-      // Transformer les données pour correspondre à notre interface
+      // Transform API response to match our interface
       const transformedData: AIBrief[] = (data || []).map((item: any) => ({
         id: item.id,
         user_id: item.user_id || '',
-        title: item.title,
+        title: item.titre || item.title,
         missions: item.missions || [],
         hard_skills: item.hard_skills || [],
         soft_skills: item.soft_skills || [],
@@ -84,15 +92,62 @@ export const useAIBriefs = () => {
     }
   };
 
+  const fetchBrief = async (briefId: string): Promise<AIBrief | null> => {
+    if (!user) return null;
+
+    try {
+      console.log('Fetching brief:', briefId);
+      
+      const response = await fetch(`${API_BASE}/brief/${briefId}`, {
+        method: 'GET',
+        headers: getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Transform single brief response
+      const transformedBrief: AIBrief = {
+        id: data.id,
+        user_id: data.user_id || '',
+        title: data.titre || data.title,
+        missions: data.missions || [],
+        hard_skills: data.hard_skills || [],
+        soft_skills: data.soft_skills || [],
+        project_context: data.project_context,
+        location: data.location,
+        constraints: data.constraints || [],
+        conversation_data: data.conversation_data,
+        brief_summary: data.brief_summary,
+        is_complete: data.is_complete || false,
+        generated_job_posting_id: data.generated_job_posting_id,
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString()
+      };
+
+      return transformedBrief;
+    } catch (error) {
+      console.error('Error fetching brief:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger le brief",
+        variant: "destructive"
+      });
+      return null;
+    }
+  };
+
   const saveBrief = async (briefData: Partial<AIBrief>) => {
     if (!user) return null;
 
     try {
       console.log('Saving brief:', briefData);
       
-      const dataToInsert = {
-        user_id: user.id,
-        title: briefData.title,
+      const payload = {
+        titre: briefData.title,
         missions: briefData.missions || [],
         hard_skills: briefData.hard_skills || [],
         soft_skills: briefData.soft_skills || [],
@@ -105,31 +160,28 @@ export const useAIBriefs = () => {
         generated_job_posting_id: briefData.generated_job_posting_id
       };
 
-      let result;
+      let response;
       if (briefData.id) {
         // Update existing brief
-        const { data, error } = await supabase
-          .from('ai_briefs')
-          .update(dataToInsert)
-          .eq('id', briefData.id)
-          .eq('user_id', user.id)
-          .select()
-          .single();
-        
-        if (error) throw error;
-        result = data;
+        response = await fetch(`${API_BASE}/brief/${briefData.id}`, {
+          method: 'PUT',
+          headers: getHeaders(),
+          body: JSON.stringify(payload)
+        });
       } else {
-        // Insert new brief
-        const { data, error } = await supabase
-          .from('ai_briefs')
-          .insert(dataToInsert)
-          .select()
-          .single();
-        
-        if (error) throw error;
-        result = data;
+        // Create new brief
+        response = await fetch(`${API_BASE}/brief`, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify(payload)
+        });
       }
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
       await fetchBriefs();
       
       toast({
@@ -155,13 +207,14 @@ export const useAIBriefs = () => {
     try {
       console.log('Deleting brief:', briefId);
       
-      const { error } = await supabase
-        .from('ai_briefs')
-        .delete()
-        .eq('id', briefId)
-        .eq('user_id', user.id);
+      const response = await fetch(`${API_BASE}/brief/${briefId}`, {
+        method: 'DELETE',
+        headers: getHeaders()
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       await fetchBriefs();
       
@@ -183,35 +236,18 @@ export const useAIBriefs = () => {
     if (!user) return null;
 
     try {
-      const brief = briefs.find(b => b.id === briefId);
-      if (!brief) throw new Error('Brief not found');
+      console.log('Generating job posting for brief:', briefId);
+      
+      const response = await fetch(`${API_BASE}/brief/${briefId}/generate`, {
+        method: 'POST',
+        headers: getHeaders()
+      });
 
-      const jobPostingData = {
-        user_id: user.id,
-        title: brief.title || 'Nouveau poste',
-        description: brief.project_context || '',
-        requirements: [...brief.hard_skills, ...brief.soft_skills],
-        missions: brief.missions,
-        hard_skills: brief.hard_skills,
-        soft_skills: brief.soft_skills,
-        location: brief.location || '',
-        source_brief_id: briefId
-      };
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-      const { data, error } = await supabase
-        .from('job_offers_drafts')
-        .insert(jobPostingData)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Update brief with generated job posting ID
-      await supabase
-        .from('ai_briefs')
-        .update({ generated_job_posting_id: data.id })
-        .eq('id', briefId);
-
+      const data = await response.json();
       await fetchBriefs();
 
       toast({
@@ -241,6 +277,7 @@ export const useAIBriefs = () => {
     saveBrief,
     deleteBrief,
     generateJobPosting,
+    fetchBrief,
     refetch: fetchBriefs
   };
 };

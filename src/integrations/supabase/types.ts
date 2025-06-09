@@ -78,6 +78,82 @@ export type Database = {
           },
         ]
       }
+      brief: {
+        Row: {
+          created_at: string
+          id: string
+          missions_embedding: string | null
+          slots: Json
+          status: string
+          titre: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          missions_embedding?: string | null
+          slots?: Json
+          status?: string
+          titre: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          missions_embedding?: string | null
+          slots?: Json
+          status?: string
+          titre?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brief_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brief_messages: {
+        Row: {
+          brief_id: string
+          created_at: string
+          id: string
+          message: string
+          sender: string
+          tokens: number | null
+        }
+        Insert: {
+          brief_id: string
+          created_at?: string
+          id?: string
+          message: string
+          sender: string
+          tokens?: number | null
+        }
+        Update: {
+          brief_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          sender?: string
+          tokens?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brief_messages_brief_id_fkey"
+            columns: ["brief_id"]
+            isOneToOne: false
+            referencedRelation: "brief"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       candidate_skills: {
         Row: {
           candidate_id: string | null
@@ -360,6 +436,48 @@ export type Database = {
             columns: ["job_posting_id"]
             isOneToOne: false
             referencedRelation: "job_postings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_descriptions: {
+        Row: {
+          brief_id: string
+          content_md: string
+          created_at: string
+          file_url: string | null
+          generated_by: string | null
+          id: string
+        }
+        Insert: {
+          brief_id: string
+          content_md: string
+          created_at?: string
+          file_url?: string | null
+          generated_by?: string | null
+          id?: string
+        }
+        Update: {
+          brief_id?: string
+          content_md?: string
+          created_at?: string
+          file_url?: string | null
+          generated_by?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_descriptions_brief_id_fkey"
+            columns: ["brief_id"]
+            isOneToOne: false
+            referencedRelation: "brief"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_descriptions_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -720,6 +838,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          hashed_password: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          hashed_password?: string | null
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          hashed_password?: string | null
+          id?: string
+        }
+        Relationships: []
       }
     }
     Views: {

@@ -1,16 +1,18 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Lightbulb, FileText, Briefcase, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import InteractiveBriefSummary from '@/components/brief/InteractiveBriefSummary';
 import ChatMessage from '@/components/brief/ChatMessage';
 import SuggestionCard from '@/components/brief/SuggestionCard';
 import { useAIBriefs } from '@/hooks/useAIBriefs';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+
+const API_BASE = process.env.REACT_APP_API_BASE || 'https://hunter-backend-w5ju.onrender.com/api';
 
 interface Message {
   id: string;
@@ -39,8 +41,10 @@ interface BriefCompletionState {
 
 const Brief = () => {
   const navigate = useNavigate();
+  const { briefId } = useParams();
+  const { user } = useAuth();
   const { toast } = useToast();
-  const { saveBrief, generateJobPosting } = useAIBriefs();
+  const { saveBrief, generateJobPosting, fetchBrief } = useAIBriefs();
   
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -53,7 +57,7 @@ const Brief = () => {
   
   const [currentMessage, setCurrentMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [currentBriefId, setCurrentBriefId] = useState<string | null>(null);
+  const [currentBriefId, setCurrentBriefId] = useState<string | null>(briefId || null);
   
   const [briefData, setBriefData] = useState<BriefData>({
     missions: [],
@@ -83,6 +87,38 @@ const Brief = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Load existing brief if briefId is provided
+  useEffect(() => {
+    const loadBrief = async () => {
+      if (currentBriefId && fetchBrief) {
+        const brief = await fetchBrief(currentBriefId);
+        if (brief) {
+          // Populate messages from conversation_data
+          if (brief.conversation_data && Array.isArray(brief.conversation_data)) {
+            setMessages(brief.conversation_data);
+          }
+          
+          // Populate briefData
+          setBriefData({
+            missions: brief.missions || [],
+            hardSkills: brief.hard_skills || [],
+            softSkills: brief.soft_skills || [],
+            context: brief.project_context || '',
+            location: brief.location || '',
+            constraints: brief.constraints || []
+          });
+          
+          // Populate completionState
+          if (brief.brief_summary) {
+            setCompletionState(brief.brief_summary);
+          }
+        }
+      }
+    };
+
+    loadBrief();
+  }, [currentBriefId, fetchBrief]);
+
   const suggestions = [
     "Quel est le niveau d'expérience requis pour ce poste ?",
     "Avez-vous défini une fourchette salariale pour ce recrutement ?",
@@ -99,6 +135,14 @@ const Brief = () => {
     }));
   };
 
+  const getHeaders = () => {
+    const token = user?.access_token;
+    return {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    };
+  };
+
   const handleSendMessage = async () => {
     if (!currentMessage.trim()) return;
 
@@ -113,32 +157,106 @@ const Brief = () => {
     setCurrentMessage('');
     setIsLoading(true);
 
-    // Simulate AI response (in real app, this would call OpenAI API)
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: generateAIResponse(currentMessage),
-        isAI: true,
-        timestamp: new Date()
+    try {
+      // If no currentBriefId, create a brief first
+      if (!currentBriefId) {
+        const briefToSave = {
+          title: 'Nouveau brief',
+          missions: briefData.missions,
+          hard_skills: briefData.hardSkills,
+          soft_skills: briefData.softSkills,
+          project_context: briefData.context,
+          location: briefData.location,
+          constraints: briefData.constraints,
+          conversation_data: [...messages, userMessage],
+          brief_summary: completionState,
+          is_complete: false
+        };
+
+        const savedBrief = await saveBrief(briefToSave);
+        if (savedBrief) {
+          setCurrentBriefId(savedBrief.id);
+        }
+      }
+
+      // Start SSE stream for AI response
+      const token = user?.access_token;
+      const eventSource = new EventSource(`${API_BASE}/chat/${currentBriefId || 'temp'}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      let aiMessageContent = '';
+      const aiMessageId = (Date.now() + 1).toString();
+
+      eventSource.onmessage = (event) => {
+        const data = event.data;
+        if (data && data !== '[DONE]') {
+          aiMessageContent += data;
+          
+          // Update the AI message in real-time
+          setMessages(prev => {
+            const existingAIMessageIndex = prev.findIndex(m => m.id === aiMessageId);
+            const aiMessage: Message = {
+              id: aiMessageId,
+              content: aiMessageContent,
+              isAI: true,
+              timestamp: new Date()
+            };
+
+            if (existingAIMessageIndex >= 0) {
+              const updated = [...prev];
+              updated[existingAIMessageIndex] = aiMessage;
+              return updated;
+            } else {
+              return [...prev, aiMessage];
+            }
+          });
+        }
       };
-      
-      setMessages(prev => [...prev, aiResponse]);
-      updateBriefData(currentMessage);
+
+      eventSource.onerror = (error) => {
+        console.error('SSE error:', error);
+        eventSource.close();
+        setIsLoading(false);
+        
+        // Fallback to simple response if SSE fails
+        if (!aiMessageContent) {
+          const fallbackMessage: Message = {
+            id: aiMessageId,
+            content: "Je vous remercie pour ces informations. Pouvez-vous me donner plus de détails sur vos attentes pour ce poste ?",
+            isAI: true,
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, fallbackMessage]);
+        }
+      };
+
+      eventSource.addEventListener('end', () => {
+        eventSource.close();
+        setIsLoading(false);
+        updateBriefData(currentMessage);
+      });
+
+      // Close connection after 30 seconds as fallback
+      setTimeout(() => {
+        if (eventSource.readyState === EventSource.OPEN) {
+          eventSource.close();
+          setIsLoading(false);
+        }
+      }, 30000);
+
+    } catch (error) {
+      console.error('Error sending message:', error);
       setIsLoading(false);
-    }, 1500);
-  };
-
-  const generateAIResponse = (userInput: string): string => {
-    // Simple simulation - in real app, this would use OpenAI
-    if (userInput.toLowerCase().includes('développeur') || userInput.toLowerCase().includes('dev')) {
-      return "Parfait ! Vous cherchez un développeur. Pouvez-vous me préciser :\n\n• Quel niveau d'expérience : junior (0-2 ans), confirmé (3-5 ans), ou senior (5+ ans) ?\n• Quelles technologies sont prioritaires pour votre projet ?\n• S'agit-il d'un poste en CDI, freelance, ou stage ?\n• Le télétravail est-il possible ?";
+      toast({
+        title: "Erreur",
+        description: "Impossible d'envoyer le message",
+        variant: "destructive"
+      });
     }
-    
-    if (userInput.toLowerCase().includes('product') || userInput.toLowerCase().includes('produit')) {
-      return "Excellent ! Un profil Product. Aidez-moi à comprendre :\n\n• Cherchez-vous plutôt un Product Manager (stratégie, roadmap) ou un Product Owner (collaboration équipe tech) ?\n• Quelle est la taille de l'équipe produit actuelle ?\n• Sur quel type de produit : B2B, B2C, SaaS, mobile app ?\n• Y a-t-il des méthodes de travail spécifiques (Agile, Scrum) ?";
-    }
-
-    return "Merci pour ces précisions ! Pour mieux cerner votre besoin, pouvez-vous me parler :\n\n• Du contexte de votre équipe actuelle\n• Des principales missions que cette personne devra accomplir\n• Des contraintes particulières (budget, timing, localisation)\n\nN'hésitez pas à détailler, même les aspects qui vous semblent évidents !";
   };
 
   const updateBriefData = (userInput: string) => {
