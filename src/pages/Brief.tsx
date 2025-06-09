@@ -12,7 +12,7 @@ import { useAIBriefs } from '@/hooks/useAIBriefs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
-const API_BASE = process.env.REACT_APP_API_BASE || 'https://hunter-backend-w5ju.onrender.com/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://hunter-backend-w5ju.onrender.com/api';
 
 interface Message {
   id: string;
@@ -42,7 +42,7 @@ interface BriefCompletionState {
 const Brief = () => {
   const navigate = useNavigate();
   const { briefId } = useParams();
-  const { user } = useAuth();
+  const { session } = useAuth();
   const { toast } = useToast();
   const { saveBrief, generateJobPosting, fetchBrief } = useAIBriefs();
   
@@ -135,14 +135,6 @@ const Brief = () => {
     }));
   };
 
-  const getHeaders = () => {
-    const token = user?.access_token;
-    return {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    };
-  };
-
   const handleSendMessage = async () => {
     if (!currentMessage.trim()) return;
 
@@ -179,78 +171,85 @@ const Brief = () => {
         }
       }
 
-      // Start SSE stream for AI response
-      const token = user?.access_token;
-      const eventSource = new EventSource(`${API_BASE}/chat/${currentBriefId || 'temp'}`, {
+      // Send message to chat endpoint and handle response
+      const token = session?.access_token;
+      const response = await fetch(`${API_BASE}/chat/${currentBriefId || 'temp'}`, {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ content: currentMessage })
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Handle response as text stream
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('No response body');
+      }
 
       let aiMessageContent = '';
       const aiMessageId = (Date.now() + 1).toString();
 
-      eventSource.onmessage = (event) => {
-        const data = event.data;
-        if (data && data !== '[DONE]') {
-          aiMessageContent += data;
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = new TextDecoder().decode(value);
+          const lines = chunk.split('\n');
           
-          // Update the AI message in real-time
-          setMessages(prev => {
-            const existingAIMessageIndex = prev.findIndex(m => m.id === aiMessageId);
-            const aiMessage: Message = {
-              id: aiMessageId,
-              content: aiMessageContent,
-              isAI: true,
-              timestamp: new Date()
-            };
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6).trim();
+              if (data && data !== '[DONE]') {
+                aiMessageContent += data;
+                
+                // Update the AI message in real-time
+                setMessages(prev => {
+                  const existingAIMessageIndex = prev.findIndex(m => m.id === aiMessageId);
+                  const aiMessage: Message = {
+                    id: aiMessageId,
+                    content: aiMessageContent,
+                    isAI: true,
+                    timestamp: new Date()
+                  };
 
-            if (existingAIMessageIndex >= 0) {
-              const updated = [...prev];
-              updated[existingAIMessageIndex] = aiMessage;
-              return updated;
-            } else {
-              return [...prev, aiMessage];
+                  if (existingAIMessageIndex >= 0) {
+                    const updated = [...prev];
+                    updated[existingAIMessageIndex] = aiMessage;
+                    return updated;
+                  } else {
+                    return [...prev, aiMessage];
+                  }
+                });
+              }
             }
-          });
+          }
         }
-      };
-
-      eventSource.onerror = (error) => {
-        console.error('SSE error:', error);
-        eventSource.close();
-        setIsLoading(false);
-        
-        // Fallback to simple response if SSE fails
-        if (!aiMessageContent) {
-          const fallbackMessage: Message = {
-            id: aiMessageId,
-            content: "Je vous remercie pour ces informations. Pouvez-vous me donner plus de détails sur vos attentes pour ce poste ?",
-            isAI: true,
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, fallbackMessage]);
-        }
-      };
-
-      eventSource.addEventListener('end', () => {
-        eventSource.close();
+      } finally {
+        reader.releaseLock();
         setIsLoading(false);
         updateBriefData(currentMessage);
-      });
-
-      // Close connection after 30 seconds as fallback
-      setTimeout(() => {
-        if (eventSource.readyState === EventSource.OPEN) {
-          eventSource.close();
-          setIsLoading(false);
-        }
-      }, 30000);
+      }
 
     } catch (error) {
       console.error('Error sending message:', error);
       setIsLoading(false);
+      
+      // Fallback response if API fails
+      const fallbackMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "Je vous remercie pour ces informations. Pouvez-vous me donner plus de détails sur vos attentes pour ce poste ?",
+        isAI: true,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, fallbackMessage]);
+      
       toast({
         title: "Erreur",
         description: "Impossible d'envoyer le message",

@@ -21,16 +21,16 @@ export interface AIBrief {
   updated_at: string;
 }
 
-const API_BASE = process.env.REACT_APP_API_BASE || 'https://hunter-backend-w5ju.onrender.com/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://hunter-backend-w5ju.onrender.com/api';
 
 export const useAIBriefs = () => {
   const [briefs, setBriefs] = useState<AIBrief[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { session } = useAuth();
   const { toast } = useToast();
 
   const getHeaders = () => {
-    const token = user?.access_token;
+    const token = session?.access_token;
     return {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`
@@ -38,7 +38,7 @@ export const useAIBriefs = () => {
   };
 
   const fetchBriefs = async () => {
-    if (!user) {
+    if (!session) {
       setLoading(false);
       return;
     }
@@ -93,7 +93,7 @@ export const useAIBriefs = () => {
   };
 
   const fetchBrief = async (briefId: string): Promise<AIBrief | null> => {
-    if (!user) return null;
+    if (!session) return null;
 
     try {
       console.log('Fetching brief:', briefId);
@@ -141,7 +141,7 @@ export const useAIBriefs = () => {
   };
 
   const saveBrief = async (briefData: Partial<AIBrief>) => {
-    if (!user) return null;
+    if (!session) return null;
 
     try {
       console.log('Saving brief:', briefData);
@@ -202,7 +202,7 @@ export const useAIBriefs = () => {
   };
 
   const deleteBrief = async (briefId: string) => {
-    if (!user) return;
+    if (!session) return;
 
     try {
       console.log('Deleting brief:', briefId);
@@ -233,7 +233,7 @@ export const useAIBriefs = () => {
   };
 
   const generateJobPosting = async (briefId: string) => {
-    if (!user) return null;
+    if (!session) return null;
 
     try {
       console.log('Generating job posting for brief:', briefId);
@@ -269,7 +269,7 @@ export const useAIBriefs = () => {
 
   useEffect(() => {
     fetchBriefs();
-  }, [user]);
+  }, [session]);
 
   return {
     briefs,
