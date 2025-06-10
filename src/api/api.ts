@@ -7,7 +7,6 @@ const api = axios.create({
   timeout: 10000
 });
 
-// Intercepteur pour injecter le token dynamique AVANT chaque requête
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     // Récupération du JWT
@@ -22,18 +21,13 @@ api.interceptors.request.use(
       }
     }
 
-    // Ajout du token au bon format pour Axios v1.x+
-    if (token) {
-      // Si config.headers est de type AxiosHeaders, utiliser set()
-      if (
-        typeof config.headers?.set === "function"
-      ) {
-        config.headers.set("Authorization", `Bearer ${token}`);
-      } else if (config.headers) {
-        // Sinon, on force sur l'objet headers
-        (config.headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
+    if (token && config.headers) {
+      // Priorité à la méthode set() (AxiosHeaders)
+      if (typeof (config.headers as any).set === "function") {
+        (config.headers as any).set("Authorization", `Bearer ${token}`);
       } else {
-        config.headers = { Authorization: `Bearer ${token}` };
+        // Fallback : objet classique
+        (config.headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
       }
     }
     return config;
