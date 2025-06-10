@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/popover";
 import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from "@/hooks/useNotifications";
 import NotificationItem from "@/components/notifications/NotificationItem";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface HeaderProps {
   title: string;
@@ -17,6 +18,7 @@ interface HeaderProps {
 const Header = ({ title }: HeaderProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const isSettingsPage = location.pathname === "/settings";
   const { notifications, unreadCount } = useNotifications();
   const markAsReadMutation = useMarkNotificationAsRead();
@@ -30,16 +32,19 @@ const Header = ({ title }: HeaderProps) => {
     markAllAsReadMutation.mutate();
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
     <div className="flex justify-between items-center mb-8">
       <div className="flex items-center gap-4">
         <h1 className="text-2xl font-bold">{title}</h1>
-        <button 
-          onClick={() => navigate('/subscription')}
-          className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
-        >
-          Request a demo
-        </button>
       </div>
       <div className="flex items-center gap-4">
         {!isSettingsPage && (
@@ -109,13 +114,13 @@ const Header = ({ title }: HeaderProps) => {
           </PopoverContent>
         </Popover>
         <button 
-          onClick={() => navigate('/login')}
+          onClick={handleSignOut}
           className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" className="text-white">
-            <path fill="currentColor" d="M5 12l5-5v3h8v4h-8v3l-5-5z"/>
+            <path fill="currentColor" d="M16 17l5-5-5-5M21 12H9"/>
           </svg>
-          Sign in
+          Sign out
         </button>
       </div>
     </div>
