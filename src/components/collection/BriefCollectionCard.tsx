@@ -151,7 +151,7 @@ const BriefCollectionCard: React.FC<BriefCollectionCardProps> = ({
           <span>{formattedDate}</span>
         </div>
         
-        {brief.hardSkills && brief.hard_skills.length > 0 && (
+        {brief.hardSkills && brief.hardSkills.length > 0 && (
           <div className="mb-3">
             <div className="flex flex-wrap gap-1">
               {brief.hardSkills.slice(0, 2).map((skill, index) => (
