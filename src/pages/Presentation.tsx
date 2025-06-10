@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -139,29 +138,19 @@ const Presentation = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
               onClick={() => navigate('/subscription')}
-              className="flex items-center gap-2 text-blue-50 bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-lg cursor-pointer whitespace-nowrap font-semibold text-base leading-6 tracking-tighter transition-colors"
-              style={{
-                fontSynthesis: 'initial',
-                fontSynthesisWeight: 'none',
-                WebkitFontSmoothing: 'antialiased',
-                color: 'rgb(233 247 255)',
-                fontWeight: 600,
-                fontSize: '16px',
-                lineHeight: '24px',
-                letterSpacing: '-.32px',
-                '--pulse-color': '#93C5FD',
-                '--duration': '1.5s'
-              }}
+              className="text-blue-50 bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-lg cursor-pointer whitespace-nowrap font-semibold text-base leading-6 tracking-tighter transition-colors"
             >
-              <Zap className="h-5 w-5" />
-              Testez gratuitement maintenant
+              <div className="s-flex s-items-center s-gap-2 s-label-base">
+                <Zap className="h-5 w-5" />
+                Testez gratuitement maintenant
+              </div>
             </button>
             <button 
               onClick={() => navigate('/subscription')}
-              className="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors ring-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 border border-gray-300 text-gray-700 bg-white hover:text-gray-700 hover:bg-gray-100 hover:border-gray-400 active:bg-gray-200 disabled:text-gray-400 disabled:border-gray-200 h-12 px-4 py-2 rounded-2xl gap-2.5 shrink-0 text-lg font-medium"
+              className="s-inline-flex s-items-center s-justify-center s-whitespace-nowrap s-ring-offset-background s-transition-colors s-ring-inset focus-visible:s-outline-none focus-visible:s-ring-2 focus-visible:s-ring-ring focus-visible:s-ring-offset-0 s-border s-border-gray-300 s-text-gray-700 s-bg-white hover:s-text-gray-700 hover:s-bg-gray-100 hover:s-border-gray-400 active:s-bg-gray-200 disabled:s-text-gray-400 disabled:s-border-gray-200 s-h-12 s-px-4 s-py-2 s-rounded-2xl s-gap-2.5 s-shrink-0 s-text-lg s-font-medium"
               aria-label="Planifier une démo"
             >
-              <div className="flex items-center gap-2">
+              <div className="s-flex s-items-center s-gap-2 s-label-base">
                 Planifier une démo
               </div>
             </button>
