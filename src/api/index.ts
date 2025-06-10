@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 // Un client Axios pour chaque API, avec baseURL dynamique depuis l'env
@@ -12,31 +11,8 @@ export const briefApi = axios.create({
   timeout: 10000
 });
 
-// Fonction utilitaire d’injection du JWT
+// Fonction utilitaire d’injection du JWT (déclarée UNE SEULE FOIS)
 const injectTokenInterceptor = (apiInstance: typeof hunterApi) => {
-  apiInstance.interceptors.request.use((config) => {
-    const userData = localStorage.getItem("supabase.auth.token");
-    let token: string | null = null;
-    if (userData) {
-      try {
-        const parsed = JSON.parse(userData);
-        token = parsed.currentSession?.access_token || parsed.access_token;
-      } catch {
-        token = null;
-      }
-    }
-    if (token && config.headers) {
-      if (typeof (config.headers as any).set === "function") {
-        (config.headers as any).set("Authorization", `Bearer ${token}`);
-      } else {
-        (config.headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
-      }
-    }
-    return config;
-  });
-};
-
-const injectTokenInterceptor = (apiInstance: typeof briefApi) => {
   apiInstance.interceptors.request.use((config) => {
     const userData = localStorage.getItem("supabase.auth.token");
     let token: string | null = null;
