@@ -39,6 +39,78 @@ interface BriefCompletionState {
   constraints: boolean;
 }
 
+// Helper pour faire un POST SSE en TypeScript avec fetch
+export async function streamAIResponse({
+  briefId,
+  message,
+  onData,
+  onComplete,
+  onError,
+}: {
+  briefId: string,
+  message: string,
+  onData: (chunk: string) => void,
+  onComplete: () => void,
+  onError?: (err: Error) => void,
+}) {
+  // Récupère le token dynamiquement (ex : depuis useAuth, ou localStorage si besoin)
+  const userData = localStorage.getItem("supabase.auth.token");
+  let token: string | null = null;
+  if (userData) {
+    try {
+      const parsed = JSON.parse(userData);
+      token = parsed.currentSession?.access_token || parsed.access_token;
+    } catch {
+      token = null;
+    }
+  }
+
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
+  const response = await fetch(`${API_BASE}/chat/${briefId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
+    body: JSON.stringify({ content: message }),
+  });
+
+  if (!response.body) {
+    onError?.(new Error("Pas de flux de réponse SSE du backend."));
+    return;
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      // On découpe par lignes SSE
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+      for (const line of lines) {
+        if (line.startsWith("data:")) {
+          const chunk = line.replace(/^data:\s?/, "");
+          if (chunk === "[END]") {
+            onComplete();
+            return;
+          }
+          onData(chunk);
+        }
+      }
+    }
+  } catch (err) {
+    onError?.(err as Error);
+  }
+  onComplete();
+}
+
+
 const Brief = () => {
   const navigate = useNavigate();
   const { briefId } = useParams();
@@ -136,106 +208,60 @@ const Brief = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!currentMessage.trim()) return;
+  if (!currentMessage.trim()) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content: currentMessage,
-      isAI: false,
-      timestamp: new Date()
-    };
+  const userMessage: Message = {
+    id: Date.now().toString(),
+    content: currentMessage,
+    isAI: false,
+    timestamp: new Date()
+  };
 
-    setMessages(prev => [...prev, userMessage]);
-    setCurrentMessage('');
-    setIsLoading(true);
+  setMessages(prev => [...prev, userMessage]);
+  setCurrentMessage('');
+  setIsLoading(true);
 
-    try {
-      // If no currentBriefId, create a brief first
-      if (!currentBriefId) {
-        const briefToSave = {
-          title: 'Nouveau brief',
-          missions: briefData.missions,
-          hard_skills: briefData.hardSkills,
-          soft_skills: briefData.softSkills,
-          project_context: briefData.context,
-          location: briefData.location,
-          constraints: briefData.constraints,
-          conversation_data: [...messages, userMessage],
-          brief_summary: completionState,
-          is_complete: false
-        };
+  // Assure-toi que le brief existe (création auto si premier message)
+  let briefId = currentBriefId;
+  if (!briefId) {
+    const savedBrief = await saveBrief({
+      title: 'Brief en cours',
+      // ...autres champs vides si besoin
+    });
+    briefId = savedBrief?.id;
+    setCurrentBriefId(briefId);
+  }
+  if (!briefId) {
+    setIsLoading(false);
+    return;
+  }
 
-        const savedBrief = await saveBrief(briefToSave);
-        if (savedBrief) {
-          setCurrentBriefId(savedBrief.id);
+  // Streaming IA
+  let aiContent = "";
+  await streamAIResponse({
+    briefId,
+    message: userMessage.content,
+    onData: (chunk) => {
+      aiContent += chunk;
+      setMessages(prev => {
+        // On remplace le dernier message IA ou on en crée un nouveau
+        const last = prev[prev.length - 1];
+        if (last && last.isAI) {
+          // On concatène les morceaux pour l’effet streaming
+          return [...prev.slice(0, -1), { ...last, content: aiContent, timestamp: new Date() }];
+        } else {
+          // Première réponse IA pour ce message
+          return [...prev, { id: Date.now().toString() + "-ai", content: aiContent, isAI: true, timestamp: new Date() }];
         }
-      }
-
-      // Send message to chat endpoint and handle response
-      const token = session?.access_token;
-      const response = await fetch(`${API_BASE}/chat/${currentBriefId || 'temp'}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ content: currentMessage })
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Handle response as text stream
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('No response body');
-      }
-
-      let aiMessageContent = '';
-      const aiMessageId = (Date.now() + 1).toString();
-
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = new TextDecoder().decode(value);
-          const lines = chunk.split('\n');
-          
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6).trim();
-              if (data && data !== '[DONE]') {
-                aiMessageContent += data;
-                
-                // Update the AI message in real-time
-                setMessages(prev => {
-                  const existingAIMessageIndex = prev.findIndex(m => m.id === aiMessageId);
-                  const aiMessage: Message = {
-                    id: aiMessageId,
-                    content: aiMessageContent,
-                    isAI: true,
-                    timestamp: new Date()
-                  };
-
-                  if (existingAIMessageIndex >= 0) {
-                    const updated = [...prev];
-                    updated[existingAIMessageIndex] = aiMessage;
-                    return updated;
-                  } else {
-                    return [...prev, aiMessage];
-                  }
-                });
-              }
-            }
-          }
-        }
-      } finally {
-        reader.releaseLock();
-        setIsLoading(false);
-        updateBriefData(currentMessage);
-      }
+    },
+    onComplete: () => setIsLoading(false),
+    onError: (err) => {
+      setIsLoading(false);
+      // Optionnel : toast d’erreur
+    }
+  });
+};
 
     } catch (error) {
       console.error('Error sending message:', error);

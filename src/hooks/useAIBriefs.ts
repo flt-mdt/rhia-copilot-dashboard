@@ -1,9 +1,28 @@
+import { useState, useEffect } from "react";
+import api from "@/api"; // Ton axios configuré avec l'intercepteur JWT
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-
+// Types stricts pour une correspondance totale front/back
 export interface AIBrief {
+  id: string;
+  user_id: string;
+  title: string | null;
+  missions: string[];
+  hardSkills: string[];
+  softSkills: string[];
+  project_context: string | null;
+  location: string | null;
+  constraints: string[];
+  conversation_data: any;
+  brief_summary: any;
+  is_complete: boolean;
+  generated_job_posting_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+type BackendBrief = {
   id: string;
   user_id: string;
   title: string | null;
@@ -19,69 +38,61 @@ export interface AIBrief {
   generated_job_posting_id: string | null;
   created_at: string;
   updated_at: string;
+};
+
+function adaptBriefFromBackend(b: BackendBrief): AIBrief {
+  return {
+    id: b.id,
+    user_id: b.user_id,
+    title: b.title,
+    missions: b.missions ?? [],
+    hardSkills: b.hard_skills ?? [],
+    softSkills: b.soft_skills ?? [],
+    project_context: b.project_context ?? "",
+    location: b.location ?? "",
+    constraints: b.constraints ?? [],
+    conversation_data: b.conversation_data ?? [],
+    brief_summary: b.brief_summary ?? {},
+    is_complete: b.is_complete ?? false,
+    generated_job_posting_id: b.generated_job_posting_id,
+    created_at: b.created_at ?? new Date().toISOString(),
+    updated_at: b.updated_at ?? new Date().toISOString()
+  };
 }
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://hunter-backend-w5ju.onrender.com/api';
+function adaptBriefToBackend(b: Partial<AIBrief>) {
+  return {
+    title: b.title,
+    missions: b.missions,
+    hard_skills: b.hardSkills,
+    soft_skills: b.softSkills,
+    project_context: b.project_context,
+    location: b.location,
+    constraints: b.constraints,
+    conversation_data: b.conversation_data,
+    brief_summary: b.brief_summary,
+    is_complete: b.is_complete,
+    generated_job_posting_id: b.generated_job_posting_id
+  };
+}
 
 export const useAIBriefs = () => {
   const [briefs, setBriefs] = useState<AIBrief[]>([]);
   const [loading, setLoading] = useState(true);
-  const { session } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
 
-  const getHeaders = () => {
-    const token = session?.access_token;
-    return {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    };
-  };
-
+  // Chargement de tous les briefs
   const fetchBriefs = async () => {
-    if (!session) {
+    if (!user) {
       setLoading(false);
       return;
     }
-
     setLoading(true);
     try {
-      console.log('Fetching briefs from API:', `${API_BASE}/brief`);
-      
-      const response = await fetch(`${API_BASE}/brief`, {
-        method: 'GET',
-        headers: getHeaders()
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('Fetched briefs data:', data);
-
-      // Transform API response to match our interface
-      const transformedData: AIBrief[] = (data || []).map((item: any) => ({
-        id: item.id,
-        user_id: item.user_id || '',
-        title: item.titre || item.title,
-        missions: item.missions || [],
-        hard_skills: item.hard_skills || [],
-        soft_skills: item.soft_skills || [],
-        project_context: item.project_context,
-        location: item.location,
-        constraints: item.constraints || [],
-        conversation_data: item.conversation_data,
-        brief_summary: item.brief_summary,
-        is_complete: item.is_complete || false,
-        generated_job_posting_id: item.generated_job_posting_id,
-        created_at: item.created_at || new Date().toISOString(),
-        updated_at: item.updated_at || new Date().toISOString()
-      }));
-
-      console.log('Transformed briefs:', transformedData);
-      setBriefs(transformedData);
+      const res = await api.get<BackendBrief[]>("/brief");
+      setBriefs(res.data.map(adaptBriefFromBackend));
     } catch (error) {
-      console.error('Error fetching briefs:', error);
       toast({
         title: "Erreur",
         description: "Impossible de charger les briefs",
@@ -92,106 +103,45 @@ export const useAIBriefs = () => {
     }
   };
 
-  const fetchBrief = async (briefId: string): Promise<AIBrief | null> => {
-    if (!session) return null;
-
+  // Chargement d'un brief par ID (utile pour page détail, édition)
+  const fetchBrief = async (briefId: string) => {
+    if (!user) return null;
     try {
-      console.log('Fetching brief:', briefId);
-      
-      const response = await fetch(`${API_BASE}/brief/${briefId}`, {
-        method: 'GET',
-        headers: getHeaders()
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Transform single brief response
-      const transformedBrief: AIBrief = {
-        id: data.id,
-        user_id: data.user_id || '',
-        title: data.titre || data.title,
-        missions: data.missions || [],
-        hard_skills: data.hard_skills || [],
-        soft_skills: data.soft_skills || [],
-        project_context: data.project_context,
-        location: data.location,
-        constraints: data.constraints || [],
-        conversation_data: data.conversation_data,
-        brief_summary: data.brief_summary,
-        is_complete: data.is_complete || false,
-        generated_job_posting_id: data.generated_job_posting_id,
-        created_at: data.created_at || new Date().toISOString(),
-        updated_at: data.updated_at || new Date().toISOString()
-      };
-
-      return transformedBrief;
+      const res = await api.get<BackendBrief>(`/brief/${briefId}`);
+      return adaptBriefFromBackend(res.data);
     } catch (error) {
-      console.error('Error fetching brief:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de charger le brief",
+        description: "Impossible de charger ce brief",
         variant: "destructive"
       });
       return null;
     }
   };
 
+  // Création ou update d'un brief (POST ou PATCH selon présence d'id)
   const saveBrief = async (briefData: Partial<AIBrief>) => {
-    if (!session) return null;
-
+    if (!user) return null;
     try {
-      console.log('Saving brief:', briefData);
-      
-      const payload = {
-        titre: briefData.title,
-        missions: briefData.missions || [],
-        hard_skills: briefData.hard_skills || [],
-        soft_skills: briefData.soft_skills || [],
-        project_context: briefData.project_context,
-        location: briefData.location,
-        constraints: briefData.constraints || [],
-        conversation_data: briefData.conversation_data,
-        brief_summary: briefData.brief_summary,
-        is_complete: briefData.is_complete || false,
-        generated_job_posting_id: briefData.generated_job_posting_id
-      };
-
-      let response;
+      let res;
       if (briefData.id) {
-        // Update existing brief
-        response = await fetch(`${API_BASE}/brief/${briefData.id}`, {
-          method: 'PUT',
-          headers: getHeaders(),
-          body: JSON.stringify(payload)
-        });
+        res = await api.patch<BackendBrief>(
+          `/brief/${briefData.id}`,
+          adaptBriefToBackend(briefData)
+        );
       } else {
-        // Create new brief
-        response = await fetch(`${API_BASE}/brief`, {
-          method: 'POST',
-          headers: getHeaders(),
-          body: JSON.stringify(payload)
-        });
+        res = await api.post<BackendBrief>(
+          `/brief`,
+          adaptBriefToBackend(briefData)
+        );
       }
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
       await fetchBriefs();
-      
       toast({
         title: "Succès",
         description: "Brief sauvegardé avec succès"
       });
-
-      return result;
+      return adaptBriefFromBackend(res.data);
     } catch (error) {
-      console.error('Error saving brief:', error);
       toast({
         title: "Erreur",
         description: "Impossible de sauvegarder le brief",
@@ -201,29 +151,17 @@ export const useAIBriefs = () => {
     }
   };
 
+  // Suppression d'un brief
   const deleteBrief = async (briefId: string) => {
-    if (!session) return;
-
+    if (!user) return;
     try {
-      console.log('Deleting brief:', briefId);
-      
-      const response = await fetch(`${API_BASE}/brief/${briefId}`, {
-        method: 'DELETE',
-        headers: getHeaders()
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      await api.delete(`/brief/${briefId}`);
       await fetchBriefs();
-      
       toast({
         title: "Succès",
         description: "Brief supprimé avec succès"
       });
     } catch (error) {
-      console.error('Error deleting brief:', error);
       toast({
         title: "Erreur",
         description: "Impossible de supprimer le brief",
@@ -232,32 +170,18 @@ export const useAIBriefs = () => {
     }
   };
 
+  // Génération de la fiche de poste à partir d'un brief
   const generateJobPosting = async (briefId: string) => {
-    if (!session) return null;
-
+    if (!user) return null;
     try {
-      console.log('Generating job posting for brief:', briefId);
-      
-      const response = await fetch(`${API_BASE}/brief/${briefId}/generate`, {
-        method: 'POST',
-        headers: getHeaders()
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const res = await api.post(`/brief/${briefId}/generate`);
       await fetchBriefs();
-
       toast({
         title: "Succès",
         description: "Fiche de poste générée avec succès"
       });
-
-      return data;
+      return res.data;
     } catch (error) {
-      console.error('Error generating job posting:', error);
       toast({
         title: "Erreur",
         description: "Impossible de générer la fiche de poste",
@@ -269,15 +193,17 @@ export const useAIBriefs = () => {
 
   useEffect(() => {
     fetchBriefs();
-  }, [session]);
+    // eslint-disable-next-line
+  }, [user?.id]);
 
   return {
     briefs,
     loading,
+    fetchBriefs,
+    fetchBrief,
     saveBrief,
     deleteBrief,
     generateJobPosting,
-    fetchBrief,
     refetch: fetchBriefs
   };
 };
