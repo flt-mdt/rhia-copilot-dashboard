@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import api from "@/api"; // Ton axios configuré avec l'intercepteur JWT
+import api from "@/api/api"; // Ton axios configuré avec l'intercepteur JWT
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
