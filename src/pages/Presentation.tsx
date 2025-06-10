@@ -138,22 +138,14 @@ const Presentation = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
               onClick={() => navigate('/subscription')}
-              className="flex items-center gap-2 text-blue-50 bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-lg cursor-pointer whitespace-nowrap font-semibold text-base leading-6 tracking-tighter transition-colors"
-              style={{
-                fontSynthesis: 'initial',
-                fontSynthesisWeight: 'none',
-                WebkitFontSmoothing: 'antialiased',
-                color: 'rgb(233 247 255)',
-                fontWeight: 600,
-                fontSize: '16px',
-                lineHeight: '24px',
-                letterSpacing: '-.32px',
-                '--pulse-color': '#93C5FD',
-                '--duration': '1.5s'
-              } as React.CSSProperties}
+              className="s-inline-flex s-items-center s-justify-center s-whitespace-nowrap s-ring-offset-background s-transition-colors s-ring-inset focus-visible:s-outline-none focus-visible:s-ring-2 focus-visible:s-ring-ring focus-visible:s-ring-offset-0 dark:focus-visible:s-ring-0 dark:focus-visible:s-ring-offset-1 s-bg-highlight s-text-highlight-50 hover:s-bg-highlight-light active:s-bg-highlight-dark disabled:s-bg-highlight-muted disabled:s-text-highlight-50/60 dark:disabled:s-bg-highlight-muted-night s-h-12 s-px-4 s-py-2 s-rounded-2xl s-label-base s-gap-2.5 s-shrink-0"
+              aria-label="Get started"
+              style={{"--pulse-color": "#93C5FD", "--duration": "1.5s"} as React.CSSProperties}
             >
-              <Zap className="h-5 w-5" />
-              Testez gratuitement maintenant
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24" className="-s-mx-0.5 s-shrink-0 s-h-6 s-w-6">
+                <path fill="currentColor" d="M5.33 15.929a13.064 13.064 0 0 1-.33-2.93c0-5.087 2.903-9.436 7-11.181C16.099 3.563 19 7.912 19 13c0 1.01-.114 1.991-.33 2.929l2.02 1.795a.5.5 0 0 1 .097.631l-2.457 4.096a.5.5 0 0 1-.782.096l-2.255-2.254a1 1 0 0 0-.707-.293H9.415a1 1 0 0 0-.707.293l-2.255 2.254a.5.5 0 0 1-.782-.096l-2.457-4.096a.5.5 0 0 1 .096-.63l2.02-1.796Zm6.67-2.93a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path>
+              </svg>
+              <div className="s-flex s-items-center s-gap-2 s-label-base">Testez gratuitement maintenant</div>
             </button>
             <button 
               onClick={() => navigate('/subscription')}
