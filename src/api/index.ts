@@ -1,17 +1,18 @@
+
 import axios from "axios";
 
 // Un client Axios pour chaque API, avec baseURL dynamique depuis l'env
-export const hunterApi = axios.create({
-  baseURL: import.meta.env.VITE_API_HUNTER_URL,
-  timeout: 10000
-});
-
 export const briefApi = axios.create({
   baseURL: import.meta.env.VITE_API_BRIEF_URL,
   timeout: 10000
 });
 
-// Fonction utilitaire d’injection du JWT (déclarée UNE SEULE FOIS)
+export const hunterApi = axios.create({
+  baseURL: import.meta.env.VITE_API_HUNTER_URL,
+  timeout: 10000
+});
+
+// Fonction utilitaire d'injection du JWT (déclarée UNE SEULE FOIS)
 const injectTokenInterceptor = (apiInstance: typeof hunterApi) => {
   apiInstance.interceptors.request.use((config) => {
     const userData = localStorage.getItem("supabase.auth.token");
@@ -35,5 +36,5 @@ const injectTokenInterceptor = (apiInstance: typeof hunterApi) => {
   });
 };
 
-// Appliquer l’intercepteur à chaque client API créé ci-dessus
+// Appliquer l'intercepteur à chaque client API créé ci-dessus
 [briefApi, hunterApi].forEach(injectTokenInterceptor);

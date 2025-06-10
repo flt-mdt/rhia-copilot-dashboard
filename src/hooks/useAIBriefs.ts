@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import api from "@/api/api"; // Ton axios configuré avec l'intercepteur JWT
+import { briefApi } from "@/api/index"; // Updated import
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -90,7 +90,7 @@ export const useAIBriefs = () => {
     }
     setLoading(true);
     try {
-      const res = await api.get<BackendBrief[]>("/brief");
+      const res = await briefApi.get<BackendBrief[]>("/brief");
       setBriefs(res.data.map(adaptBriefFromBackend));
     } catch (error) {
       toast({
@@ -107,7 +107,7 @@ export const useAIBriefs = () => {
   const fetchBrief = async (briefId: string) => {
     if (!user) return null;
     try {
-      const res = await api.get<BackendBrief>(`/brief/${briefId}`);
+      const res = await briefApi.get<BackendBrief>(`/brief/${briefId}`);
       return adaptBriefFromBackend(res.data);
     } catch (error) {
       toast({
@@ -125,12 +125,12 @@ export const useAIBriefs = () => {
     try {
       let res;
       if (briefData.id) {
-        res = await api.patch<BackendBrief>(
+        res = await briefApi.patch<BackendBrief>(
           `/brief/${briefData.id}`,
           adaptBriefToBackend(briefData)
         );
       } else {
-        res = await api.post<BackendBrief>(
+        res = await briefApi.post<BackendBrief>(
           `/brief`,
           adaptBriefToBackend(briefData)
         );
@@ -155,7 +155,7 @@ export const useAIBriefs = () => {
   const deleteBrief = async (briefId: string) => {
     if (!user) return;
     try {
-      await api.delete(`/brief/${briefId}`);
+      await briefApi.delete(`/brief/${briefId}`);
       await fetchBriefs();
       toast({
         title: "Succès",
@@ -174,7 +174,7 @@ export const useAIBriefs = () => {
   const generateJobPosting = async (briefId: string) => {
     if (!user) return null;
     try {
-      const res = await api.post(`/brief/${briefId}/generate`);
+      const res = await briefApi.post(`/brief/${briefId}/generate`);
       await fetchBriefs();
       toast({
         title: "Succès",

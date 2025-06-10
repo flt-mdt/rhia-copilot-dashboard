@@ -1,10 +1,8 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { HunterCandidate } from '@/components/hunter/CandidateCard';
-import { hunterApi } from "@/api/api";
-
+import { hunterApi } from "@/api/index";
 
 export interface SavedHunterProfile {
   id: string;
