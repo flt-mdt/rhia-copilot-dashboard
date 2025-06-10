@@ -173,7 +173,7 @@ const Brief = () => {
           // Populate briefData
           setBriefData({
             missions: brief.missions || [],
-            hardSkills: brief.hard_skills || [],
+            hardSkills: brief.hardSkills || [],
             softSkills: brief.soft_skills || [],
             context: brief.project_context || '',
             location: brief.location || '',
@@ -304,8 +304,8 @@ const Brief = () => {
       id: currentBriefId,
       title: briefData.missions[0] || 'Nouveau brief',
       missions: briefData.missions,
-      hard_skills: briefData.hardSkills,
-      soft_skills: briefData.softSkills,
+      hardSkills: briefData.hardSkills,
+      softSkills: briefData.softSkills,
       project_context: briefData.context,
       location: briefData.location,
       constraints: briefData.constraints,
