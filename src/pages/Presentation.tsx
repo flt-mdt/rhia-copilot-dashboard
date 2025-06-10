@@ -98,9 +98,9 @@ const Presentation = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-white">
       {/* Header with Sign In */}
-      <div className="bg-white shadow-sm">
+      <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img 
@@ -113,7 +113,7 @@ const Presentation = () => {
           <Button 
             variant="outline" 
             onClick={() => navigate('/login')}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             <LogIn className="h-4 w-4" />
             Se connecter
@@ -121,22 +121,26 @@ const Presentation = () => {
         </div>
       </div>
 
-      {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 animate-fade-in">
-            Bien plus qu'un ATS.
-            <span className="block text-blue-600 mt-2">Une IA Copilote pour les RH modernes.</span>
+      {/* Hero Section - New Clean Style */}
+      <section className="py-24 px-4 bg-white">
+        <div className="max-w-5xl mx-auto text-center">
+          <h1 className="text-5xl md:text-6xl font-normal text-gray-900 mb-8 leading-tight">
+            <span className="font-bold">Bien plus</span> qu'un ATS.
+            <br />
+            Une <span className="font-bold">IA Copilote</span> pour les 
+            <br />
+            <span className="font-bold">RH modernes</span>.
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12 animate-fade-in">
-            Automatisez votre processus de recrutement avec notre IA avancée. 
-            Analysez, sourcez et décidez avec une précision inégalée.
+          <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
+            La plateforme pour automatiser votre processus de recrutement avec notre IA avancée,
+            <br />
+            connectée à vos outils d'entreprise et alimentée par les meilleurs modèles d'IA.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg" 
               onClick={() => navigate('/subscription')}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-medium rounded-lg"
             >
               <Zap className="h-5 w-5 mr-2" />
               Testez gratuitement maintenant
@@ -145,16 +149,16 @@ const Presentation = () => {
               variant="outline" 
               size="lg"
               onClick={() => navigate('/subscription')}
-              className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 text-lg font-semibold"
+              className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg font-medium rounded-lg"
             >
-              Voir les plans tarifaires
+              Planifier une démo
             </Button>
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 text-center">
             <div className="animate-fade-in">
@@ -178,7 +182,7 @@ const Presentation = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -214,7 +218,7 @@ const Presentation = () => {
       </section>
 
       {/* Comparison Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -225,7 +229,7 @@ const Presentation = () => {
             </p>
           </div>
 
-          <div className="bg-gray-50 rounded-2xl p-8">
+          <div className="bg-white rounded-2xl p-8 shadow-sm">
             <div className="grid md:grid-cols-3 gap-8 mb-8">
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-blue-600 mb-2">RHIA Copilot</h3>
@@ -262,7 +266,7 @@ const Presentation = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 px-4">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
