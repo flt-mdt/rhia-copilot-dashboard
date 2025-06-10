@@ -262,28 +262,7 @@ const Brief = () => {
     }
   });
 };
-
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setIsLoading(false);
-      
-      // Fallback response if API fails
-      const fallbackMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: "Je vous remercie pour ces informations. Pouvez-vous me donner plus de détails sur vos attentes pour ce poste ?",
-        isAI: true,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, fallbackMessage]);
-      
-      toast({
-        title: "Erreur",
-        description: "Impossible d'envoyer le message",
-        variant: "destructive"
-      });
-    }
-  };
-
+  
   const updateBriefData = (userInput: string) => {
     // Simple parsing - in real app, this would use AI to extract structured data
     setBriefData(prev => {
