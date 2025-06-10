@@ -109,14 +109,23 @@ const Presentation = () => {
             />
             <span className="font-semibold text-xl text-gray-900">RHIA Copilot</span>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/login')}
-            className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-          >
-            <LogIn className="h-4 w-4" />
-            Se connecter
-          </Button>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => navigate('/subscription')}
+              className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
+            >
+              Request a demo
+            </button>
+            <button 
+              onClick={() => navigate('/login')}
+              className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" className="text-white">
+                <path fill="currentColor" d="M5 12l5-5v3h8v4h-8v3l-5-5z"/>
+              </svg>
+              Sign in
+            </button>
+          </div>
         </div>
       </div>
 

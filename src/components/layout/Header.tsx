@@ -1,7 +1,7 @@
 
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { 
   Popover,
   PopoverContent,
@@ -16,6 +16,7 @@ interface HeaderProps {
 
 const Header = ({ title }: HeaderProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isSettingsPage = location.pathname === "/settings";
   const { notifications, unreadCount } = useNotifications();
   const markAsReadMutation = useMarkNotificationAsRead();
@@ -31,7 +32,15 @@ const Header = ({ title }: HeaderProps) => {
 
   return (
     <div className="flex justify-between items-center mb-8">
-      <h1 className="text-2xl font-bold">{title}</h1>
+      <div className="flex items-center gap-4">
+        <h1 className="text-2xl font-bold">{title}</h1>
+        <button 
+          onClick={() => navigate('/subscription')}
+          className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
+        >
+          Request a demo
+        </button>
+      </div>
       <div className="flex items-center gap-4">
         {!isSettingsPage && (
           <div className="relative">
@@ -99,6 +108,15 @@ const Header = ({ title }: HeaderProps) => {
             </div>
           </PopoverContent>
         </Popover>
+        <button 
+          onClick={() => navigate('/login')}
+          className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" className="text-white">
+            <path fill="currentColor" d="M5 12l5-5v3h8v4h-8v3l-5-5z"/>
+          </svg>
+          Sign in
+        </button>
       </div>
     </div>
   );
