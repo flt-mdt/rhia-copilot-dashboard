@@ -1,5 +1,8 @@
 // src/api.ts
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
+// Exemple :
+export const rhiaApi = axios.create({ baseURL: import.meta.env.VITE_API_RHIA_URL });
+export const hunterApi = axios.create({ baseURL: import.meta.env.VITE_API_HUNTER_URL });
 
 // Création de l'instance Axios
 const api = axios.create({
