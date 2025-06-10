@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -151,7 +150,7 @@ const Presentation = () => {
                 letterSpacing: '-.32px',
                 '--pulse-color': '#93C5FD',
                 '--duration': '1.5s'
-              }}
+              } as React.CSSProperties}
             >
               <Zap className="h-5 w-5" />
               Testez gratuitement maintenant
