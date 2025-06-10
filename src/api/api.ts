@@ -1,7 +1,7 @@
 // src/api.ts
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
+import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 
-// Création de l'instance Axios sans headers Authorization par défaut
+// Création de l'instance Axios
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   timeout: 10000
@@ -9,8 +9,8 @@ const api = axios.create({
 
 // Intercepteur pour injecter le token dynamique AVANT chaque requête
 api.interceptors.request.use(
-  (config: AxiosRequestConfig): AxiosRequestConfig => {
-    // Récupère dynamiquement le JWT Supabase (localStorage ou AuthContext)
+  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+    // Récupération du JWT
     const userData = localStorage.getItem("supabase.auth.token");
     let token: string | null = null;
     if (userData) {
@@ -22,12 +22,20 @@ api.interceptors.request.use(
       }
     }
 
-    // Les headers doivent rester un simple objet string-string pour Axios v1+
-    config.headers = {
-      ...(config.headers as Record<string, string>),
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    };
-
+    // Ajout du token au bon format pour Axios v1.x+
+    if (token) {
+      // Si config.headers est de type AxiosHeaders, utiliser set()
+      if (
+        typeof config.headers?.set === "function"
+      ) {
+        config.headers.set("Authorization", `Bearer ${token}`);
+      } else if (config.headers) {
+        // Sinon, on force sur l'objet headers
+        (config.headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
+      } else {
+        config.headers = { Authorization: `Bearer ${token}` };
+      }
+    }
     return config;
   },
   (error: AxiosError) => Promise.reject(error)
