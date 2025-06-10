@@ -11,3 +11,30 @@ export const hunterApi = axios.create({
   baseURL: import.meta.env.VITE_API_BRIEF_URL,
   timeout: 10000
 });
+
+// Fonction utilitaire d’injection du JWT
+const injectTokenInterceptor = (apiInstance: typeof rhiaApi) => {
+  apiInstance.interceptors.request.use((config) => {
+    const userData = localStorage.getItem("supabase.auth.token");
+    let token: string | null = null;
+    if (userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        token = parsed.currentSession?.access_token || parsed.access_token;
+      } catch {
+        token = null;
+      }
+    }
+    if (token && config.headers) {
+      if (typeof (config.headers as any).set === "function") {
+        (config.headers as any).set("Authorization", `Bearer ${token}`);
+      } else {
+        (config.headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
+      }
+    }
+    return config;
+  });
+};
+
+// Appliquer l’intercepteur à chaque client API créé ci-dessus
+[rhiaApi, hunterApi, adminApi].forEach(injectTokenInterceptor);
