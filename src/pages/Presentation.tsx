@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -121,15 +120,15 @@ const Presentation = () => {
         </div>
       </div>
 
-      {/* Hero Section - New Clean Style */}
+      {/* Hero Section - Updated Style */}
       <section className="py-24 px-4 bg-white">
         <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-normal text-gray-900 mb-8 leading-tight">
-            <span className="font-bold">Bien plus</span> qu'un ATS.
+            Bien plus qu'un ATS.
             <br />
-            Une <span className="font-bold">IA Copilote</span> pour les 
+            Une IA Copilote pour les 
             <br />
-            <span className="font-bold">RH modernes</span>.
+            RH modernes.
           </h1>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
             La plateforme pour automatiser votre processus de recrutement avec notre IA avancée,
@@ -145,14 +144,15 @@ const Presentation = () => {
               <Zap className="h-5 w-5 mr-2" />
               Testez gratuitement maintenant
             </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
+            <button 
               onClick={() => navigate('/subscription')}
-              className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg font-medium rounded-lg"
+              className="inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors ring-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 border border-gray-300 text-gray-700 bg-white hover:text-gray-700 hover:bg-gray-100 hover:border-gray-400 active:bg-gray-200 disabled:text-gray-400 disabled:border-gray-200 h-12 px-4 py-2 rounded-2xl gap-2.5 shrink-0 text-lg font-medium"
+              aria-label="Planifier une démo"
             >
-              Planifier une démo
-            </Button>
+              <div className="flex items-center gap-2">
+                Planifier une démo
+              </div>
+            </button>
           </div>
         </div>
       </section>
