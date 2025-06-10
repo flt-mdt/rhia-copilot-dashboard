@@ -174,7 +174,7 @@ const Brief = () => {
           setBriefData({
             missions: brief.missions || [],
             hardSkills: brief.hardSkills || [],
-            softSkills: brief.soft_skills || [],
+            softSkills: brief.softSkills || [],
             context: brief.project_context || '',
             location: brief.location || '',
             constraints: brief.constraints || []

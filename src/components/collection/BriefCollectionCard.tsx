@@ -151,17 +151,17 @@ const BriefCollectionCard: React.FC<BriefCollectionCardProps> = ({
           <span>{formattedDate}</span>
         </div>
         
-        {brief.hard_skills && brief.hard_skills.length > 0 && (
+        {brief.hardSkills && brief.hard_skills.length > 0 && (
           <div className="mb-3">
             <div className="flex flex-wrap gap-1">
-              {brief.hard_skills.slice(0, 2).map((skill, index) => (
+              {brief.hardSkills.slice(0, 2).map((skill, index) => (
                 <Badge key={index} variant="outline" className="text-xs bg-blue-50 text-blue-700">
                   {skill}
                 </Badge>
               ))}
-              {brief.hard_skills.length > 2 && (
+              {brief.hardSkills.length > 2 && (
                 <Badge variant="outline" className="text-xs bg-gray-50">
-                  +{brief.hard_skills.length - 2}
+                  +{brief.hardSkills.length - 2}
                 </Badge>
               )}
             </div>
