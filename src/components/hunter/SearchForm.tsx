@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
-import api from '@/api/api';
+import api from '@/api/index';
 
 interface SearchFormProps {
   onSearch: (criteria: string) => void;

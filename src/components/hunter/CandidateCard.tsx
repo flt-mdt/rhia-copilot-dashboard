@@ -1,5 +1,5 @@
 
-import api from '@/api/api';
+import api from '@/api/index';
 import React, { useState } from 'react';
 import { ExternalLink, Save, Download, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
