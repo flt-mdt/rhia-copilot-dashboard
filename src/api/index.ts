@@ -25,32 +25,6 @@ const injectTokenInterceptor = (apiInstance: typeof hunterApi) => {
         token = null;
       }
     }
-    if (token && config.headers) {
-      if (typeof (config.headers as any).set === "function") {
-        (config.headers as any).set("Authorization", `Bearer ${token}`);
-      } else {
-        (config.headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
-      }
-    }
-    return config;
-  });
-};
-
-// Appliquer l'intercepteur à chaque client API créé ci-dessus
-[briefApi, hunterApi].forEach(injectTokenInterceptor);
-
-const injectTokenInterceptor = (apiInstance: typeof hunterApi) => {
-  apiInstance.interceptors.request.use((config) => {
-    const userData = localStorage.getItem("supabase.auth.token");
-    let token: string | null = null;
-    if (userData) {
-      try {
-        const parsed = JSON.parse(userData);
-        token = parsed.currentSession?.access_token || parsed.access_token;
-      } catch {
-        token = null;
-      }
-    }
     // DEBUG LOG ICI
     console.log(
       `[${config.url}] Authorization header:`,
@@ -67,3 +41,7 @@ const injectTokenInterceptor = (apiInstance: typeof hunterApi) => {
     return config;
   });
 };
+
+
+// Appliquer l'intercepteur à chaque client API créé ci-dessus
+[briefApi, hunterApi].forEach(injectTokenInterceptor);
