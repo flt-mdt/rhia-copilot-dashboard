@@ -20,7 +20,7 @@ const injectTokenInterceptor = (apiInstance: typeof hunterApi) => {
     if (userData) {
       try {
         const parsed = JSON.parse(userData);
-        token = parsed.currentSession?.access_token || parsed.access_token;
+        token = token = parsed.access_token;
       } catch {
         token = null;
       }
