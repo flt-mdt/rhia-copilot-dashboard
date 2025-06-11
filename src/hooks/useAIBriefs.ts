@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { briefApi } from "@/api/index"; // Updated import
+import { briefApi } from "@/api/api"; // Updated import
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
