@@ -20,17 +20,17 @@ const injectTokenInterceptor = (apiInstance: typeof hunterApi) => {
     if (userData) {
       try {
         const parsed = JSON.parse(userData);
-        token = token = parsed.access_token;
+        // ✅ Prend access_token directement (structure confirmée)
+        token = parsed.access_token;
       } catch {
         token = null;
       }
     }
-    // DEBUG LOG ICI
+    // Log pour debug
     console.log(
       `[${config.url}] Authorization header:`,
       token ? `Bearer ${token.substring(0, 10)}...` : "AUCUN TOKEN"
     );
-
     if (token && config.headers) {
       if (typeof (config.headers as any).set === "function") {
         (config.headers as any).set("Authorization", `Bearer ${token}`);
@@ -41,6 +41,7 @@ const injectTokenInterceptor = (apiInstance: typeof hunterApi) => {
     return config;
   });
 };
+
 
 
 // Appliquer l'intercepteur à chaque client API créé ci-dessus
