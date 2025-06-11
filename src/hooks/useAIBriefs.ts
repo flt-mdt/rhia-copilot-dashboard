@@ -90,7 +90,7 @@ export const useAIBriefs = () => {
     }
     setLoading(true);
     try {
-      const res = await briefApi.get<BackendBrief[]>("/brief");
+      const res = await briefApi.get<BackendBrief[]>("/brief/");
       setBriefs(res.data.map(adaptBriefFromBackend));
     } catch (error) {
       toast({
