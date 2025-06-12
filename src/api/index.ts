@@ -43,16 +43,14 @@ const attachJwtInterceptor = (api: AxiosInstance) => {
     );
 
     if (token) {
-      // Axios v1 : headers est une instance de AxiosHeaders (set) ou un plain object.
-      if (typeof (config.headers as any)?.set === "function") {
-        (config.headers as any).set("Authorization", `Bearer ${token}`);
-      } else {
-        config.headers = {
-          ...(config.headers || {}),
-          Authorization: `Bearer ${token}`
-        };
-      }
-    }
+  if (typeof (config.headers as any)?.set === "function") {
+    // Cas AxiosHeaders
+    (config.headers as any).set("Authorization", `Bearer ${token}`);
+  } else {
+    // ✅ On ajoute la propriété sans écraser l’objet → plus de TS2322
+    (config.headers as Record<string, string>).Authorization = `Bearer ${token}`;
+  }
+}
     return config;
   });
 };
