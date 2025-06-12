@@ -1,48 +1,68 @@
+// src/api/index.ts
+import axios, { AxiosInstance } from "axios";
+import { createClient } from "@supabase/supabase-js";
 
-import axios from "axios";
+/* ------------------------------------------------------------------ */
+/* 1.  Client Supabase : permet de récupérer un JWT toujours à jour   */
+/* ------------------------------------------------------------------ */
+export const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL!,
+  import.meta.env.VITE_SUPABASE_ANON_KEY!
+);
 
-// Un client Axios pour chaque API, avec baseURL dynamique depuis l'env
-export const briefApi = axios.create({
-  baseURL: import.meta.env.VITE_API_BRIEF_URL,
-  timeout: 10000
+/** Renvoie le JWT (ou null) — la promesse se résout très vite (cache interne). */
+async function getAccessToken(): Promise<string | null> {
+  const { data } = await supabase.auth.getSession();      // auto-refresh si expiré
+  return data.session?.access_token ?? null;
+}
+
+/* ------------------------------------------------------------------ */
+/* 2.  Création d’un AxiosInstance par micro-service                  */
+/* ------------------------------------------------------------------ */
+export const briefApi: AxiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_BRIEF_URL, // ex : https://brief-backend…/api
+  timeout: 10_000
 });
 
-export const hunterApi = axios.create({
-  baseURL: import.meta.env.VITE_API_HUNTER_URL,
-  timeout: 10000
+export const hunterApi: AxiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_HUNTER_URL, // ex : https://hunter-backend…/api
+  timeout: 10_000
 });
 
-// Fonction utilitaire d'injection du JWT (déclarée UNE SEULE FOIS)
-const injectTokenInterceptor = (apiInstance: typeof hunterApi) => {
-  apiInstance.interceptors.request.use((config) => {
-    const userData = localStorage.getItem("supabase.auth.token");
-    let token: string | null = null;
-    if (userData) {
-      try {
-        const parsed = JSON.parse(userData);
-        // ✅ Prend access_token directement (structure confirmée)
-        token = parsed.access_token;
-      } catch {
-        token = null;
-      }
-    }
-    // Log pour debug
-    console.log(
-      `[${config.url}] Authorization header:`,
-      token ? `Bearer ${token.substring(0, 10)}...` : "AUCUN TOKEN"
+/* ------------------------------------------------------------------ */
+/* 3.  Intercepteur JWT commun (async → Axios accepte une Promise)    */
+/* ------------------------------------------------------------------ */
+const attachJwtInterceptor = (api: AxiosInstance) => {
+  api.interceptors.request.use(async (config) => {
+    const token = await getAccessToken();
+
+    // 🔎 Debug facultatif
+    console.debug(
+      `[Axios] ${config.method?.toUpperCase()} ${config.baseURL}${config.url} —`,
+      token ? "JWT ajouté" : "PAS DE JWT"
     );
-    if (token && config.headers) {
-      if (typeof (config.headers as any).set === "function") {
+
+    if (token) {
+      // Axios v1 : headers est une instance de AxiosHeaders (set) ou un plain object.
+      if (typeof (config.headers as any)?.set === "function") {
         (config.headers as any).set("Authorization", `Bearer ${token}`);
       } else {
-        (config.headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
+        config.headers = {
+          ...(config.headers || {}),
+          Authorization: `Bearer ${token}`
+        };
       }
     }
     return config;
   });
 };
 
+/* ------------------------------------------------------------------ */
+/* 4.  On monte l’intercepteur sur **chaque** client                   */
+/* ------------------------------------------------------------------ */
+[briefApi, hunterApi].forEach(attachJwtInterceptor);
 
-
-// Appliquer l'intercepteur à chaque client API créé ci-dessus
-[briefApi, hunterApi].forEach(injectTokenInterceptor);
+/* ------------------------------------------------------------------ */
+/* 5.  (Option) export d’un objet util si d’autres modules en ont besoin */
+/* ------------------------------------------------------------------ */
+export const apiClients = { briefApi, hunterApi };
