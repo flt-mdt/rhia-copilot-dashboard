@@ -1,5 +1,4 @@
 
-import api from '@/api/index';
 import React, { useState } from 'react';
 import { ExternalLink, Save, Download, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useHunterProfiles } from '@/hooks/useHunterProfiles';
+import { hunterApi } from '@/api/index';
 
 interface Skill {
   name: string;
@@ -39,7 +39,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, searchQuery })
 
   const handleSaveCandidate = async () => {
   try {
-    await api.patch(`/results/${candidate.id}`, {
+    await hunterApi.patch(`/results/${candidate.id}`, {
       is_shortlisted: true
     });
     setIsSaved(true);

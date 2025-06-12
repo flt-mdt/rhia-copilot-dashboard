@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
-import api from '@/api/index';
+import { hunterApi } from '@/api/index';
 
 interface SearchFormProps {
   onSearch: (criteria: string) => void;
@@ -49,7 +49,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
     setStatus('pending');
 
     try {
-      const res = await api.post('/search', {
+      const res = await hunterApi.post('/search', {
         user_id: userId,
         brief_text: searchCriteria,
         language: 'fr',
@@ -77,14 +77,14 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
 
   const pollSearchStatus = async (id: string) => {
   try {
-    const res = await api.get(`/search/${id}/status`);
+    const res = await hunterApi.get(`/search/${id}/status`);
     const { status, is_terminal } = res.data;
 
     if (status === 'done') {
       fetchResults();
     } else if (is_terminal) {
       setStatus('idle');
-      // Optionnel : afficher un message d’erreur ou “aucun résultat”
+      // Optionnel : afficher un message d'erreur ou "aucun résultat"
     } else {
       setTimeout(() => pollSearchStatus(id), 3000);
     }
@@ -97,7 +97,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
 
   const fetchResults = async () => {
     try {
-      const res = await api.get(`/results/${userId}?min_score=80&limit=10`);
+      const res = await hunterApi.get(`/results/${userId}?min_score=80&limit=10`);
       if (typeof onResults === 'function') {
         onResults(res.data.candidates);
       }
