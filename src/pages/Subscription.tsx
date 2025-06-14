@@ -39,7 +39,7 @@ const Subscription = () => {
         { text: t('subscription.plans.starter.features.accounts'), included: true },
         { text: t('subscription.plans.starter.features.emailSupport'), included: true },
         { text: t('subscription.plans.starter.features.platformAccess'), included: true },
-        { text: t('subscription.plans.starter.features.hrReports'), included: false },
+        { text: t('subscription.plans.starter.features.hrReports'), included: true },
         { text: t('subscription.plans.starter.features.apiIntegration'), included: false },
         { text: t('subscription.plans.starter.features.dedicatedSupport'), included: false },
       ]
@@ -58,7 +58,7 @@ const Subscription = () => {
         { text: t('subscription.plans.pro.features.hrReports'), included: true },
         { text: t('subscription.plans.pro.features.prioritySupport'), included: true },
         { text: t('subscription.plans.pro.features.platformAccess'), included: true },
-        { text: t('subscription.plans.pro.features.apiIntegration'), included: false },
+        { text: t('subscription.plans.pro.features.apiIntegration'), included: true },
         { text: t('subscription.plans.pro.features.dedicatedSupport'), included: false },
       ]
     },
@@ -80,12 +80,6 @@ const Subscription = () => {
         { text: t('subscription.plans.enterprise.features.platformAccess'), included: true },
       ]
     }
-  ];
-
-  const planColors = [
-    { bg: 'bg-blue-50', text: 'text-blue-600', hover: 'hover:bg-blue-100' },
-    { bg: 'bg-green-50', text: 'text-green-600', hover: 'hover:bg-green-100' },
-    { bg: 'bg-indigo-50', text: 'text-indigo-600', hover: 'hover:bg-indigo-100' },
   ];
 
   const handleSubscribe = async (priceId: string, planName: string) => {
@@ -156,12 +150,11 @@ const Subscription = () => {
 
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-3 gap-8">
-          {plans.map((plan, index) => {
-            const colors = planColors[index % planColors.length];
+          {plans.map((plan) => {
             return (
               <div 
                 key={plan.id}
-                className={`rounded-2xl p-8 flex flex-col ${colors.bg}`}
+                className="rounded-2xl p-8 flex flex-col bg-blue-50"
               >
                 <h3 className="text-xl font-bold text-gray-900 mb-4">{plan.name}</h3>
                 
@@ -177,7 +170,7 @@ const Subscription = () => {
                 <div className="space-y-3 mb-10">
                   {plan.features.filter(f => f.included).map((feature, fIndex) => (
                     <div key={fIndex} className="flex items-start gap-3">
-                      <ChevronRight className={`w-5 h-5 flex-shrink-0 mt-0.5 ${colors.text}`} />
+                      <ChevronRight className="w-5 h-5 flex-shrink-0 mt-0.5 text-blue-600" />
                       <span className="text-gray-700">{feature.text}</span>
                     </div>
                   ))}
@@ -186,7 +179,7 @@ const Subscription = () => {
                 <Button 
                   onClick={() => handleSubscribe(plan.priceId, plan.name)}
                   variant="ghost"
-                  className={`mt-auto w-full justify-center h-12 text-md font-semibold ${colors.hover} ${colors.text}`}
+                  className="mt-auto w-full justify-center h-12 text-md font-semibold hover:bg-blue-100 text-blue-600"
                 >
                   Choisir ce plan
                 </Button>

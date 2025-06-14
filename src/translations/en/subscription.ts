@@ -1,4 +1,3 @@
-
 export const subscriptionTranslations = {
   title: "Choose your subscription plan",
   subtitle: "Automate your recruitment process with our advanced AI. Pay only for what you use.",
@@ -21,7 +20,7 @@ export const subscriptionTranslations = {
       features: {
         requests: "100 AI requests",
         accounts: "1 HR account",
-        emailSupport: "Email support",
+        emailSupport: "Standard support",
         platformAccess: "Platform access",
         hrReports: "HR report generation",
         apiIntegration: "API integration",
@@ -37,7 +36,7 @@ export const subscriptionTranslations = {
         hrReports: "HR report generation",
         prioritySupport: "Priority support",
         platformAccess: "Platform access",
-        apiIntegration: "API integration",
+        apiIntegration: "API Access",
         dedicatedSupport: "Dedicated support"
       }
     },
