@@ -27,9 +27,11 @@ import {
   Rocket,
   Globe
 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Presentation = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const advantages = [
     {
@@ -104,15 +106,13 @@ const Presentation = () => {
               onClick={() => navigate('/schedule-demo')}
               className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
             >
-              {/* @ts-ignore */}
-              {require('@/contexts/LanguageContext').useLanguage().t('common.requestADemo')}
+              {t('common.requestADemo')}
             </button>
             <button 
               onClick={() => navigate('/login')}
               className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
             >
-              {/* @ts-ignore */}
-              {require('@/contexts/LanguageContext').useLanguage().t('common.signIn')}
+              {t('common.signIn')}
             </button>
           </div>
         </div>
@@ -141,16 +141,14 @@ const Presentation = () => {
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" className="text-white">
                 <path fill="currentColor" d="M5.33 15.929a13.064 13.064 0 0 1-.33-2.93c0-5.087 2.903-9.436 7-11.181C16.099 3.563 19 7.912 19 13c0 1.01-.114 1.991-.33 2.929l2.02 1.795a.5.5 0 0 1 .097.631l-2.457 4.096a.5.5 0 0 1-.782.096l-2.255-2.254a1 1 0 0 0-.707-.293H9.415a1 1 0 0 0-.707.293l-2.255 2.254a.5.5 0 0 1-.782-.096l-2.457-4.096a.5.5 0 0 1 .096-.63l2.02-1.796Zm6.67-2.93a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path>
               </svg>
-              {/* @ts-ignore */}
-              {require('@/contexts/LanguageContext').useLanguage().t('common.getStarted')}
+              {t('common.getStarted')}
             </button>
             <button 
               onClick={() => navigate('/schedule-demo')}
               className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-8 py-3 rounded-2xl transition-colors duration-200 text-lg h-12"
-              aria-label="Planifier une démo"
+              aria-label={t('common.planDemo')}
             >
-              {/* @ts-ignore */}
-              {require('@/contexts/LanguageContext').useLanguage().t('common.planDemo')}
+              {t('common.planDemo')}
             </button>
           </div>
         </div>
@@ -247,8 +245,7 @@ const Presentation = () => {
                 onClick={() => navigate('/subscription')}
                 className="text-sm text-gray-600 font-normal hover:text-gray-800 transition-colors duration-200"
               >
-                {/* @ts-ignore */}
-                {require('@/contexts/LanguageContext').useLanguage().t('common.learnMore')}
+                {t('common.learnMore')}
               </button>
             </div>
 
@@ -301,8 +298,7 @@ const Presentation = () => {
                 onClick={() => navigate('/subscription')}
                 className="text-sm text-gray-600 font-normal hover:text-gray-800 transition-colors duration-200"
               >
-                {/* @ts-ignore */}
-                {require('@/contexts/LanguageContext').useLanguage().t('common.learnMore')}
+                {t('common.learnMore')}
               </button>
             </div>
 
@@ -355,8 +351,7 @@ const Presentation = () => {
                 onClick={() => navigate('/subscription')}
                 className="text-sm text-gray-600 font-normal hover:text-gray-800 transition-colors duration-200"
               >
-                {/* @ts-ignore */}
-                {require('@/contexts/LanguageContext').useLanguage().t('common.learnMore')}
+                {t('common.learnMore')}
               </button>
             </div>
           </div>
@@ -393,10 +388,9 @@ const Presentation = () => {
                 <button 
                   onClick={() => navigate('/schedule-demo')}
                   className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-8 py-3 rounded-2xl transition-colors duration-200 text-lg h-12"
-                  aria-label="Planifier une démo"
+                  aria-label={t('common.planDemo')}
                 >
-                  {/* @ts-ignore */}
-                  {require('@/contexts/LanguageContext').useLanguage().t('common.planDemo')}
+                  {t('common.planDemo')}
                 </button>
               </div>
             </div>
