@@ -80,14 +80,11 @@ const Presentation = () => {
   ];
 
   const trustedPartners = [
-    { name: "TotalEnergies", logo: "/lovable-uploads/65b214d1-d611-4de9-bb66-a774d9117c92.png" },
-    { name: "Renault", logo: "/lovable-uploads/7c5623e7-5b59-4a3c-bce7-a32f13222272.png" },
-    { name: "Air Liquide", logo: "/lovable-uploads/1ba73bc5-dccc-4e40-9a7b-bf976165a6fc.png" },
-    { name: "CY Tech", logo: "/lovable-uploads/9274b791-b401-4ac1-a736-6cc21e124970.png" },
-    { name: "Innovatech", logo: "/lovable-uploads/98ca04f1-5f60-4316-92e7-dfd967e16a19.png" },
-    { name: "Google", logo: "/lovable-uploads/add27bbf-284b-4ea1-ab3e-b9ec42eb3ce3.png" },
-    { name: "Microsoft", logo: "/lovable-uploads/ae75513b-0f6f-491f-a7ec-615b6dac461e.png" },
-    { name: "Salesforce", logo: "/lovable-uploads/c160eb91-2188-46e8-921a-51dca3fe9bf0.png" }
+    { name: "1Jeune1Mentor", logo: "/lovable-uploads/3dd94ce0-d520-422d-81b1-7e28aa82ab49.png" },
+    { name: "CY Entreprendre", logo: "/lovable-uploads/bb9268b7-d158-436b-9b94-49935c3585ed.png" },
+    { name: "Pépite", logo: "/lovable-uploads/e0e7cde3-0c75-4e68-a92a-4bac1e153212.png" },
+    { name: "ESSEC Business School", logo: "/lovable-uploads/f3c5e674-6f18-4847-87cc-9831c9a8b2d6.png" },
+    { name: "Genius", logo: "/lovable-uploads/ae9428b1-7883-4eea-bc3a-5bbc7ec22126.png" },
   ];
 
   return (
@@ -167,7 +164,7 @@ const Presentation = () => {
               Ils nous font confiance
             </h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center justify-items-center">
+          <div className="grid grid-cols-3 md:grid-cols-5 gap-8 items-center justify-items-center">
             {trustedPartners.map((partner, index) => (
               <div 
                 key={index} 
@@ -176,7 +173,7 @@ const Presentation = () => {
                 <img 
                   src={partner.logo} 
                   alt={partner.name}
-                  className="max-h-12 max-w-full object-contain opacity-70 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
+                  className="max-h-12 max-w-full object-contain opacity-70 hover:opacity-100 transition-opacity duration-300 invert"
                 />
               </div>
             ))}
