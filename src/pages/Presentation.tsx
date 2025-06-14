@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -143,11 +144,11 @@ const Presentation = () => {
         </div>
       </section>
 
-      {/* Trusted by Section - Replaces Stats */}
-      <section className="py-16 bg-gray-50">
+      {/* Trusted by Section - Updated Style */}
+      <section className="py-16 bg-gray-100">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-8">
+            <h2 className="text-2xl font-normal text-gray-600 mb-8">
               Ils nous font confiance
             </h2>
           </div>
@@ -155,12 +156,13 @@ const Presentation = () => {
             {trustedPartners.map((partner, index) => (
               <div 
                 key={index} 
-                className="flex items-center justify-center h-16 w-full opacity-60 hover:opacity-100 transition-opacity duration-200"
+                className="flex items-center justify-center h-16 w-full"
               >
                 <img 
                   src={partner.logo} 
                   alt={partner.name}
-                  className="max-h-12 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-200"
+                  className="max-h-12 max-w-full object-contain opacity-60 hover:opacity-80 transition-opacity duration-200 filter brightness-0 saturate-100"
+                  style={{ filter: 'brightness(0) saturate(100%) invert(47%) sepia(6%) saturate(372%) hue-rotate(201deg) brightness(94%) contrast(88%)' }}
                   onError={(e) => {
                     console.log(`Failed to load image: ${partner.logo}`);
                     e.currentTarget.style.display = 'none';
