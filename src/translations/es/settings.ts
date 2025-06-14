@@ -10,6 +10,7 @@ export const settingsTranslations = {
     description: "Configurar criterios de evaluación para candidatos",
     help: "Definir los criterios utilizados para evaluar candidatos"
   },
+  unsavedChanges: "Tienes cambios sin guardar. Haz clic en \"Guardar\" para almacenarlos.",
   activity: {
     title: "Actividad reciente",
     empty: "No hay actividad reciente"

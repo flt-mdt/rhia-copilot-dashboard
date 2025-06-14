@@ -120,7 +120,6 @@ const Settings = () => {
     <TooltipProvider>
       <div className="ml-64 p-8 bg-[#F9FAFB]">
         <Header title={t('settings.title')} />
-        
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Language Selector */}
           <LanguageSelector />
@@ -139,9 +138,11 @@ const Settings = () => {
                       <TooltipContent className="max-w-xs p-4 bg-white border shadow-lg">
                         <div className="space-y-2 text-sm">
                           <div className="font-semibold text-gray-900">
+                            {/* Cette instruction n'a pas de clé de traduction spécifique, elle reste en dur */}
                             💡 À quoi servent les étoiles ?
                           </div>
                           <div className="text-gray-700">
+                            {/* Idem, phrase d'aide spécifique */}
                             Les étoiles permettent d'indiquer l'importance que vous accordez à chaque critère dans le calcul de la note de matching.
                           </div>
                           <div className="text-gray-700">
@@ -170,16 +171,14 @@ const Settings = () => {
                 {t('settings.criteria.description')}
               </CardDescription>
             </CardHeader>
-            
             <CardContent>
               <p className="text-sm text-gray-600 mb-6">
                 {t('settings.criteria.help')}
               </p>
-              
               <div className="space-y-6">
                 {criteria.map(criterion => (
                   <div 
-                    key={criterion.id} 
+                    key={criterion.id}
                     className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4 border-b border-gray-100"
                   >
                     <div className="mb-2 sm:mb-0">
@@ -193,11 +192,11 @@ const Settings = () => {
                   </div>
                 ))}
               </div>
-
               {hasUnsavedChanges && (
                 <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
                   <p className="text-sm text-amber-800">
-                    Vous avez des modifications non sauvegardées. Cliquez sur "Enregistrer" pour les sauvegarder.
+                    {/* Message d'avertissement spécifique */}
+                    {t('settings.unsavedChanges')}
                   </p>
                 </div>
               )}
@@ -253,3 +252,4 @@ const Settings = () => {
 };
 
 export default Settings;
+

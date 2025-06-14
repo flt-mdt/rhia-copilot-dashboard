@@ -10,6 +10,7 @@ export const settingsTranslations = {
     description: "Configure evaluation criteria for candidates",
     help: "Define the criteria used to evaluate candidates"
   },
+  unsavedChanges: "You have unsaved changes. Click \"Save\" to store them.",
   activity: {
     title: "Recent Activity",
     empty: "No recent activity"

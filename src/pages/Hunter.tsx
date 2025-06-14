@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -67,7 +66,6 @@ const Hunter = () => {
   return (
     <div className="ml-64 p-8 bg-[#F9FAFB]">
       <Header title={t('hunter.title')} />
-
       <div className="max-w-7xl mx-auto">
         <SearchForm
           userId={user.id}
