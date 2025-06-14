@@ -123,8 +123,8 @@ const Presentation = () => {
       {/* Hero Section - Updated Style */}
       <section className="py-24 px-4 bg-white">
         <div className="max-w-5xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-geist font-normal text-gray-900 mb-8 leading-tight">
-            Bien plus qu'un ATS.
+          <h1 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 mb-8 leading-tight">
+            Bien plus qu&apos;un ATS.
             <br />
             Une IA Copilote pour les 
             <br />
@@ -133,7 +133,7 @@ const Presentation = () => {
           <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
             La plateforme pour automatiser votre processus de recrutement avec notre IA avancée,
             <br />
-            connectée à vos outils d'entreprise et alimentée par les meilleurs modèles d'IA.
+            connectée à vos outils d&apos;entreprise et alimentée par les meilleurs modèles d&apos;IA.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
