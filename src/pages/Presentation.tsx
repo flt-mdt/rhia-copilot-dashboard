@@ -585,33 +585,33 @@ const Presentation = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <section
+        className="py-20 bg-white/90 bg-gradient-to-b from-blue-100/60 via-white/90 to-white/100 transition-all duration-500"
+        // On conserve mobile-friendliness et fondu avec le reste du site grâce à un dégradé doux et de l'opacité
+      >
         <div className="max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-4xl font-geist font-bold mb-6">
+          <h2 className="text-4xl font-geist font-bold mb-6 text-gray-900">
             Prêt à révolutionner votre recrutement ?
           </h2>
-          <p className="text-xl mb-8 text-blue-100">
+          <p className="text-xl mb-8 text-blue-500">
             Rejoignez les centaines de RH qui ont déjà adopté l'IA pour recruter plus efficacement
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
+            <button
               onClick={() => navigate('/subscription')}
-              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
+              className="inline-flex items-center justify-center gap-3 bg-white text-blue-600 border border-blue-500 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-600 font-semibold px-8 py-4 rounded-2xl shadow transition-colors duration-200 text-lg h-12"
             >
               <Zap className="h-5 w-5 mr-2" />
-              Commencer maintenant
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold"
+              {t('common.getStarted')}
+            </button>
+            <button
               onClick={() => navigate('/schedule-demo')}
+              className="inline-flex items-center justify-center gap-2 border border-blue-500 text-blue-600 bg-white hover:bg-blue-50 hover:text-blue-700 hover:border-blue-600 font-semibold px-8 py-4 rounded-2xl shadow transition-colors duration-200 text-lg h-12"
             >
-              Planifier une démo
-            </Button>
+              {t('common.planDemo')}
+            </button>
           </div>
-          <p className="text-sm text-blue-200 mt-6">
+          <p className="text-sm text-blue-400 mt-6">
             Essai gratuit • Sans engagement • Support dédié
           </p>
         </div>
