@@ -1,4 +1,3 @@
-
 import { dashboardTranslations } from './dashboard';
 import { candidatesTranslations } from './candidates';
 import { candidateProfileTranslations } from './candidateProfile';
@@ -22,14 +21,5 @@ export const esTranslations = {
   hunter: hunterTranslations,
   brief: briefTranslations,
   subscription: subscriptionTranslations,
-  success: commonTranslations.success,
-  common: {
-    loading: commonTranslations.loading,
-    back: commonTranslations.back,
-    save: commonTranslations.save,
-    saving: commonTranslations.saving,
-    cancel: commonTranslations.cancel,
-    creating: commonTranslations.creating,
-    deleting: commonTranslations.deleting,
-  }
+  common: commonTranslations,
 };
