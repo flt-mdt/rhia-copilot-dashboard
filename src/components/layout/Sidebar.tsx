@@ -39,7 +39,7 @@ const Sidebar = () => {
           alt="RHIA Copilot" 
           className="h-10 w-auto"
         />
-        <span className="font-semibold text-lg">RHIA Copilot</span>
+        <span className="font-jakarta font-extrabold text-lg">RHIA Copilot</span>
       </div>
       
       <nav className="mt-8">
