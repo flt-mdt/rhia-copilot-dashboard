@@ -25,7 +25,8 @@ import {
   Star,
   LogIn,
   ChevronRight,
-  Rocket
+  Rocket,
+  Globe
 } from 'lucide-react';
 
 const Presentation = () => {
@@ -83,7 +84,10 @@ const Presentation = () => {
     { name: "Renault", logo: "/lovable-uploads/7c5623e7-5b59-4a3c-bce7-a32f13222272.png" },
     { name: "Air Liquide", logo: "/lovable-uploads/1ba73bc5-dccc-4e40-9a7b-bf976165a6fc.png" },
     { name: "CY Tech", logo: "/lovable-uploads/9274b791-b401-4ac1-a736-6cc21e124970.png" },
-    { name: "Innovatech", logo: "/lovable-uploads/98ca04f1-5f60-4316-92e7-dfd967e16a19.png" }
+    { name: "Innovatech", logo: "/lovable-uploads/98ca04f1-5f60-4316-92e7-dfd967e16a19.png" },
+    { name: "Google", logo: "/lovable-uploads/add27bbf-284b-4ea1-ab3e-b9ec42eb3ce3.png" },
+    { name: "Microsoft", logo: "/lovable-uploads/ae75513b-0f6f-491f-a7ec-615b6dac461e.png" },
+    { name: "Salesforce", logo: "/lovable-uploads/c160eb91-2188-46e8-921a-51dca3fe9bf0.png" }
   ];
 
   return (
@@ -397,6 +401,145 @@ const Presentation = () => {
             <div className="relative">
               <IntegrationDiagram />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Have AI wherever you work Section */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 mb-4">
+              L'IA, partout où vous travaillez
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-light">
+              Tirez parti de la puissance de l'IA et de vos connaissances là où vous en avez besoin. Fini les allers-retours entre les outils.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 text-left">
+            {/* Column 1: Analyzer */}
+            <div className="bg-white rounded-2xl p-6 flex flex-col border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300">
+              <div className="bg-white rounded-lg mb-6 flex-grow">
+                <div className="bg-white rounded-lg shadow-lg p-4 h-56 w-full overflow-hidden border">
+                    <div className="flex items-center mb-3">
+                        <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center ring-4 ring-green-50">
+                            <Brain className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div className="ml-3">
+                            <div className="font-semibold text-sm text-gray-800">Analyse de CV</div>
+                            <div className="text-xs text-gray-500">Rapport pour Jeanne Dupont</div>
+                        </div>
+                    </div>
+                    <div className="space-y-3 mt-4">
+                        <div className="text-xs text-gray-600">Adéquation avec le poste :</div>
+                        <div>
+                            <div className="text-xs font-medium text-gray-500 mb-1 flex justify-between"><span>Compétences</span> <span>95%</span></div>
+                            <div className="w-full bg-gray-200 rounded-full h-1.5"><div className="bg-green-500 h-1.5 rounded-full" style={{width: '95%'}}></div></div>
+                        </div>
+                        <div>
+                           <div className="text-xs font-medium text-gray-500 mb-1 flex justify-between"><span>Expérience</span> <span>88%</span></div>
+                            <div className="w-full bg-gray-200 rounded-full h-1.5"><div className="bg-green-500 h-1.5 rounded-full" style={{width: '88%'}}></div></div>
+                        </div>
+                        <div>
+                            <div className="text-xs font-medium text-gray-500 mb-1 flex justify-between"><span>Savoir-être</span> <span>70%</span></div>
+                            <div className="w-full bg-gray-200 rounded-full h-1.5"><div className="bg-yellow-500 h-1.5 rounded-full" style={{width: '70%'}}></div></div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-geist font-bold text-gray-900 mb-2">
+                  Analysez depuis votre ATS
+                </h3>
+                <p className="text-gray-600 text-sm leading-6">
+                  Connectez RHIA pour analyser les candidatures et obtenir des scores de matching sans changer d'interface.
+                </p>
+              </div>
+            </div>
+
+            {/* Column 2: Brief */}
+            <div className="bg-white rounded-2xl p-6 flex flex-col border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300">
+              <div className="bg-white rounded-lg mb-6 flex-grow">
+                <div className="bg-white rounded-lg shadow-lg p-4 h-56 w-full overflow-hidden border flex flex-col">
+                    <div className="flex items-center mb-3">
+                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center ring-4 ring-red-50">
+                           <MessageSquare className="h-5 w-5 text-red-600" />
+                        </div>
+                        <div className="ml-3">
+                            <div className="font-semibold text-sm text-gray-800">RHIA Copilot</div>
+                            <div className="text-xs text-gray-500">Brief de poste via Slack</div>
+                        </div>
+                    </div>
+                    <div className="flex-grow space-y-2 text-xs flex flex-col justify-end">
+                        <div className="bg-gray-100 text-gray-800 p-2.5 rounded-xl rounded-br-sm self-end ml-auto max-w-[80%]">
+                            Nous cherchons un Chef de Projet Marketing.
+                        </div>
+                        <div className="bg-blue-500 text-white p-2.5 rounded-xl rounded-bl-sm self-start max-w-[80%]">
+                            Entendu. Quelles sont les 3 compétences indispensables ?
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-geist font-bold text-gray-900 mb-2">
+                  Collaborez sur Slack
+                </h3>
+                <p className="text-gray-600 text-sm leading-6">
+                  Utilisez l'IA dans vos outils de com' pour créer des fiches de poste précises avec les managers.
+                </p>
+              </div>
+            </div>
+
+            {/* Column 3: Hunter */}
+            <div className="bg-white rounded-2xl p-6 flex flex-col border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300">
+              <div className="bg-white rounded-lg mb-6 flex-grow">
+                <div className="bg-white rounded-lg shadow-lg p-4 h-56 w-full overflow-hidden border">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center">
+                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center ring-4 ring-blue-50">
+                               <Search className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <div className="ml-3">
+                                <h4 className="font-semibold text-sm text-gray-800">Hunter IA</h4>
+                                <div className="text-xs text-gray-500">Sourcing en cours...</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-blue-700"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                            <Globe className="h-4 w-4 text-gray-500"/>
+                        </div>
+                    </div>
+                    <div className="space-y-1.5">
+                        <div className="flex items-center p-1.5 bg-gray-50 rounded-lg">
+                            <img src="https://i.pravatar.cc/32?u=a" alt="avatar" className="w-7 h-7 rounded-full"/>
+                            <div className="ml-2 text-xs font-medium text-gray-700">Alice Martin - Dev Fullstack</div>
+                        </div>
+                        <div className="flex items-center p-1.5 bg-gray-50 rounded-lg">
+                            <img src="https://i.pravatar.cc/32?u=b" alt="avatar" className="w-7 h-7 rounded-full"/>
+                            <div className="ml-2 text-xs font-medium text-gray-700">Bob Dupont - Ingénieur Logiciel</div>
+                        </div>
+                        <div className="flex items-center p-1.5 bg-gray-50 rounded-lg">
+                            <img src="https://i.pravatar.cc/32?u=c" alt="avatar" className="w-7 h-7 rounded-full"/>
+                            <div className="ml-2 text-xs font-medium text-gray-700">Clara Petit - Spécialiste React</div>
+                        </div>
+                         <div className="flex items-center p-1.5 bg-gray-50 rounded-lg opacity-60">
+                            <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs font-bold">42+</div>
+                            <div className="ml-2 text-xs font-medium text-gray-500">autres profils sourcés...</div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-geist font-bold text-gray-900 mb-2">
+                  Automatisez votre sourcing
+                </h3>
+                <p className="text-gray-600 text-sm leading-6">
+                  Découvrez des talents cachés en déclenchant des actions de sourcing IA pour automatiser les tâches répétitives.
+                </p>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
