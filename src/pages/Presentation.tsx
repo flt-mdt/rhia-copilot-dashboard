@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -67,11 +68,11 @@ const Presentation = () => {
   ];
 
   const trustedPartners = [
-    { name: "ESSEC", logo: "ESSEC" },
-    { name: "Pépite France", logo: "PÉPITE FRANCE" },
-    { name: "1 jeune 1 mentor", logo: "1 JEUNE 1 MENTOR" },
-    { name: "Association Genius", logo: "GENIUS" },
-    { name: "CY Tech", logo: "CY TECH" }
+    { name: "ESSEC", logo: "/lovable-uploads/ae75513b-0f6f-491f-a7ec-615b6dac461e.png" },
+    { name: "Pépite France", logo: "/lovable-uploads/43966923-f146-4c96-adc2-911cc58570c6.png" },
+    { name: "1 jeune 1 mentor", logo: "/lovable-uploads/c160eb91-2188-46e8-921a-51dca3fe9bf0.png" },
+    { name: "Association Genius", logo: "/lovable-uploads/98ca04f1-5f60-4316-92e7-dfd967e16a19.png" },
+    { name: "CY Tech", logo: "/lovable-uploads/9274b791-b401-4ac1-a736-6cc21e124970.png" }
   ];
 
   return (
@@ -157,9 +158,11 @@ const Presentation = () => {
                 key={index} 
                 className="flex items-center justify-center h-16 w-full opacity-60 hover:opacity-100 transition-opacity duration-200"
               >
-                <div className="text-gray-500 font-medium text-sm text-center">
-                  {partner.logo}
-                </div>
+                <img 
+                  src={partner.logo} 
+                  alt={partner.name}
+                  className="max-h-12 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-200"
+                />
               </div>
             ))}
           </div>
