@@ -28,22 +28,22 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
-          label={t('dashboard.stats.newApplications')}
+          title={t('dashboard.stats.newApplications')}
           value={isLoading ? "..." : stats?.newApplications ?? 0}
           change={isLoading ? undefined : getChangeProps(stats?.newApplicationsChange)}
         />
         <StatCard
-          label={t('dashboard.stats.totalCandidates')}
+          title={t('dashboard.stats.totalCandidates')}
           value={isLoading ? "..." : stats?.totalCandidates ?? 0}
           change={isLoading ? undefined : getChangeProps(stats?.totalCandidatesChange)}
         />
         <StatCard
-          label={t('dashboard.stats.interviewStage')}
+          title={t('dashboard.stats.interviewStage')}
           value={isLoading ? "..." : stats?.interviewStage ?? 0}
           change={isLoading ? undefined : getChangeProps(stats?.interviewStageChange)}
         />
         <StatCard
-          label={t('dashboard.stats.activeJobs')}
+          title={t('dashboard.stats.activeJobs')}
           value={isLoading ? "..." : stats?.activeJobs ?? 0}
           change={isLoading ? undefined : getChangeProps(stats?.activeJobsChange)}
         />
@@ -56,4 +56,5 @@ const Dashboard = () => {
     </div>
   );
 };
+
 export default Dashboard;
