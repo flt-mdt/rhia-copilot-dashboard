@@ -158,12 +158,12 @@ const Presentation = () => {
       {/* Trusted by Section - Updated Style */}
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-4xl font-geist font-bold text-gray-900 mb-8">
               Ils nous font confiance
             </h2>
           </div>
-          <div className="grid grid-cols-3 md:grid-cols-5 gap-8 items-center justify-items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-6 md:gap-8 items-center justify-items-center">
             {trustedPartners.map((partner, index) => (
               <div 
                 key={index} 
@@ -181,10 +181,10 @@ const Presentation = () => {
       </section>
 
       {/* Applications Section - New Design */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-12 md:py-20 px-2 md:px-4 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-geist font-bold text-gray-900 mb-4">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 mb-4">
               Quels outils allez-vous utiliser ou créer aujourd'hui ?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -192,9 +192,9 @@ const Presentation = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {/* Analyse des candidats */}
-            <div className="bg-green-50 rounded-2xl p-8 relative overflow-hidden">
+            <div className="bg-green-50 rounded-2xl p-6 md:p-8 relative overflow-hidden">
               <div className="absolute top-4 right-4">
                 <span className="bg-green-600 text-white text-xs px-3 py-1 rounded-full font-medium">
                   @candidateAnalyzer
@@ -251,7 +251,7 @@ const Presentation = () => {
             </div>
 
             {/* Brief avec l'IA */}
-            <div className="bg-pink-50 rounded-2xl p-8 relative overflow-hidden">
+            <div className="bg-pink-50 rounded-2xl p-6 md:p-8 relative overflow-hidden">
               <div className="absolute top-4 right-4">
                 <span className="bg-red-600 text-white text-xs px-3 py-1 rounded-full font-medium">
                   @briefCrafter
@@ -304,7 +304,7 @@ const Presentation = () => {
             </div>
 
             {/* Hunter - Sourcing IA */}
-            <div className="bg-blue-50 rounded-2xl p-8 relative overflow-hidden">
+            <div className="bg-blue-50 rounded-2xl p-6 md:p-8 relative overflow-hidden">
               <div className="absolute top-4 right-4">
                 <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-medium">
                   @hunterAI
@@ -360,12 +360,12 @@ const Presentation = () => {
       </section>
 
       {/* Comparison Section - New Design matching the image */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="py-12 md:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-2 md:px-4">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
             {/* Left Content */}
             <div>
-              <div className="mb-6">
+              <div className="mb-4 md:mb-6">
                 <span className="text-blue-500 font-medium text-lg">RHIA pour le Recrutement</span>
               </div>
               <h2 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 mb-4 leading-tight">
@@ -373,10 +373,10 @@ const Presentation = () => {
                 <br />
                 Réduisez les Interruptions
               </h2>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              <p className="text-lg text-gray-600 mb-6 md:mb-8 leading-relaxed">
                 Centralisez l'analyse des candidatures, automatisez la documentation, et gardez votre équipe RH concentrée sur l'essentiel.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                 <button 
                   onClick={() => navigate('/subscription')}
                   className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-3 rounded-full transition-colors duration-200 text-base"
@@ -394,7 +394,7 @@ const Presentation = () => {
             </div>
             
             {/* Right Integration Diagram */}
-            <div className="relative">
+            <div className="relative mt-10 md:mt-0">
               <img src="/lovable-uploads/b3542959-ca1f-4f73-bb8d-8b59700980c7.png" alt="Diagramme d'intégration RHIA" className="w-full h-auto" />
             </div>
           </div>
@@ -402,9 +402,9 @@ const Presentation = () => {
       </section>
 
       {/* Have AI wherever you work Section */}
-      <section className="py-20 px-4 bg-gray-50">
+      <section className="py-12 md:py-20 px-2 md:px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 md:mb-16">
             <h2 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 mb-4">
               L'IA, partout où vous travaillez
             </h2>
@@ -413,9 +413,9 @@ const Presentation = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 text-left">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-left">
             {/* Column 1: Analyzer */}
-            <div className="bg-white rounded-2xl p-6 flex flex-col border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300">
+            <div className="bg-white rounded-2xl p-4 md:p-6 flex flex-col border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300">
               <div className="bg-white rounded-lg mb-6 flex-grow">
                 <div className="bg-white rounded-lg shadow-lg p-4 h-56 w-full overflow-hidden border">
                     <div className="flex items-center mb-3">
@@ -455,7 +455,7 @@ const Presentation = () => {
             </div>
 
             {/* Column 2: Brief */}
-            <div className="bg-white rounded-2xl p-6 flex flex-col border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300">
+            <div className="bg-white rounded-2xl p-4 md:p-6 flex flex-col border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300">
               <div className="bg-white rounded-lg mb-6 flex-grow">
                 <div className="bg-white rounded-lg shadow-lg p-4 h-56 w-full overflow-hidden border flex flex-col">
                     <div className="flex items-center mb-3">
@@ -488,7 +488,7 @@ const Presentation = () => {
             </div>
 
             {/* Column 3: Hunter */}
-            <div className="bg-white rounded-2xl p-6 flex flex-col border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300">
+            <div className="bg-white rounded-2xl p-4 md:p-6 flex flex-col border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300">
               <div className="bg-white rounded-lg mb-6 flex-grow">
                 <div className="bg-white rounded-lg shadow-lg p-4 h-56 w-full overflow-hidden border">
                     <div className="flex items-center justify-between mb-4">
@@ -541,9 +541,9 @@ const Presentation = () => {
       </section>
 
       {/* Testimonials Section - New Carousel Design */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-12 md:py-20 px-2 md:px-4 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between md:items-center mb-12">
+          <div className="flex flex-col md:flex-row justify-between md:items-center mb-10 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-geist font-bold text-gray-900 mb-4 md:mb-0">
               Conçu pour les équipes RH qui visent l'excellence
             </h2>
@@ -556,10 +556,10 @@ const Presentation = () => {
             }}
             className="w-full relative"
           >
-            <CarouselContent className="-ml-8">
+            <CarouselContent className="-ml-0 md:-ml-8">
               {testimonials.map((testimonial, index) => (
-                <CarouselItem key={index} className="pl-8 md:basis-1/2 lg:basis-1/3">
-                  <div className="bg-gray-50 rounded-2xl p-8 flex flex-col justify-between h-full min-h-[320px] hover:shadow-lg transition-shadow duration-300">
+                <CarouselItem key={index} className="pl-0 md:pl-8 md:basis-1/2 lg:basis-1/3">
+                  <div className="bg-gray-50 rounded-2xl p-6 md:p-8 flex flex-col justify-between h-full min-h-[320px] hover:shadow-lg transition-shadow duration-300">
                     <p className="text-gray-600 text-base md:text-lg mb-6 leading-relaxed">
                       "{testimonial.comment}"
                     </p>
