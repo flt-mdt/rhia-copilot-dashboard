@@ -9,8 +9,13 @@ export const commonTranslations = {
   deleting: "Deleting...",
   success: {
     loginSuccess: "Login successful!",
-    signupSuccess: "Signup successful!",
+    signupSuccess: "Sign up successful!",
     languageUpdated: "Language updated successfully!",
     logoutSuccess: "Logout successful!"
-  }
+  },
+  requestADemo: "Request a demo",
+  getStarted: "Get started",
+  learnMore: "Learn more",
+  signIn: "Sign in",
+  planDemo: "Plan a demo"
 };

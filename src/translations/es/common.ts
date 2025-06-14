@@ -10,7 +10,12 @@ export const commonTranslations = {
   success: {
     loginSuccess: "¡Inicio de sesión exitoso!",
     signupSuccess: "¡Registro exitoso!",
-    languageUpdated: "¡Idioma actualizado con éxito!",
+    languageUpdated: "¡Idioma actualizado correctamente!",
     logoutSuccess: "¡Cierre de sesión exitoso!"
-  }
+  },
+  requestADemo: "Solicitar una demostración",
+  getStarted: "Empezar",
+  learnMore: "Saber más",
+  signIn: "Iniciar sesión",
+  planDemo: "Planificar una demo"
 };

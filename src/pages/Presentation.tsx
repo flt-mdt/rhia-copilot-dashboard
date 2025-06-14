@@ -104,16 +104,15 @@ const Presentation = () => {
               onClick={() => navigate('/schedule-demo')}
               className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
             >
-              Request a demo
+              {/* @ts-ignore */}
+              {require('@/contexts/LanguageContext').useLanguage().t('common.requestADemo')}
             </button>
             <button 
               onClick={() => navigate('/login')}
               className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" className="text-white">
-                <path fill="currentColor" d="M5 12l5-5v3h8v4h-8v3l-5-5z"/>
-              </svg>
-              Sign in
+              {/* @ts-ignore */}
+              {require('@/contexts/LanguageContext').useLanguage().t('common.signIn')}
             </button>
           </div>
         </div>
@@ -142,14 +141,16 @@ const Presentation = () => {
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" className="text-white">
                 <path fill="currentColor" d="M5.33 15.929a13.064 13.064 0 0 1-.33-2.93c0-5.087 2.903-9.436 7-11.181C16.099 3.563 19 7.912 19 13c0 1.01-.114 1.991-.33 2.929l2.02 1.795a.5.5 0 0 1 .097.631l-2.457 4.096a.5.5 0 0 1-.782.096l-2.255-2.254a1 1 0 0 0-.707-.293H9.415a1 1 0 0 0-.707.293l-2.255 2.254a.5.5 0 0 1-.782-.096l-2.457-4.096a.5.5 0 0 1 .096-.63l2.02-1.796Zm6.67-2.93a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path>
               </svg>
-              Get started
+              {/* @ts-ignore */}
+              {require('@/contexts/LanguageContext').useLanguage().t('common.getStarted')}
             </button>
             <button 
               onClick={() => navigate('/schedule-demo')}
               className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-8 py-3 rounded-2xl transition-colors duration-200 text-lg h-12"
               aria-label="Planifier une démo"
             >
-              Planifier une démo
+              {/* @ts-ignore */}
+              {require('@/contexts/LanguageContext').useLanguage().t('common.planDemo')}
             </button>
           </div>
         </div>
@@ -246,7 +247,8 @@ const Presentation = () => {
                 onClick={() => navigate('/subscription')}
                 className="text-sm text-gray-600 font-normal hover:text-gray-800 transition-colors duration-200"
               >
-                Learn more
+                {/* @ts-ignore */}
+                {require('@/contexts/LanguageContext').useLanguage().t('common.learnMore')}
               </button>
             </div>
 
@@ -299,7 +301,8 @@ const Presentation = () => {
                 onClick={() => navigate('/subscription')}
                 className="text-sm text-gray-600 font-normal hover:text-gray-800 transition-colors duration-200"
               >
-                Learn more
+                {/* @ts-ignore */}
+                {require('@/contexts/LanguageContext').useLanguage().t('common.learnMore')}
               </button>
             </div>
 
@@ -352,7 +355,8 @@ const Presentation = () => {
                 onClick={() => navigate('/subscription')}
                 className="text-sm text-gray-600 font-normal hover:text-gray-800 transition-colors duration-200"
               >
-                Learn more
+                {/* @ts-ignore */}
+                {require('@/contexts/LanguageContext').useLanguage().t('common.learnMore')}
               </button>
             </div>
           </div>
@@ -381,14 +385,18 @@ const Presentation = () => {
                   onClick={() => navigate('/subscription')}
                   className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-3 rounded-full transition-colors duration-200 text-base"
                 >
-                  <Rocket className="h-4 w-4" />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" className="text-white">
+                    <path fill="currentColor" d="M5.33 15.929a13.064 13.064 0 0 1-.33-2.93c0-5.087 2.903-9.436 7-11.181C16.099 3.563 19 7.912 19 13c0 1.01-.114 1.991-.33 2.929l2.02 1.795a.5.5 0 0 1 .097.631l-2.457 4.096a.5.5 0 0 1-.782.096l-2.255-2.254a1 1 0 0 0-.707-.293H9.415a1 1 0 0 0-.707.293l-2.255 2.254a.5.5 0 0 1-.782-.096l-2.457-4.096a.5.5 0 0 1 .096-.63l2.02-1.796Zm6.67-2.93a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path>
+                  </svg>
                   Commencer maintenant
                 </button>
                 <button 
                   onClick={() => navigate('/schedule-demo')}
-                  className="inline-flex items-center justify-center gap-2 bg-transparent text-gray-700 hover:bg-gray-100 font-medium px-6 py-3 rounded-full transition-colors duration-200 text-base"
+                  className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-8 py-3 rounded-2xl transition-colors duration-200 text-lg h-12"
+                  aria-label="Planifier une démo"
                 >
-                  Demander une démo
+                  {/* @ts-ignore */}
+                  {require('@/contexts/LanguageContext').useLanguage().t('common.planDemo')}
                 </button>
               </div>
             </div>

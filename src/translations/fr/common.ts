@@ -12,5 +12,10 @@ export const commonTranslations = {
     signupSuccess: "Inscription réussie !",
     languageUpdated: "Langue mise à jour avec succès !",
     logoutSuccess: "Déconnexion réussie !"
-  }
+  },
+  requestADemo: "Planifier une démo",
+  getStarted: "Commencer",
+  learnMore: "En savoir plus",
+  signIn: "Connexion",
+  planDemo: "Planifier une démo"
 };
