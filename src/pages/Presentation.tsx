@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -65,6 +64,14 @@ const Presentation = () => {
       comment: "Le matching automatique est d'une précision impressionnante. Nos embauches sont plus pertinentes.",
       rating: 5
     }
+  ];
+
+  const trustedPartners = [
+    { name: "ESSEC", logo: "ESSEC" },
+    { name: "Pépite France", logo: "PÉPITE FRANCE" },
+    { name: "1 jeune 1 mentor", logo: "1 JEUNE 1 MENTOR" },
+    { name: "Association Genius", logo: "GENIUS" },
+    { name: "CY Tech", logo: "CY TECH" }
   ];
 
   return (
@@ -136,26 +143,25 @@ const Presentation = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Trusted by Section - Replaces Stats */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            <div className="animate-fade-in">
-              <div className="text-4xl font-bold text-blue-600 mb-2">70%</div>
-              <div className="text-gray-600">de temps gagné sur l'analyse</div>
-            </div>
-            <div className="animate-fade-in">
-              <div className="text-4xl font-bold text-green-600 mb-2">5x</div>
-              <div className="text-gray-600">plus de candidats qualifiés</div>
-            </div>
-            <div className="animate-fade-in">
-              <div className="text-4xl font-bold text-purple-600 mb-2">95%</div>
-              <div className="text-gray-600">de précision dans le matching</div>
-            </div>
-            <div className="animate-fade-in">
-              <div className="text-4xl font-bold text-orange-600 mb-2">24h</div>
-              <div className="text-gray-600">pour sourcer un profil rare</div>
-            </div>
+          <div className="text-center mb-12">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-8">
+              Ils nous font confiance
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center justify-items-center">
+            {trustedPartners.map((partner, index) => (
+              <div 
+                key={index} 
+                className="flex items-center justify-center h-16 w-full opacity-60 hover:opacity-100 transition-opacity duration-200"
+              >
+                <div className="text-gray-500 font-medium text-sm text-center">
+                  {partner.logo}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
