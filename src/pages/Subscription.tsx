@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -165,7 +166,7 @@ const Subscription = () => {
                   <span className="text-gray-600">{plan.period}</span>
                 </div>
                 
-                <p className="text-gray-600 mb-8 flex-grow">{plan.description}</p>
+                <p className="text-gray-600 mb-8">{plan.description}</p>
                 
                 <div className="space-y-3 mb-10">
                   {plan.features.filter(f => f.included).map((feature, fIndex) => (
