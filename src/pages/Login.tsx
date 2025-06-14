@@ -206,12 +206,12 @@ const Login = () => {
             <TabsContent value="signup">
               <CardTitle className="text-2xl mb-2">{t('login.signup.title')}</CardTitle>
               <CardDescription className="mb-4">
-                Choisissez d'abonnement pour créer votre compte
+                {t('login.signup.description')}
               </CardDescription>
               
               <form onSubmit={handleSignUp} className="space-y-4">
                 <Button type="submit" className="w-full">
-                  Choisir un abonnement
+                  {t('common.planDemo')}
                 </Button>
               </form>
             </TabsContent>

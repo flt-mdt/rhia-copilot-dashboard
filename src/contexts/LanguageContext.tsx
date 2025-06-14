@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
@@ -68,6 +67,12 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (value && typeof value === 'object' && k in value) {
         value = value[k];
       } else {
+        // Log warning for missing translation key
+        if (process.env.NODE_ENV === 'development' || true) {
+          // always log for now, to debug more easily
+          // eslint-disable-next-line no-console
+          console.warn(`Missing translation for key "${key}" in language "${language}"`);
+        }
         return key;
       }
     }

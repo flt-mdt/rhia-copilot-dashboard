@@ -1,4 +1,3 @@
-
 export const authTranslations = {
   title: "RHIA Copilot",
   email: "Correo electrónico",
