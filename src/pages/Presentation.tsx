@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import IntegrationDiagram from '@/components/IntegrationDiagram';
 import { 
   Carousel, 
   CarouselContent, 
@@ -396,7 +395,7 @@ const Presentation = () => {
             
             {/* Right Integration Diagram */}
             <div className="relative">
-              <IntegrationDiagram />
+              <img src="/lovable-uploads/b3542959-ca1f-4f73-bb8d-8b59700980c7.png" alt="Diagramme d'intégration RHIA" className="w-full h-auto" />
             </div>
           </div>
         </div>
