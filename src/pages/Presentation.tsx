@@ -4,6 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import IntegrationDiagram from '@/components/IntegrationDiagram';
 import { 
+  Carousel, 
+  CarouselContent, 
+  CarouselItem, 
+  CarouselNext, 
+  CarouselPrevious 
+} from "@/components/ui/carousel";
+import { 
   Brain, 
   Briefcase, 
   MessageSquare, 
@@ -49,30 +56,29 @@ const Presentation = () => {
 
   const testimonials = [
     {
-      name: "Marie Dubois",
-      role: "Directrice RH - TechCorp",
-      comment: "RHIA a révolutionné notre processus de recrutement. Nous gagnons 70% de temps sur l'analyse des candidatures.",
-      rating: 5
+      name: "Jean-Luc Martin",
+      role: "Directeur des Talents, TotalEnergies",
+      comment: "Avec RHIA, nous avons réduit notre temps de présélection de 75%. L'IA identifie des compétences que nous aurions manquées, nous permettant de nous concentrer sur les meilleurs talents.",
+      logo: "/lovable-uploads/65b214d1-d611-4de9-bb66-a774d9117c92.png",
+      companyName: "TotalEnergies"
     },
     {
-      name: "Pierre Martin",
-      role: "Consultant RH - Talent Solutions",
-      comment: "L'IA de sourcing nous a permis de trouver des profils que nous n'aurions jamais découverts autrement.",
-      rating: 5
+      name: "Isabelle Dubois",
+      role: "Responsable Acquisition de Talents, Renault Group",
+      comment: "L'outil de brief par IA a transformé notre collaboration avec les managers. Les descriptions de poste sont plus précises, ce qui a un impact direct sur la qualité des candidatures reçues.",
+      logo: "/lovable-uploads/7c5623e7-5b59-4a3c-bce7-a32f13222272.png",
+      companyName: "Renault"
     },
     {
-      name: "Sophie Laurent",
-      role: "Responsable Recrutement - InnovateCorp",
-      comment: "Le matching automatique est d'une précision impressionnante. Nos embauches sont plus pertinentes.",
-      rating: 5
+      name: "David Bernard",
+      role: "VP Human Resources, Air Liquide",
+      comment: "RHIA n'est pas juste un ATS, c'est un véritable copilote. Le sourcing automatisé nous a ouvert l'accès à un vivier de candidats passifs que nous n'arrivions pas à atteindre.",
+      logo: "/lovable-uploads/1ba73bc5-dccc-4e40-9a7b-bf976165a6fc.png",
+      companyName: "Air Liquide"
     }
   ];
 
   const trustedPartners = [
-    { name: "ESSEC", logo: "/lovable-uploads/ae75513b-0f6f-491f-a7ec-615b6dac461e.png" },
-    { name: "Pépite France", logo: "/lovable-uploads/43966923-f146-4c96-adc2-911cc58570c6.png" },
-    { name: "1 jeune 1 mentor", logo: "/lovable-uploads/c160eb91-2188-46e8-921a-51dca3fe9bf0.png" },
-    { name: "Association Genius", logo: "/lovable-uploads/98ca04f1-5f60-4316-92e7-dfd967e16a19.png" },
     { name: "CY Tech", logo: "/lovable-uploads/9274b791-b401-4ac1-a736-6cc21e124970.png" }
   ];
 
@@ -396,36 +402,45 @@ const Presentation = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Testimonials Section - New Carousel Design */}
       <section className="py-20 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Ils nous font confiance
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between md:items-center mb-12 relative">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-0">
+              Conçu pour les équipes RH qui visent l'excellence
             </h2>
-            <p className="text-xl text-gray-600">
-              Découvrez les témoignages de nos clients satisfaits
-            </p>
+            <div className="flex gap-2 items-center absolute -top-0 right-0">
+               <CarouselPrevious className="static translate-y-0 bg-white border-gray-200 hover:bg-gray-100 text-gray-600 hover:text-gray-900" />
+               <CarouselNext className="static translate-y-0 bg-white border-gray-200 hover:bg-gray-100 text-gray-600 hover:text-gray-900" />
+            </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="hover:shadow-xl transition-all duration-300 animate-fade-in">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ))}
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-8">
+              {testimonials.map((testimonial, index) => (
+                <CarouselItem key={index} className="pl-8 md:basis-1/2 lg:basis-1/3">
+                  <div className="bg-gray-50 rounded-2xl p-8 flex flex-col justify-between h-full min-h-[320px] hover:shadow-lg transition-shadow duration-300">
+                    <p className="text-gray-600 text-base md:text-lg mb-6 leading-relaxed">
+                      "{testimonial.comment}"
+                    </p>
+                    <div className="flex items-center justify-between mt-auto">
+                      <div>
+                        <div className="font-semibold text-gray-900">{testimonial.name}</div>
+                        <div className="text-sm text-gray-500">{testimonial.role}</div>
+                      </div>
+                      <img src={testimonial.logo} alt={testimonial.companyName} className="h-8 max-w-[120px] object-contain"/>
+                    </div>
                   </div>
-                  <p className="text-gray-600 mb-6 italic">"{testimonial.comment}"</p>
-                  <div>
-                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-500">{testimonial.role}</div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </div>
       </section>
 
