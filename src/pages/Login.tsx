@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -118,8 +117,8 @@ const Login = () => {
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">{t('login.signin')}</TabsTrigger>
-              <TabsTrigger value="signup">{t('login.signup')}</TabsTrigger>
+              <TabsTrigger value="signin">{t('login.signin.tab')}</TabsTrigger>
+              <TabsTrigger value="signup">{t('login.signup.tab')}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="signin">
@@ -207,7 +206,7 @@ const Login = () => {
             <TabsContent value="signup">
               <CardTitle className="text-2xl mb-2">{t('login.signup.title')}</CardTitle>
               <CardDescription className="mb-4">
-                Choisissez d'abord votre abonnement pour créer votre compte
+                Choisissez d'abonnement pour créer votre compte
               </CardDescription>
               
               <form onSubmit={handleSignUp} className="space-y-4">
