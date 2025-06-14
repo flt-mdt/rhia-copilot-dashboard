@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -80,7 +79,11 @@ const Presentation = () => {
   ];
 
   const trustedPartners = [
-    { name: "CY Tech", logo: "/lovable-uploads/9274b791-b401-4ac1-a736-6cc21e124970.png" }
+    { name: "TotalEnergies", logo: "/lovable-uploads/65b214d1-d611-4de9-bb66-a774d9117c92.png" },
+    { name: "Renault", logo: "/lovable-uploads/7c5623e7-5b59-4a3c-bce7-a32f13222272.png" },
+    { name: "Air Liquide", logo: "/lovable-uploads/1ba73bc5-dccc-4e40-9a7b-bf976165a6fc.png" },
+    { name: "CY Tech", logo: "/lovable-uploads/9274b791-b401-4ac1-a736-6cc21e124970.png" },
+    { name: "Innovatech", logo: "/lovable-uploads/98ca04f1-5f60-4316-92e7-dfd967e16a19.png" }
   ];
 
   return (
@@ -119,7 +122,7 @@ const Presentation = () => {
       {/* Hero Section - Updated Style */}
       <section className="py-24 px-4 bg-white">
         <div className="max-w-5xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-normal text-gray-900 mb-8 leading-tight">
+          <h1 className="text-5xl md:text-6xl font-geist font-normal text-gray-900 mb-8 leading-tight">
             Bien plus qu'un ATS.
             <br />
             Une IA Copilote pour les 
@@ -156,7 +159,7 @@ const Presentation = () => {
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-2xl font-normal text-gray-600 mb-8">
+            <h2 className="text-2xl font-geist font-normal text-gray-600 mb-8">
               Ils nous font confiance
             </h2>
           </div>
@@ -169,12 +172,7 @@ const Presentation = () => {
                 <img 
                   src={partner.logo} 
                   alt={partner.name}
-                  className="max-h-12 max-w-full object-contain opacity-60 hover:opacity-80 transition-opacity duration-200 filter brightness-0 saturate-100"
-                  style={{ filter: 'brightness(0) saturate(100%) invert(47%) sepia(6%) saturate(372%) hue-rotate(201deg) brightness(94%) contrast(88%)' }}
-                  onError={(e) => {
-                    console.log(`Failed to load image: ${partner.logo}`);
-                    e.currentTarget.style.display = 'none';
-                  }}
+                  className="max-h-12 max-w-full object-contain opacity-70 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0"
                 />
               </div>
             ))}
@@ -186,7 +184,7 @@ const Presentation = () => {
       <section className="py-20 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-geist font-bold text-gray-900 mb-4">
               Quels outils allez-vous utiliser ou créer aujourd'hui ?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -223,7 +221,7 @@ const Presentation = () => {
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Analyse des candidats</h3>
+              <h3 className="text-xl font-geist font-bold text-gray-900 mb-4">Analyse des candidats</h3>
               
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-2">
@@ -276,7 +274,7 @@ const Presentation = () => {
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Brief avec l'IA</h3>
+              <h3 className="text-xl font-geist font-bold text-gray-900 mb-4">Brief avec l'IA</h3>
               
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-2">
@@ -329,7 +327,7 @@ const Presentation = () => {
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Hunter - Sourcing IA</h3>
+              <h3 className="text-xl font-geist font-bold text-gray-900 mb-4">Hunter - Sourcing IA</h3>
               
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-2">
@@ -370,7 +368,7 @@ const Presentation = () => {
               <div className="mb-6">
                 <span className="text-blue-500 font-medium text-lg">RHIA pour le Recrutement</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+              <h2 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 mb-4 leading-tight">
                 Automatisez Votre Processus,
                 <br />
                 Réduisez les Interruptions
@@ -407,7 +405,7 @@ const Presentation = () => {
       <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between md:items-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-0">
+            <h2 className="text-3xl md:text-4xl font-geist font-bold text-gray-900 mb-4 md:mb-0">
               Conçu pour les équipes RH qui visent l'excellence
             </h2>
           </div>
@@ -448,7 +446,7 @@ const Presentation = () => {
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-4xl font-bold mb-6">
+          <h2 className="text-4xl font-geist font-bold mb-6">
             Prêt à révolutionner votre recrutement ?
           </h2>
           <p className="text-xl mb-8 text-blue-100">
