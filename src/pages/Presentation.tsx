@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -353,49 +352,43 @@ const Presentation = () => {
         </div>
       </section>
 
-      {/* Comparison Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Pourquoi RHIA est différent d'un ATS classique ?
-            </h2>
-            <p className="text-xl text-gray-600">
-              Une comparaison claire de nos avantages concurrentiels
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-8 shadow-sm">
-            <div className="grid md:grid-cols-3 gap-8 mb-8">
-              <div className="text-center">
-                <h3 className="text-2xl font-bold text-blue-600 mb-2">RHIA Copilot</h3>
-                <p className="text-gray-600">IA Copilote avancée</p>
+      {/* Comparison Section - New Design */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Left Content */}
+            <div>
+              <div className="mb-4">
+                <span className="text-blue-500 font-medium text-sm">RHIA pour le Recrutement</span>
               </div>
-              <div className="text-center">
-                <h3 className="text-2xl font-bold text-gray-600 mb-2">VS</h3>
-              </div>
-              <div className="text-center">
-                <h3 className="text-2xl font-bold text-gray-400 mb-2">ATS Classique</h3>
-                <p className="text-gray-500">Gestion basique</p>
+              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                Automatisez Votre Processus,
+                <br />
+                Réduisez les Interruptions
+              </h2>
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                Centralisez l'analyse des candidatures, automatisez la documentation, et gardez votre équipe RH concentrée sur l'essentiel.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button 
+                  onClick={() => navigate('/subscription')}
+                  className="inline-flex items-center justify-center gap-3 bg-blue-500 hover:bg-blue-600 text-white font-medium px-8 py-3 rounded-lg transition-colors duration-200"
+                >
+                  <Zap className="h-5 w-5" />
+                  Commencer maintenant
+                </button>
+                <button 
+                  onClick={() => navigate('/subscription')}
+                  className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-8 py-3 rounded-lg transition-colors duration-200"
+                >
+                  Parler aux ventes
+                </button>
               </div>
             </div>
-
-            <div className="space-y-4">
-              {advantages.map((advantage, index) => (
-                <div key={index} className="grid md:grid-cols-3 gap-4 py-4 border-b border-gray-200 last:border-b-0">
-                  <div className="flex items-center gap-2 text-green-600">
-                    <CheckCircle className="h-5 w-5" />
-                    <span className="font-medium">{advantage.rhia}</span>
-                  </div>
-                  <div className="text-center">
-                    <ArrowRight className="h-5 w-5 text-gray-400 mx-auto" />
-                  </div>
-                  <div className="flex items-center gap-2 text-red-400">
-                    <span className="w-5 h-5 border-2 border-red-400 rounded-full flex items-center justify-center text-xs">✗</span>
-                    <span>{advantage.ats}</span>
-                  </div>
-                </div>
-              ))}
+            
+            {/* Right Integration Diagram */}
+            <div className="relative">
+              <IntegrationDiagram />
             </div>
           </div>
         </div>
