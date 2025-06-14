@@ -55,6 +55,7 @@ const App: React.FC = () => {
                 <Route path="/dashboard-redirect" element={<RootRedirect />} />
                 <Route path="/subscription" element={<Subscription />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/ScheduleDemo.tsx" element={<ScheduleDemo />}
                 <Route path="/sign-in" element={<Navigate to="/login" replace />} />
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
