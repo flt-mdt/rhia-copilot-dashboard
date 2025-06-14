@@ -16,7 +16,8 @@ import {
   CheckCircle,
   ArrowRight,
   Star,
-  LogIn
+  LogIn,
+  ChevronRight
 } from 'lucide-react';
 
 const Presentation = () => {
@@ -204,28 +205,28 @@ const Presentation = () => {
               
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">Analyse intelligente de candidatures automatisée</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">Score de matching objectif basé sur l'IA</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">Lecture automatique des CV et lettres de motivation</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">Élimination des biais de recrutement</span>
                 </div>
               </div>
 
               <button 
                 onClick={() => navigate('/subscription')}
-                className="text-green-700 text-sm hover:text-green-800 font-medium"
+                className="text-sm text-gray-600 font-normal hover:text-gray-800 transition-colors duration-200"
               >
-                En savoir plus
+                Learn more
               </button>
             </div>
 
@@ -257,28 +258,28 @@ const Presentation = () => {
               
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">Génération de briefs ultra-précis avec l'IA</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">Conversation intelligente pour affiner vos attentes</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">Mise en lumière des soft skills et fit culturel</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">Formalisation des besoins avec précision inégalée</span>
                 </div>
               </div>
 
               <button 
                 onClick={() => navigate('/subscription')}
-                className="text-red-700 text-sm hover:text-red-800 font-medium"
+                className="text-sm text-gray-600 font-normal hover:text-gray-800 transition-colors duration-200"
               >
-                En savoir plus
+                Learn more
               </button>
             </div>
 
@@ -310,28 +311,28 @@ const Presentation = () => {
               
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">IA qui scanne Internet pour sourcer les meilleurs profils</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">Scraping intelligent (LinkedIn, GitHub, portfolios)</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">Accès aux candidats passifs difficilement accessibles</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-gray-700">Sourcing automatisé et ciblé par l'IA</span>
                 </div>
               </div>
 
               <button 
                 onClick={() => navigate('/subscription')}
-                className="text-blue-700 text-sm hover:text-blue-800 font-medium"
+                className="text-sm text-gray-600 font-normal hover:text-gray-800 transition-colors duration-200"
               >
-                En savoir plus
+                Learn more
               </button>
             </div>
           </div>
