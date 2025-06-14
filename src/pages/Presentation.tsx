@@ -586,8 +586,8 @@ const Presentation = () => {
 
       {/* CTA Section */}
       <section
-        className="py-20 bg-white/90 bg-gradient-to-b from-blue-100/60 via-white/90 to-white/100 transition-all duration-500"
-        // On conserve mobile-friendliness et fondu avec le reste du site grâce à un dégradé doux et de l'opacité
+        className="py-20 bg-white/90 bg-gradient-to-t from-blue-100/60 via-white/90 to-white/100 transition-all duration-500"
+        // Fond dégradé inversé : le blanc est en haut, le bleu arrive en descendant, pour un fondu plus doux avec le footer.
       >
         <div className="max-w-4xl mx-auto text-center px-4">
           <h2 className="text-4xl font-geist font-bold mb-6 text-gray-900">
