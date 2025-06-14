@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,37 +21,6 @@ import {
 
 const Presentation = () => {
   const navigate = useNavigate();
-
-  const features = [
-    {
-      icon: Brain,
-      title: "Analyse intelligente de candidatures",
-      description: "L'IA lit, comprend et analyse automatiquement CV, lettres de motivation et vidéos pour calculer un score de matching objectif.",
-      impact: "Gagnez du temps, objectivisez vos choix, éliminez les biais",
-      color: "bg-blue-500"
-    },
-    {
-      icon: Briefcase,
-      title: "Gestion d'offres et candidatures",
-      description: "Créez des fiches de poste, associez des candidats et suivez leur évolution dans un dashboard personnalisé centralisé.",
-      impact: "Tout est centralisé, fluide, simple et connecté",
-      color: "bg-green-500"
-    },
-    {
-      icon: MessageSquare,
-      title: "RHIA Copilot - Assistant personnel RH",
-      description: "Générez des briefs ultra-précis avec l'IA, affinez vos attentes et mettez en lumière les soft skills et fit culturel.",
-      impact: "Formalisez vos besoins avec une précision inégalée",
-      color: "bg-purple-500"
-    },
-    {
-      icon: Search,
-      title: "Hunter - Sourcing IA avancé",
-      description: "L'IA scanne Internet pour sourcer les meilleurs profils via un scraping intelligent (LinkedIn, GitHub, portfolios).",
-      impact: "Trouvez des candidats passifs difficilement accessibles",
-      color: "bg-orange-500"
-    }
-  ];
 
   const advantages = [
     {
@@ -189,38 +159,181 @@ const Presentation = () => {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Applications Section - New Design */}
       <section className="py-20 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Fonctionnalités révolutionnaires
+              Quels outils allez-vous utiliser ou créer aujourd'hui ?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Découvrez comment RHIA transforme chaque étape de votre processus de recrutement
+              Découvrez nos trois applications principales qui transforment votre processus de recrutement
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="hover:shadow-xl transition-all duration-300 animate-fade-in border-l-4" style={{borderLeftColor: feature.color.replace('bg-', '#')}}>
-                <CardHeader>
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center`}>
-                      <feature.icon className="h-6 w-6 text-white" />
-                    </div>
-                    <CardTitle className="text-xl">{feature.title}</CardTitle>
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Analyse des candidats */}
+            <div className="bg-green-50 rounded-2xl p-8 relative overflow-hidden">
+              <div className="absolute top-4 right-4">
+                <span className="bg-green-600 text-white text-xs px-3 py-1 rounded-full font-medium">
+                  @candidateAnalyzer
+                </span>
+              </div>
+              
+              <div className="mb-6">
+                <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
+                  <Brain className="h-6 w-6 text-white" />
+                </div>
+                <div className="bg-white rounded-lg p-4 mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Brain className="h-5 w-5 text-green-600" />
+                    <span className="font-semibold text-gray-900">RHIA Analyzer</span>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">{feature.description}</p>
-                  <div className="flex items-center gap-2 text-green-600 font-medium">
-                    <TrendingUp className="h-4 w-4" />
-                    <span className="text-sm">Impact : {feature.impact}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  <p className="text-sm text-gray-600">
+                    "L'IA la plus précise que nous ayons adoptée pour analyser les candidatures"
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className="bg-green-600 text-white text-xs px-3 py-1 rounded-full font-medium">
+                    @smartMatching
+                  </span>
+                </div>
+              </div>
+
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Analyse des candidats</h3>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Analyse intelligente de candidatures automatisée</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Score de matching objectif basé sur l'IA</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Lecture automatique des CV et lettres de motivation</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Élimination des biais de recrutement</span>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => navigate('/subscription')}
+                className="text-green-700 text-sm hover:text-green-800 font-medium"
+              >
+                En savoir plus
+              </button>
+            </div>
+
+            {/* Brief avec l'IA */}
+            <div className="bg-pink-50 rounded-2xl p-8 relative overflow-hidden">
+              <div className="absolute top-4 right-4">
+                <span className="bg-red-600 text-white text-xs px-3 py-1 rounded-full font-medium">
+                  @briefCrafter
+                </span>
+              </div>
+              
+              <div className="mb-6">
+                <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center mb-4">
+                  <MessageSquare className="h-6 w-6 text-white" />
+                </div>
+                <div className="bg-white rounded-lg p-4 mb-4 text-center">
+                  <div className="text-2xl font-bold text-gray-900 mb-1">RHIA Copilot</div>
+                  <div className="text-3xl font-bold text-red-600 mb-1">85%</div>
+                  <div className="text-sm text-gray-600">de précision dans la définition des besoins</div>
+                </div>
+                <div className="text-right">
+                  <span className="bg-red-600 text-white text-xs px-3 py-1 rounded-full font-medium">
+                    @needsDefinition
+                  </span>
+                </div>
+              </div>
+
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Brief avec l'IA</h3>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Génération de briefs ultra-précis avec l'IA</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Conversation intelligente pour affiner vos attentes</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Mise en lumière des soft skills et fit culturel</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Formalisation des besoins avec précision inégalée</span>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => navigate('/subscription')}
+                className="text-red-700 text-sm hover:text-red-800 font-medium"
+              >
+                En savoir plus
+              </button>
+            </div>
+
+            {/* Hunter - Sourcing IA */}
+            <div className="bg-blue-50 rounded-2xl p-8 relative overflow-hidden">
+              <div className="absolute top-4 right-4">
+                <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-medium">
+                  @hunterAI
+                </span>
+              </div>
+              
+              <div className="mb-6">
+                <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
+                  <Search className="h-6 w-6 text-white" />
+                </div>
+                <div className="bg-white rounded-lg p-4 mb-4 text-center">
+                  <div className="text-2xl font-bold text-gray-900 mb-1">RHIA Hunter</div>
+                  <div className="text-3xl font-bold text-blue-600 mb-1">92%</div>
+                  <div className="text-sm text-gray-600">de profils qualifiés trouvés en moins de 24h</div>
+                </div>
+                <div className="text-right">
+                  <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-medium">
+                    @talentSourcing
+                  </span>
+                </div>
+              </div>
+
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Hunter - Sourcing IA</h3>
+              
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">IA qui scanne Internet pour sourcer les meilleurs profils</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Scraping intelligent (LinkedIn, GitHub, portfolios)</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Accès aux candidats passifs difficilement accessibles</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">Sourcing automatisé et ciblé par l'IA</span>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => navigate('/subscription')}
+                className="text-blue-700 text-sm hover:text-blue-800 font-medium"
+              >
+                En savoir plus
+              </button>
+            </div>
           </div>
         </div>
       </section>
