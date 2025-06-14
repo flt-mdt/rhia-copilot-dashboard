@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LogIn, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface PricingFeature {
   text: string;
@@ -81,6 +82,29 @@ const Subscription = () => {
         { text: t('subscription.plans.enterprise.features.platformAccess'), included: true },
       ]
     }
+  ];
+
+  const faqs = [
+    {
+      id: 'faq1',
+      question: t('subscription.faq.changePlan.question'),
+      answer: t('subscription.faq.changePlan.answer'),
+    },
+    {
+      id: 'faq2',
+      question: t('subscription.faq.exceedQuota.question'),
+      answer: t('subscription.faq.exceedQuota.answer'),
+    },
+    {
+      id: 'faq3',
+      question: t('subscription.faq.freeTrial.question'),
+      answer: t('subscription.faq.freeTrial.answer'),
+    },
+    {
+      id: 'faq4',
+      question: t('subscription.faq.dataSecure.question'),
+      answer: t('subscription.faq.dataSecure.answer'),
+    },
   ];
 
   const handleSubscribe = async (priceId: string, planName: string) => {
@@ -188,6 +212,32 @@ const Subscription = () => {
             )
           })}
         </div>
+        
+        {/* FAQ Section */}
+        <div className="mt-24 mb-12">
+          <div className="grid md:grid-cols-3 gap-16">
+            <div className="md:col-span-1">
+              <h2 className="text-4xl font-bold text-gray-900 leading-tight">
+                {t('subscription.faq.title')}
+              </h2>
+            </div>
+            <div className="md:col-span-2">
+              <Accordion type="single" collapsible className="w-full">
+                {faqs.map((faq) => (
+                  <AccordionItem value={faq.id} key={faq.id}>
+                    <AccordionTrigger className="text-left">
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
