@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -101,7 +102,7 @@ const Presentation = () => {
           </div>
           <div className="flex items-center gap-4">
             <button 
-              onClick={() => navigate('/subscription')}
+              onClick={() => navigate('/schedule-demo')}
               className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
             >
               Request a demo
@@ -145,7 +146,7 @@ const Presentation = () => {
               Get started
             </button>
             <button 
-              onClick={() => navigate('/subscription')}
+              onClick={() => navigate('/schedule-demo')}
               className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-8 py-3 rounded-2xl transition-colors duration-200 text-lg h-12"
               aria-label="Planifier une démo"
             >
@@ -385,7 +386,7 @@ const Presentation = () => {
                   Commencer maintenant
                 </button>
                 <button 
-                  onClick={() => navigate('/subscription')}
+                  onClick={() => navigate('/schedule-demo')}
                   className="inline-flex items-center justify-center gap-2 bg-transparent text-gray-700 hover:bg-gray-100 font-medium px-6 py-3 rounded-full transition-colors duration-200 text-base"
                 >
                   Demander une démo
@@ -604,7 +605,7 @@ const Presentation = () => {
               variant="outline" 
               size="lg"
               className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold"
-              onClick={() => navigate('/subscription')}
+              onClick={() => navigate('/schedule-demo')}
             >
               Planifier une démo
             </Button>
