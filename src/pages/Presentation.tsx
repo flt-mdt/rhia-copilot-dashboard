@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -162,6 +161,10 @@ const Presentation = () => {
                   src={partner.logo} 
                   alt={partner.name}
                   className="max-h-12 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-200"
+                  onError={(e) => {
+                    console.log(`Failed to load image: ${partner.logo}`);
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
               </div>
             ))}
