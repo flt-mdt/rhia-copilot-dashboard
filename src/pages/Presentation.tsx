@@ -118,7 +118,7 @@ const Presentation = () => {
         </div>
       </div>
 
-      {/* Hero Section - Updated Style */}
+      {/* Hero Section */}
       <section className="py-24 px-4 bg-white">
         <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 mb-8 leading-tight">
