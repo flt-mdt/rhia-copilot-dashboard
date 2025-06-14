@@ -1,3 +1,4 @@
+
 export const subscriptionTranslations = {
   title: "Choisissez votre forfait d'abonnement",
   subtitle: "Automatisez votre processus de recrutement avec notre IA avancée. Payez seulement ce que vous utilisez.",
