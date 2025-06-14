@@ -2,9 +2,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LogIn, ChevronRight } from 'lucide-react';
+import { LogIn, ChevronRight, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { SecurityComplianceSection } from '@/components/subscription/SecurityComplianceSection';
 
 interface PricingFeature {
   text: string;
@@ -228,6 +229,8 @@ const Subscription = () => {
           })}
         </div>
         
+        <SecurityComplianceSection />
+
         {/* FAQ Section */}
         <div className="mt-24 mb-12">
           <div className="grid md:grid-cols-3 gap-16">

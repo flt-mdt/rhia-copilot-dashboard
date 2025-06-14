@@ -1,3 +1,4 @@
+
 export const subscriptionTranslations = {
   title: "Elige tu plan de suscripción",
   subtitle: "Automatiza tu proceso de contratación con nuestra IA avanzada. Paga solo por lo que uses.",
@@ -88,5 +89,22 @@ export const subscriptionTranslations = {
   cta: {
     needHelp: "¿Necesitas ayuda para elegir el plan correcto?",
     contactTeam: "Contacta nuestro equipo"
+  },
+  security: {
+    title: "Seguridad y cumplimiento",
+    cards: {
+      privacy: {
+        title: "Privacidad de datos",
+        description: "Tus datos son tus datos. Nunca se usan para entrenar modelos."
+      },
+      access: {
+        title: "Control de acceso",
+        description: "Permisos detallados con Espacios para información sensible."
+      },
+      compliance: {
+        title: "Cumplimiento",
+        description: "Certificado SOC2 Tipo II, cumple con HIPAA y GDPR."
+      }
+    }
   }
 };

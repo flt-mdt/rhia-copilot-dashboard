@@ -100,6 +100,23 @@ const subscriptionTranslations = {
   cta: {
     needHelp: "Besoin d'aide pour choisir le bon forfait ?",
     contactTeam: "Contactez notre équipe"
+  },
+  security: {
+    title: "Sécurité & conformité",
+    cards: {
+      privacy: {
+        title: "Confidentialité des données",
+        description: "Vos données sont vos données. Jamais utilisées pour l'entraînement de modèles."
+      },
+      access: {
+        title: "Contrôle d'accès",
+        description: "Permissions granulaires avec des Espaces pour les informations sensibles."
+      },
+      compliance: {
+        title: "Conformité",
+        description: "Certifié SOC2 Type II, conforme HIPAA et RGPD."
+      }
+    }
   }
 };
 
