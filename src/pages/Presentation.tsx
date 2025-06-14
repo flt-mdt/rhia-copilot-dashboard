@@ -145,7 +145,7 @@ const Presentation = () => {
       </section>
 
       {/* Trusted by Section - Updated Style */}
-      <section className="py-16 bg-gray-100">
+      <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-2xl font-normal text-gray-600 mb-8">
