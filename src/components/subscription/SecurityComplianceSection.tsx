@@ -35,7 +35,7 @@ export const SecurityComplianceSection = () => {
 
   return (
     <div className="mt-24 mb-12">
-      <h2 className="text-4xl font-bold text-gray-900 leading-tight mb-12">
+      <h2 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 leading-tight mb-12">
         {t('subscription.security.title')}
       </h2>
       <div className="grid md:grid-cols-3 gap-8">
@@ -58,3 +58,4 @@ export const SecurityComplianceSection = () => {
     </div>
   );
 };
+

@@ -160,7 +160,7 @@ const Presentation = () => {
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-2xl font-geist font-normal text-gray-600 mb-8">
+            <h2 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 mb-8">
               Ils nous font confiance
             </h2>
           </div>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -181,7 +180,7 @@ const Subscription = () => {
 
         {/* Header content */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 mb-4">
             {t('subscription.title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -229,13 +228,14 @@ const Subscription = () => {
           })}
         </div>
         
+        {/* Section Sécurité & Conformité */}
         <SecurityComplianceSection />
 
         {/* FAQ Section */}
         <div className="mt-24 mb-12">
           <div className="grid md:grid-cols-3 gap-16">
             <div className="md:col-span-1">
-              <h2 className="text-4xl font-bold text-gray-900 leading-tight">
+              <h2 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 leading-tight">
                 {t('subscription.faq.title')}
               </h2>
             </div>
