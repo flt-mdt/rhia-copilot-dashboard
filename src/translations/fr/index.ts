@@ -1,4 +1,3 @@
-
 import { dashboardTranslations } from './dashboard';
 import { candidatesTranslations } from './candidates';
 import { candidateProfileTranslations } from './candidateProfile';
