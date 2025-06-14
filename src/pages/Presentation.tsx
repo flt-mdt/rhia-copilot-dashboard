@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -354,16 +355,16 @@ const Presentation = () => {
         </div>
       </section>
 
-      {/* Comparison Section - New Design */}
+      {/* Comparison Section - New Design matching the image */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left Content */}
             <div>
-              <div className="mb-4">
-                <span className="text-blue-500 font-medium text-sm">RHIA pour le Recrutement</span>
+              <div className="mb-6">
+                <span className="text-blue-500 font-medium text-lg">RHIA pour le Recrutement</span>
               </div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+              <h2 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Automatisez Votre Processus,
                 <br />
                 Réduisez les Interruptions
@@ -374,16 +375,16 @@ const Presentation = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <button 
                   onClick={() => navigate('/subscription')}
-                  className="inline-flex items-center justify-center gap-3 bg-blue-500 hover:bg-blue-600 text-white font-medium px-8 py-3 rounded-lg transition-colors duration-200"
+                  className="inline-flex items-center justify-center gap-3 bg-blue-500 hover:bg-blue-600 text-white font-medium px-8 py-4 rounded-lg transition-colors duration-200 text-lg"
                 >
                   <Zap className="h-5 w-5" />
                   Commencer maintenant
                 </button>
                 <button 
                   onClick={() => navigate('/subscription')}
-                  className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-8 py-3 rounded-lg transition-colors duration-200"
+                  className="inline-flex items-center justify-center gap-2 text-gray-700 bg-white hover:bg-gray-50 font-medium px-8 py-4 rounded-lg transition-colors duration-200 text-lg"
                 >
-                  Parler aux ventes
+                  Demander une démo
                 </button>
               </div>
             </div>
@@ -495,3 +496,4 @@ const Presentation = () => {
 };
 
 export default Presentation;
+
