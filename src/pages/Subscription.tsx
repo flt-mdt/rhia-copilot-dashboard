@@ -105,6 +105,21 @@ const Subscription = () => {
       question: t('subscription.faq.dataSecure.question'),
       answer: t('subscription.faq.dataSecure.answer'),
     },
+    {
+      id: 'faq5',
+      question: t('subscription.faq.integration.question'),
+      answer: t('subscription.faq.integration.answer'),
+    },
+    {
+      id: 'faq6',
+      question: t('subscription.faq.aiModel.question'),
+      answer: t('subscription.faq.aiModel.answer'),
+    },
+    {
+      id: 'faq7',
+      question: t('subscription.faq.supportOnboarding.question'),
+      answer: t('subscription.faq.supportOnboarding.answer'),
+    },
   ];
 
   const handleSubscribe = async (priceId: string, planName: string) => {

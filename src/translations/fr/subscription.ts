@@ -72,6 +72,18 @@ export const subscriptionTranslations = {
     dataSecure: {
       question: "Les données sont-elles sécurisées ?",
       answer: "Oui, toutes vos données sont chiffrées et hébergées en Europe en conformité avec le RGPD."
+    },
+    integration: {
+      question: "RHIA Copilot peut-il s'intégrer à notre SIRH/ATS existant ?",
+      answer: "Oui, notre plan Enterprise offre une intégration via API et webhooks pour une connexion fluide avec vos outils RH actuels, y compris la plupart des ATS du marché. Le plan Pro inclut également un accès API."
+    },
+    aiModel: {
+      question: "Quel type d'IA utilisez-vous et comment garantissez-vous la confidentialité des données des candidats ?",
+      answer: "Nous utilisons des modèles de langage propriétaires avancés, spécialement entraînés pour les tâches RH. Toutes les données sont chiffrées, traitées en Europe conformément au RGPD, et ne servent jamais à entraîner des modèles publics. Nous garantissons la confidentialité absolue de vos données et de celles de vos candidats."
+    },
+    supportOnboarding: {
+      question: "Quel type de support et d'onboarding proposez-vous ?",
+      answer: "Tous nos plans incluent un accès à la plateforme et un support client. Le plan Pro offre un support prioritaire, et le plan Enterprise inclut un support dédié avec un onboarding personnalisé pour assurer que votre équipe tire le meilleur parti de notre plateforme dès le premier jour."
     }
   },
   cta: {

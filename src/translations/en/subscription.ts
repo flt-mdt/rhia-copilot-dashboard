@@ -1,3 +1,4 @@
+
 export const subscriptionTranslations = {
   title: "Choose your subscription plan",
   subtitle: "Automate your recruitment process with our advanced AI. Pay only for what you use.",
@@ -71,6 +72,18 @@ export const subscriptionTranslations = {
     dataSecure: {
       question: "Is data secure?",
       answer: "Yes, all your data is encrypted and hosted in Europe in compliance with GDPR."
+    },
+    integration: {
+      question: "Can RHIA Copilot integrate with our existing Applicant Tracking System (ATS)?",
+      answer: "Yes, our Enterprise plan offers API and webhooks for seamless integration with your existing HR tools, including most ATS on the market. The Pro plan also includes API access."
+    },
+    aiModel: {
+      question: "What kind of AI do you use, and how do you ensure candidate data privacy?",
+      answer: "We use advanced proprietary language models trained for HR tasks. All data is encrypted, processed in Europe in compliance with GDPR, and is not used to train public models. We guarantee the confidentiality of your data and that of your candidates."
+    },
+    supportOnboarding: {
+      question: "What kind of support and onboarding is included?",
+      answer: "All our plans include platform access and support. The Pro plan offers priority support, and the Enterprise plan includes dedicated support with a personalized onboarding to ensure your team makes the most of our platform from day one."
     }
   },
   cta: {
