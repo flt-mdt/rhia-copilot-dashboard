@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -405,14 +406,10 @@ const Presentation = () => {
       {/* Testimonials Section - New Carousel Design */}
       <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between md:items-center mb-12 relative">
+          <div className="flex flex-col md:flex-row justify-between md:items-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-0">
               Conçu pour les équipes RH qui visent l'excellence
             </h2>
-            <div className="flex gap-2 items-center absolute -top-0 right-0">
-               <CarouselPrevious className="static translate-y-0 bg-white border-gray-200 hover:bg-gray-100 text-gray-600 hover:text-gray-900" />
-               <CarouselNext className="static translate-y-0 bg-white border-gray-200 hover:bg-gray-100 text-gray-600 hover:text-gray-900" />
-            </div>
           </div>
 
           <Carousel
@@ -420,7 +417,7 @@ const Presentation = () => {
               align: "start",
               loop: true,
             }}
-            className="w-full"
+            className="w-full relative"
           >
             <CarouselContent className="-ml-8">
               {testimonials.map((testimonial, index) => (
@@ -440,6 +437,10 @@ const Presentation = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
+            <div className="flex gap-2 items-center absolute -top-20 right-0">
+               <CarouselPrevious className="static translate-y-0 bg-white border-gray-200 hover:bg-gray-100 text-gray-600 hover:text-gray-900" />
+               <CarouselNext className="static translate-y-0 bg-white border-gray-200 hover:bg-gray-100 text-gray-600 hover:text-gray-900" />
+            </div>
           </Carousel>
         </div>
       </section>
