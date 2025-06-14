@@ -72,6 +72,18 @@ export const subscriptionTranslations = {
     dataSecure: {
       question: "Les données sont-elles sécurisées ?",
       answer: "Oui, toutes vos données sont chiffrées et hébergées en Europe conformément au RGPD."
+    },
+    integration: {
+      question: "L'intégration avec nos outils RH (SIRH/ATS) sera-t-elle complexe ?",
+      answer: "Pas du tout. Nous avons conçu RHIA Copilot pour s'intégrer facilement à votre écosystème. Le plan Enterprise inclut l'intégration complète via API et webhooks, gérée par nos équipes, pour une transition sans effort. Le plan Pro donne également accès à l'API pour connecter vos outils clés. L'objectif : centraliser, pas disperser vos données."
+    },
+    aiModel: {
+      question: "Comment garantissez-vous la sécurité de nos données et celles de nos candidats ?",
+      answer: "La sécurité est notre priorité. Nous utilisons des modèles d’IA propriétaires, spécifiquement entraînés pour les RH, jamais des modèles publics. Toutes vos données sont chiffrées et hébergées en Europe dans le respect strict du RGPD. Confidentialité totale : vos données ne servent jamais à entraîner d'autres modèles. C'est votre coffre-fort RH sécurisé et intelligent."
+    },
+    supportOnboarding: {
+      question: "Comment allez-vous nous accompagner au lancement et garantir l’adoption par nos équipes ?",
+      answer: "On ne vous laisse pas seuls ! Chaque plan inclut un accompagnement pour garantir votre succès. Le plan Pro vous donne un accès prioritaire à nos experts. Avec le plan Enterprise, nous allons plus loin : gestionnaire de compte dédié et onboarding personnalisé pour former vos équipes, intégrer vos processus, et garantir le retour sur investissement dès le premier jour."
     }
   },
   cta: {
