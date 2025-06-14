@@ -1,4 +1,3 @@
-
 export const subscriptionTranslations = {
   title: "Choisissez votre forfait d'abonnement",
   subtitle: "Automatisez votre processus de recrutement avec notre IA avancée. Payez seulement ce que vous utilisez.",
@@ -74,16 +73,16 @@ export const subscriptionTranslations = {
       answer: "Oui, toutes vos données sont chiffrées et hébergées en Europe en conformité avec le RGPD."
     },
     integration: {
-      question: "RHIA Copilot peut-il s'intégrer à notre SIRH/ATS existant ?",
-      answer: "Oui, notre plan Enterprise offre une intégration via API et webhooks pour une connexion fluide avec vos outils RH actuels, y compris la plupart des ATS du marché. Le plan Pro inclut également un accès API."
+      question: "L'intégration avec nos outils RH actuels (SIRH/ATS) sera-t-elle complexe ?",
+      answer: "Absolument pas. Nous avons conçu RHIA Copilot pour qu'il s'intègre en douceur à votre écosystème. Notre plan Enterprise inclut une intégration complète via API et webhooks, gérée par nos équipes pour une transition sans effort. Le plan Pro vous donne également un accès API pour connecter vos outils clés. L'objectif est de centraliser vos données, pas de les disperser."
     },
     aiModel: {
-      question: "Quel type d'IA utilisez-vous et comment garantissez-vous la confidentialité des données des candidats ?",
-      answer: "Nous utilisons des modèles de langage propriétaires avancés, spécialement entraînés pour les tâches RH. Toutes les données sont chiffrées, traitées en Europe conformément au RGPD, et ne servent jamais à entraîner des modèles publics. Nous garantissons la confidentialité absolue de vos données et de celles de vos candidats."
+      question: "Comment garantissez-vous la sécurité de nos données et de celles des candidats ?",
+      answer: "La sécurité est notre priorité absolue. Nous utilisons des modèles IA propriétaires, entraînés spécifiquement pour les RH, et non des modèles publics. Toutes vos données sont chiffrées, hébergées en Europe en stricte conformité avec le RGPD. Nous garantissons une confidentialité totale : vos données ne sont jamais utilisées pour entraîner d'autres modèles. C'est votre coffre-fort de données RH, sécurisé et intelligent."
     },
     supportOnboarding: {
-      question: "Quel type de support et d'onboarding proposez-vous ?",
-      answer: "Tous nos plans incluent un accès à la plateforme et un support client. Le plan Pro offre un support prioritaire, et le plan Enterprise inclut un support dédié avec un onboarding personnalisé pour assurer que votre équipe tire le meilleur parti de notre plateforme dès le premier jour."
+      question: "Comment allez-vous nous aider à prendre en main l'outil et à assurer son adoption par l'équipe ?",
+      answer: "Nous ne vous laissons pas seul. Chaque plan inclut un support pour garantir votre succès. Le plan Pro vous donne un accès prioritaire à nos experts. Avec le plan Enterprise, nous allons plus loin : un gestionnaire de compte dédié et un programme d'onboarding personnalisé sont inclus pour former votre équipe, intégrer vos processus et assurer un retour sur investissement dès le premier jour."
     }
   },
   cta: {

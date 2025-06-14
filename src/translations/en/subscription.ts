@@ -1,4 +1,3 @@
-
 export const subscriptionTranslations = {
   title: "Choose your subscription plan",
   subtitle: "Automate your recruitment process with our advanced AI. Pay only for what you use.",
@@ -74,16 +73,16 @@ export const subscriptionTranslations = {
       answer: "Yes, all your data is encrypted and hosted in Europe in compliance with GDPR."
     },
     integration: {
-      question: "Can RHIA Copilot integrate with our existing Applicant Tracking System (ATS)?",
-      answer: "Yes, our Enterprise plan offers API and webhooks for seamless integration with your existing HR tools, including most ATS on the market. The Pro plan also includes API access."
+      question: "Will integration with our current HR tools (HRIS/ATS) be complex?",
+      answer: "Not at all. We designed RHIA Copilot to integrate smoothly into your ecosystem. Our Enterprise plan includes full integration via API and webhooks, managed by our teams for an effortless transition. The Pro plan also gives you API access to connect your key tools. The goal is to centralize your data, not scatter it."
     },
     aiModel: {
-      question: "What kind of AI do you use, and how do you ensure candidate data privacy?",
-      answer: "We use advanced proprietary language models trained for HR tasks. All data is encrypted, processed in Europe in compliance with GDPR, and is not used to train public models. We guarantee the confidentiality of your data and that of your candidates."
+      question: "How do you guarantee the security of our data and our candidates' data?",
+      answer: "Security is our top priority. We use proprietary AI models, specifically trained for HR, not public models. All your data is encrypted and hosted in Europe in strict compliance with GDPR. We guarantee total confidentiality: your data is never used to train other models. It's your secure and intelligent HR data vault."
     },
     supportOnboarding: {
-      question: "What kind of support and onboarding is included?",
-      answer: "All our plans include platform access and support. The Pro plan offers priority support, and the Enterprise plan includes dedicated support with a personalized onboarding to ensure your team makes the most of our platform from day one."
+      question: "How will you help us get started and ensure team adoption?",
+      answer: "We don't leave you on your own. Every plan includes support to ensure your success. The Pro plan gives you priority access to our experts. With the Enterprise plan, we go further: a dedicated account manager and a personalized onboarding program are included to train your team, integrate your processes, and ensure a return on investment from day one."
     }
   },
   cta: {
