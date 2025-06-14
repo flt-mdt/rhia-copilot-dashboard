@@ -30,6 +30,7 @@ import Subscription from "./pages/Subscription";
 import RootRedirect from "./components/RootRedirect";
 import Presentation from "./pages/Presentation";
 import Privacy from "./pages/Privacy";
+import ScheduleDemo from "./pages/ScheduleDemo";
 
 const App: React.FC = () => {
   const [queryClient] = React.useState(() => new QueryClient({
@@ -55,7 +56,7 @@ const App: React.FC = () => {
                 <Route path="/dashboard-redirect" element={<RootRedirect />} />
                 <Route path="/subscription" element={<Subscription />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/ScheduleDemo.tsx" element={<ScheduleDemo />}
+                <Route path="/schedule-demo" element={<ScheduleDemo />} />
                 <Route path="/sign-in" element={<Navigate to="/login" replace />} />
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
