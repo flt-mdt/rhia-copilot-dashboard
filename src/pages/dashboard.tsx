@@ -6,7 +6,7 @@ import TopCandidates from '@/components/dashboard/TopCandidates';
 import ActiveJobs from '@/components/dashboard/ActiveJobs';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Skeleton } from '@/components/ui/skeleton';
+import { TrendingUp, BarChart, Clock, Activity } from 'lucide-react';
 
 const getChangeProps = (changeValue?: string) => {
   if (typeof changeValue !== "string") return undefined;
@@ -28,21 +28,25 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
+          icon={<TrendingUp className="w-7 h-7" />}
           title={t('dashboard.stats.newApplications')}
           value={isLoading ? "..." : stats?.newApplications ?? 0}
           change={isLoading ? undefined : getChangeProps(stats?.newApplicationsChange)}
         />
         <StatCard
+          icon={<BarChart className="w-7 h-7" />}
           title={t('dashboard.stats.totalCandidates')}
           value={isLoading ? "..." : stats?.totalCandidates ?? 0}
           change={isLoading ? undefined : getChangeProps(stats?.totalCandidatesChange)}
         />
         <StatCard
+          icon={<Clock className="w-7 h-7" />}
           title={t('dashboard.stats.interviewStage')}
           value={isLoading ? "..." : stats?.interviewStage ?? 0}
           change={isLoading ? undefined : getChangeProps(stats?.interviewStageChange)}
         />
         <StatCard
+          icon={<Activity className="w-7 h-7" />}
           title={t('dashboard.stats.activeJobs')}
           value={isLoading ? "..." : stats?.activeJobs ?? 0}
           change={isLoading ? undefined : getChangeProps(stats?.activeJobsChange)}
