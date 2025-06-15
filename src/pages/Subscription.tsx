@@ -158,7 +158,7 @@ const Subscription = () => {
   return (
     <div className="min-h-screen bg-white py-12 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header avec bouton Sign In */}
+        {/* Header avec bouton Sign In et Planifier une démo */}
         <div className="flex justify-between items-center mb-8">
           <button onClick={() => navigate('/')} className="flex items-center gap-3">
             <img 
@@ -168,12 +168,20 @@ const Subscription = () => {
             />
             <span className="font-semibold text-lg">RHIA Copilot</span>
           </button>
-          <Button
-            onClick={() => navigate('/login')}
-            className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
-          >
-            {t('common.signIn')}
-          </Button>
+          <div className="flex gap-4">
+            <Button
+              onClick={() => navigate('/login')}
+              className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
+            >
+              {t('common.signIn')}
+            </Button>
+            <Button
+              onClick={() => navigate('/schedule-demo')}
+              className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
+            >
+              {t('common.planDemo')}
+            </Button>
+          </div>
         </div>
 
         {/* Header content */}
