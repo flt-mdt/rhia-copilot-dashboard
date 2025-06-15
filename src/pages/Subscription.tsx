@@ -168,19 +168,19 @@ const Subscription = () => {
             />
             <span className="font-semibold text-lg">RHIA Copilot</span>
           </button>
-          {/* Buttons style à la pixel perfect */}
-          <div className="flex gap-4">
+          {/* Boutons pixel perfect */}
+          <div className="flex gap-3">
             <Button
               onClick={() => navigate('/schedule-demo')}
-              className="h-[56px] px-8 rounded-full border-2 border-[#b3c6e0] bg-white text-[#24426b] font-medium text-lg shadow-none hover:bg-[#f6fafd] hover:text-[#24426b] hover:border-[#3882f6] transition-all"
-              style={{ minWidth: 230, boxShadow: 'none', fontFamily: 'Inter, sans-serif' }}
+              className="h-12 px-7 rounded-full border-[1.5px] border-[#b3c6e0] bg-white text-[#24426b] font-medium text-base shadow-sm hover:bg-[#f6fafd] hover:text-[#24426b] hover:border-[#3882f6] transition-all"
+              style={{ boxShadow: '0 1px 2px 0 rgba(16,30,54,0.07)', fontFamily: 'Inter, sans-serif', minWidth: 170 }}
             >
               {t('common.planDemo')}
             </Button>
             <Button
               onClick={() => navigate('/login')}
-              className="h-[56px] px-8 rounded-full bg-[#3882f6] text-white font-medium text-lg border-2 border-transparent shadow-none hover:bg-[#2563eb] transition-all"
-              style={{ minWidth: 180, boxShadow: 'none', fontFamily: 'Inter, sans-serif' }}
+              className="h-12 px-7 rounded-full bg-[#3882f6] text-white font-medium text-base border-0 shadow-sm hover:bg-[#2563eb] transition-all"
+              style={{ boxShadow: '0 1.5px 3px 0 rgba(16,30,54,0.09)', fontFamily: 'Inter, sans-serif', minWidth: 140 }}
             >
               {t('common.signIn')}
             </Button>
