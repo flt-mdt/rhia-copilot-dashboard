@@ -168,10 +168,9 @@ const Subscription = () => {
             />
             <span className="font-semibold text-lg">RHIA Copilot</span>
           </button>
-          <Button 
-            variant="outline" 
+          <Button
             onClick={() => navigate('/login')}
-            className="flex items-center gap-2"
+            className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
           >
             <LogIn className="h-4 w-4" />
             Sign In
