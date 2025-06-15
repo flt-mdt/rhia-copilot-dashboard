@@ -168,19 +168,19 @@ const Subscription = () => {
             />
             <span className="font-semibold text-lg">RHIA Copilot</span>
           </button>
-          {/* Boutons pixel perfect */}
-          <div className="flex gap-3">
+          {/* Boutons pixel perfect : copie exacte du style de Presentation */}
+          <div className="flex gap-4">
             <Button
               onClick={() => navigate('/schedule-demo')}
-              className="h-12 px-7 rounded-full border-[1.5px] border-[#b3c6e0] bg-white text-[#24426b] font-medium text-base shadow-sm hover:bg-[#f6fafd] hover:text-[#24426b] hover:border-[#3882f6] transition-all"
-              style={{ boxShadow: '0 1px 2px 0 rgba(16,30,54,0.07)', fontFamily: 'Inter, sans-serif', minWidth: 170 }}
+              className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
+              style={{ fontFamily: 'Inter, sans-serif' }}
             >
               {t('common.planDemo')}
             </Button>
             <Button
               onClick={() => navigate('/login')}
-              className="h-12 px-7 rounded-full bg-[#3882f6] text-white font-medium text-base border-0 shadow-sm hover:bg-[#2563eb] transition-all"
-              style={{ boxShadow: '0 1.5px 3px 0 rgba(16,30,54,0.09)', fontFamily: 'Inter, sans-serif', minWidth: 140 }}
+              className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
+              style={{ fontFamily: 'Inter, sans-serif' }}
             >
               {t('common.signIn')}
             </Button>
