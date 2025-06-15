@@ -168,16 +168,19 @@ const Subscription = () => {
             />
             <span className="font-semibold text-lg">RHIA Copilot</span>
           </button>
-          <div className="flex gap-3">
+          {/* Buttons style à la pixel perfect */}
+          <div className="flex gap-4">
             <Button
               onClick={() => navigate('/schedule-demo')}
-              className="bg-blue-600 text-white font-bold px-6 py-2 rounded-full shadow-md text-sm h-10 transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+              className="h-[56px] px-8 rounded-full border-2 border-[#b3c6e0] bg-white text-[#24426b] font-medium text-lg shadow-none hover:bg-[#f6fafd] hover:text-[#24426b] hover:border-[#3882f6] transition-all"
+              style={{ minWidth: 230, boxShadow: 'none', fontFamily: 'Inter, sans-serif' }}
             >
               {t('common.planDemo')}
             </Button>
             <Button
               onClick={() => navigate('/login')}
-              className="bg-white text-blue-600 font-bold px-6 py-2 rounded-full shadow-md text-sm h-10 border border-blue-600 transition-colors duration-200 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+              className="h-[56px] px-8 rounded-full bg-[#3882f6] text-white font-medium text-lg border-2 border-transparent shadow-none hover:bg-[#2563eb] transition-all"
+              style={{ minWidth: 180, boxShadow: 'none', fontFamily: 'Inter, sans-serif' }}
             >
               {t('common.signIn')}
             </Button>
