@@ -58,9 +58,9 @@ const CandidateHeader = ({
   onCopyLink
 }: CandidateHeaderProps) => {
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "bg-green-500";
-    if (score >= 60) return "bg-yellow-500";
-    return "bg-red-500";
+    if (score >= 80) return "#10B981"; // green
+    if (score >= 60) return "#F59E0B"; // yellow/orange
+    return "#EF4444"; // red
   };
 
   const formattedLastUpdated = formatDistanceToNow(new Date(lastUpdated), {
@@ -68,66 +68,123 @@ const CandidateHeader = ({
     locale: fr
   });
 
+  // Mock data - en production, ces valeurs viendraient des props ou d'une API
+  const averageScore = 79;
+  const topScore = 85;
+
+  const createCircularProgress = (percentage: number, color: string, size: number = 120) => {
+    const radius = (size - 8) / 2;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDasharray = circumference;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+    return (
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="transform -rotate-90">
+          {/* Background circle */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="#f3f4f6"
+            strokeWidth="8"
+            fill="transparent"
+          />
+          {/* Progress circle */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={color}
+            strokeWidth="8"
+            fill="transparent"
+            strokeLinecap="round"
+            strokeDasharray={strokeDasharray}
+            strokeDashoffset={strokeDashoffset}
+            className="transition-all duration-300"
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-3xl font-bold text-gray-900">{percentage}%</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col md:flex-row items-start md:items-center justify-between">
-      <div className="flex flex-col">
-        <div className="flex items-center gap-3 mb-2">
-          <h1 className="text-2xl font-bold">{name}</h1>
-          <Button variant="ghost" size="icon" onClick={onCopyLink} className="h-7 w-7">
+    <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+        <div className="flex flex-col">
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-2xl font-bold">{name}</h1>
+            <Button variant="ghost" size="icon" onClick={onCopyLink} className="h-7 w-7">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Copy className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Copier le lien du profil</p>
+                </TooltipContent>
+              </Tooltip>
+            </Button>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-2 mt-1">
+            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+              {targetJob}
+            </span>
+            <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${statusToColorMap[status]}`}>
+              {statusLabels[status]}
+            </span>
+            
             <Tooltip>
               <TooltipTrigger asChild>
-                <Copy className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                <div className="inline-flex items-center gap-1 text-xs font-medium text-gray-600">
+                  {aiStatusIcons[aiStatus]}
+                  <span>{aiStatusLabels[aiStatus]}</span>
+                </div>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Copier le lien du profil</p>
+                <p>
+                  {aiStatus === "analyzed" ? "Profil analysé par notre IA" : 
+                   aiStatus === "error" ? "Une erreur est survenue lors de l'analyse" :
+                   "L'analyse du profil est en cours"}
+                </p>
               </TooltipContent>
             </Tooltip>
-          </Button>
+            
+            <span className="text-xs text-gray-500 ml-2">
+              Mis à jour {formattedLastUpdated}
+            </span>
+          </div>
         </div>
         
-        <div className="flex flex-wrap items-center gap-2 mt-1">
-          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-            {targetJob}
-          </span>
-          <span className={`text-xs font-medium px-2.5 py-0.5 rounded ${statusToColorMap[status]}`}>
-            {statusLabels[status]}
-          </span>
-          
+        <div className="mt-4 md:mt-0 flex flex-col items-center">
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="inline-flex items-center gap-1 text-xs font-medium text-gray-600">
-                {aiStatusIcons[aiStatus]}
-                <span>{aiStatusLabels[aiStatus]}</span>
+              <div className="flex flex-col items-center">
+                {createCircularProgress(score, getScoreColor(score))}
+                
+                {/* Statistics en dessous */}
+                <div className="flex items-center gap-8 mt-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <span>Average</span>
+                    <span className="text-gray-400">↑</span>
+                    <span className="font-medium text-gray-700">{averageScore}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span>Top Score</span>
+                    <span className="text-gray-400">↑</span>
+                    <span className="font-medium text-gray-700">{topScore}</span>
+                  </div>
+                </div>
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>
-                {aiStatus === "analyzed" ? "Profil analysé par notre IA" : 
-                 aiStatus === "error" ? "Une erreur est survenue lors de l'analyse" :
-                 "L'analyse du profil est en cours"}
-              </p>
+              <p>Score de matching IA</p>
             </TooltipContent>
           </Tooltip>
-          
-          <span className="text-xs text-gray-500 ml-2">
-            Mis à jour {formattedLastUpdated}
-          </span>
         </div>
-      </div>
-      
-      <div className="mt-4 md:mt-0 flex items-center">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex items-center">
-              <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-bold ${getScoreColor(score)}`}>
-                {score}%
-              </div>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Score de matching IA</p>
-          </TooltipContent>
-        </Tooltip>
       </div>
     </div>
   );
