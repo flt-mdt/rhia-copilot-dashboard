@@ -1,6 +1,7 @@
 
 import { dashboardTranslations } from './dashboard';
 import { jobsTranslations } from './jobs';
+import { jobDetailTranslations } from './jobDetail';
 import { hunterTranslations } from './hunter';
 import { settingsTranslations } from './settings';
 import { subscriptionTranslations } from './subscription';
@@ -11,6 +12,7 @@ import { commonTranslations } from './common';
 export const frTranslations = {
   dashboard: dashboardTranslations,
   jobs: jobsTranslations,
+  jobDetail: jobDetailTranslations,
   hunter: hunterTranslations,
   settings: settingsTranslations,
   subscription: subscriptionTranslations,
