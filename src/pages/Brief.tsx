@@ -1,514 +1,515 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Lightbulb, FileText, Briefcase, BookOpen } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import { useNavigate, useParams } from 'react-router-dom';
-import InteractiveBriefSummary from '@/components/brief/InteractiveBriefSummary';
-import ChatMessage from '@/components/brief/ChatMessage';
-import SuggestionCard from '@/components/brief/SuggestionCard';
-import { useAIBriefs } from '@/hooks/useAIBriefs';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://hunter-backend-w5ju.onrender.com/api';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AlertTriangle, Check, RefreshCw, Send, Download, Copy } from 'lucide-react';
+import { UserPreferences, BriefData, briefBackendApi } from '@/services/briefBackendApi';
+import ChatMessage from '@/components/brief/ChatMessage';
+
+// Les 18 sections canoniques du brief
+const SECTION_IDS = [
+  "Titre & Job Family",
+  "Contexte & Business Case", 
+  "Finalité/Mission",
+  "Objectifs & KPIs",
+  "Responsabilités clés",
+  "Périmètre budgétaire & managérial",
+  "Environnement & contraintes",
+  "Compétences & exigences",
+  "Qualifications & expériences",
+  "Employee Value Proposition",
+  "Perspectives d'évolution",
+  "Rémunération & avantages",
+  "Cadre contractuel",
+  "Mesure de la performance & cadence",
+  "Parties prenantes & RACI",
+  "Inclusion, conformité & sécurité",
+  "Onboarding & développement",
+  "Processus de recrutement"
+];
 
 interface Message {
   id: string;
   content: string;
   isAI: boolean;
   timestamp: Date;
+  component?: React.ReactNode;
 }
 
-interface BriefData {
-  missions: string[];
-  hardSkills: string[];
-  softSkills: string[];
-  context: string;
-  location: string;
-  constraints: string[];
-}
-
-interface BriefCompletionState {
-  missions: boolean;
-  hardSkills: boolean;
-  softSkills: boolean;
-  context: boolean;
-  location: boolean;
-  constraints: boolean;
-}
-
-// Helper pour faire un POST SSE en TypeScript avec fetch
-export async function streamAIResponse({
-  briefId,
-  message,
-  onData,
-  onComplete,
-  onError,
-}: {
-  briefId: string,
-  message: string,
-  onData: (chunk: string) => void,
-  onComplete: () => void,
-  onError?: (err: Error) => void,
-}) {
-  // Récupère le token dynamiquement (ex : depuis useAuth, ou localStorage si besoin)
-  const userData = localStorage.getItem("supabase.auth.token");
-  let token: string | null = null;
-  if (userData) {
-    try {
-      const parsed = JSON.parse(userData);
-      token = parsed.currentSession?.access_token || parsed.access_token;
-    } catch {
-      token = null;
-    }
-  }
-
-  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
-
-  const response = await fetch(`${API_BASE}/chat/${briefId}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    },
-    body: JSON.stringify({ content: message }),
-  });
-
-  if (!response.body) {
-    onError?.(new Error("Pas de flux de réponse SSE du backend."));
-    return;
-  }
-
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      // On découpe par lignes SSE
-      const lines = buffer.split("\n");
-      buffer = lines.pop() || "";
-      for (const line of lines) {
-        if (line.startsWith("data:")) {
-          const chunk = line.replace(/^data:\s?/, "");
-          if (chunk === "[END]") {
-            onComplete();
-            return;
-          }
-          onData(chunk);
-        }
-      }
-    }
-  } catch (err) {
-    onError?.(err as Error);
-  }
-  onComplete();
-}
-
+type WorkflowStep = 'config' | 'data-entry' | 'generation' | 'final';
 
 const Brief = () => {
-  const navigate = useNavigate();
-  const { briefId } = useParams();
-  const { session } = useAuth();
-  const { toast } = useToast();
-  const { saveBrief, generateJobPosting, fetchBrief } = useAIBriefs();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [currentStep, setCurrentStep] = useState<WorkflowStep>('config');
   
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      content: "Bonjour ! Je suis votre assistant IA spécialisé en recrutement. Je vais vous aider à définir précisément le profil que vous recherchez. Pour commencer, pouvez-vous me parler de votre besoin de recrutement ? Même si vous n'êtes pas encore sûr des détails, décrivez-moi simplement la situation.",
-      isAI: true,
-      timestamp: new Date()
-    }
-  ]);
-  
-  const [currentMessage, setCurrentMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentBriefId, setCurrentBriefId] = useState<string | null>(briefId || null);
-  
-  const [briefData, setBriefData] = useState<BriefData>({
-    missions: [],
-    hardSkills: [],
-    softSkills: [],
-    context: '',
-    location: '',
-    constraints: []
+  // Configuration
+  const [userPreferences, setUserPreferences] = useState<UserPreferences>({
+    sections: new Array(18).fill(false),
+    language: 'fr',
+    seniority: 'Senior'
   });
+  
+  // Données du brief
+  const [briefData, setBriefData] = useState<BriefData>({});
+  const [completedSections, setCompletedSections] = useState<Set<string>>(new Set());
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  
+  // Génération
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedMarkdown, setGeneratedMarkdown] = useState<string>('');
+  const [confidence, setConfidence] = useState<number>(0);
+  const [fallbackNeeded, setFallbackNeeded] = useState<boolean>(false);
+  const [feedbackText, setFeedbackText] = useState('');
+  const [isReforming, setIsReforming] = useState(false);
+  
+  // Brief final
+  const [finalBrief, setFinalBrief] = useState<string>('');
+  const [isCopied, setIsCopied] = useState(false);
 
-  const [completionState, setCompletionState] = useState<BriefCompletionState>({
-    missions: false,
-    hardSkills: false,
-    softSkills: false,
-    context: false,
-    location: false,
-    constraints: false
-  });
+  const activeSections = SECTION_IDS.filter((_, index) => userPreferences.sections[index]);
+  const progress = activeSections.length > 0 ? (completedSections.size / activeSections.length) * 100 : 0;
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const addMessage = (content: string, isAI: boolean = false, component?: React.ReactNode) => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      content,
+      isAI,
+      timestamp: new Date(),
+      component
+    };
+    setMessages(prev => [...prev, newMessage]);
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const handleSectionToggle = (index: number, checked: boolean) => {
+    const newSections = [...userPreferences.sections];
+    newSections[index] = checked;
+    setUserPreferences({
+      ...userPreferences,
+      sections: newSections
+    });
+  };
 
-  // Load existing brief if briefId is provided
-  useEffect(() => {
-    const loadBrief = async () => {
-      if (currentBriefId && fetchBrief) {
-        const brief = await fetchBrief(currentBriefId);
-        if (brief) {
-          // Populate messages from conversation_data
-          if (brief.conversation_data && Array.isArray(brief.conversation_data)) {
-            setMessages(brief.conversation_data);
-          }
-          
-          // Populate briefData
-          setBriefData({
-            missions: brief.missions || [],
-            hardSkills: brief.hardSkills || [],
-            softSkills: brief.softSkills || [],
-            context: brief.project_context || '',
-            location: brief.location || '',
-            constraints: brief.constraints || []
-          });
-          
-          // Populate completionState
-          if (brief.brief_summary) {
-            setCompletionState(brief.brief_summary);
-          }
-        }
-      }
-    };
+  const handleConfigSubmit = async () => {
+    try {
+      await briefBackendApi.storeUserPreferences(userPreferences);
+      addMessage("Configuration sauvegardée ! Passons maintenant à la saisie des données pour chaque section.", true);
+      setCurrentStep('data-entry');
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde des préférences:', error);
+      addMessage("Erreur lors de la sauvegarde. Veuillez réessayer.", true);
+    }
+  };
 
-    loadBrief();
-  }, [currentBriefId, fetchBrief]);
-
-  const suggestions = [
-    "Quel est le niveau d'expérience requis pour ce poste ?",
-    "Avez-vous défini une fourchette salariale pour ce recrutement ?",
-    "Souhaitez-vous explorer plusieurs profils différents ?",
-    "Dans quel contexte cette personne va-t-elle évoluer au quotidien ?",
-    "Y a-t-il des contraintes particulières à prendre en compte ?",
-    "Quelles sont vos attentes en termes de disponibilité ?"
-  ];
-
-  const handleCompletionChange = (section: keyof BriefCompletionState, completed: boolean) => {
-    setCompletionState(prev => ({
+  const handleDataUpdate = async (sectionId: string, data: Record<string, any>) => {
+    setBriefData(prev => ({
       ...prev,
-      [section]: completed
+      [sectionId]: data
     }));
-  };
-
-  const handleSendMessage = async () => {
-  if (!currentMessage.trim()) return;
-
-  const userMessage: Message = {
-    id: Date.now().toString(),
-    content: currentMessage,
-    isAI: false,
-    timestamp: new Date()
-  };
-
-  setMessages(prev => [...prev, userMessage]);
-  setCurrentMessage('');
-  setIsLoading(true);
-
-  // Assure-toi que le brief existe (création auto si premier message)
-  let briefId = currentBriefId;
-  if (!briefId) {
-    const savedBrief = await saveBrief({
-      title: 'Brief en cours',
-      // ...autres champs vides si besoin
-    });
-    briefId = savedBrief?.id;
-    setCurrentBriefId(briefId);
-  }
-  if (!briefId) {
-    setIsLoading(false);
-    return;
-  }
-
-  // Streaming IA
-  let aiContent = "";
-  await streamAIResponse({
-    briefId,
-    message: userMessage.content,
-    onData: (chunk) => {
-      aiContent += chunk;
-      setMessages(prev => {
-        // On remplace le dernier message IA ou on en crée un nouveau
-        const last = prev[prev.length - 1];
-        if (last && last.isAI) {
-          // On concatène les morceaux pour l’effet streaming
-          return [...prev.slice(0, -1), { ...last, content: aiContent, timestamp: new Date() }];
-        } else {
-          // Première réponse IA pour ce message
-          return [...prev, { id: Date.now().toString() + "-ai", content: aiContent, isAI: true, timestamp: new Date() }];
-        }
-      });
-    },
-    onComplete: () => setIsLoading(false),
-    onError: (err) => {
-      setIsLoading(false);
-      // Optionnel : toast d’erreur
+    
+    try {
+      await briefBackendApi.updateBriefData(sectionId, data);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour des données:', error);
     }
-  });
-};
-  
-  const updateBriefData = (userInput: string) => {
-    // Simple parsing - in real app, this would use AI to extract structured data
-    setBriefData(prev => {
-      const updated = { ...prev };
+  };
+
+  const handleGenerate = async () => {
+    if (activeSections.length === 0 || currentSectionIndex >= activeSections.length) return;
+    
+    const currentSection = activeSections[currentSectionIndex];
+    setIsGenerating(true);
+    
+    try {
+      const response = await briefBackendApi.generateSection(
+        currentSection,
+        userPreferences,
+        briefData
+      );
       
-      if (userInput.toLowerCase().includes('développeur')) {
-        updated.missions = ['Développement logiciel', 'Maintenance du code'];
-        updated.hardSkills = ['JavaScript', 'React', 'Node.js'];
-      }
+      setGeneratedMarkdown(response.markdown);
+      setConfidence(response.confidence);
+      setFallbackNeeded(response.fallback_needed);
       
-      if (userInput.toLowerCase().includes('product')) {
-        updated.missions = ['Gestion de produit', 'Définition de roadmap'];
-        updated.softSkills = ['Communication', 'Leadership'];
-      }
+      addMessage(`Section "${currentSection}" générée avec un niveau de confiance de ${Math.round(response.confidence * 100)}%`, true);
       
-      if (userInput.toLowerCase().includes('remote') || userInput.toLowerCase().includes('télétravail')) {
-        updated.location = 'Télétravail possible';
-      }
+    } catch (error) {
+      console.error('Erreur lors de la génération:', error);
+      addMessage("Erreur lors de la génération. Veuillez réessayer.", true);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleReformulate = async () => {
+    if (!feedbackText.trim() || !generatedMarkdown) return;
+    
+    const currentSection = activeSections[currentSectionIndex];
+    setIsReforming(true);
+    
+    try {
+      const response = await briefBackendApi.provideFeedback(
+        currentSection,
+        feedbackText,
+        generatedMarkdown,
+        userPreferences,
+        briefData
+      );
       
-      return updated;
-    });
-  };
-
-  const handleSuggestionClick = (suggestion: string) => {
-    setCurrentMessage(suggestion);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
+      setGeneratedMarkdown(response.markdown);
+      setConfidence(response.confidence);
+      setFeedbackText('');
+      setFallbackNeeded(false);
+      
+      addMessage("Section reformulée selon vos commentaires.", true);
+      
+    } catch (error) {
+      console.error('Erreur lors de la reformulation:', error);
+      addMessage("Erreur lors de la reformulation. Veuillez réessayer.", true);
+    } finally {
+      setIsReforming(false);
     }
   };
 
-  const isBriefComplete = Object.values(completionState).every(Boolean);
-
-  const handleSaveBrief = async () => {
-    const briefToSave = {
-      id: currentBriefId,
-      title: briefData.missions[0] || 'Nouveau brief',
-      missions: briefData.missions,
-      hardSkills: briefData.hardSkills,
-      softSkills: briefData.softSkills,
-      project_context: briefData.context,
-      location: briefData.location,
-      constraints: briefData.constraints,
-      conversation_data: messages,
-      brief_summary: completionState,
-      is_complete: isBriefComplete
-    };
-
-    const savedBrief = await saveBrief(briefToSave);
-    if (savedBrief) {
-      setCurrentBriefId(savedBrief.id);
+  const handleValidateSection = () => {
+    const currentSection = activeSections[currentSectionIndex];
+    setCompletedSections(prev => new Set([...prev, currentSection]));
+    
+    const nextIndex = currentSectionIndex + 1;
+    if (nextIndex < activeSections.length) {
+      setCurrentSectionIndex(nextIndex);
+      setGeneratedMarkdown('');
+      setConfidence(0);
+      setFallbackNeeded(false);
+      addMessage(`Section "${currentSection}" validée ! Passons à la section suivante : "${activeSections[nextIndex]}"`, true);
+    } else {
+      setCurrentStep('final');
+      loadFinalBrief();
     }
   };
 
-  const handleGenerateJobPosting = async () => {
-    if (!currentBriefId) {
-      await handleSaveBrief();
-    }
-
-    if (currentBriefId) {
-      const jobPosting = await generateJobPosting(currentBriefId);
-      if (jobPosting) {
-        navigate('/job-postings');
-      }
+  const loadFinalBrief = async () => {
+    try {
+      const markdown = await briefBackendApi.getFinalBrief();
+      setFinalBrief(markdown);
+      addMessage("Excellent ! Votre brief est maintenant complet. Vous pouvez le consulter, le copier ou le télécharger.", true);
+    } catch (error) {
+      console.error('Erreur lors du chargement du brief final:', error);
+      addMessage("Erreur lors de la génération du brief final.", true);
     }
   };
 
-  return (
-    <TooltipProvider>
-      <div className="ml-64 min-h-screen bg-bgLight">
-        <div className="p-6">
-          {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              🤖 Brief avec l'IA – Définissons votre besoin
-            </h1>
-            <p className="text-gray-600">
-              L'IA vous aide à préciser votre besoin, même si vous ne savez pas encore exactement ce que vous cherchez.
-            </p>
-          </div>
+  const handleCopyFinalBrief = async () => {
+    try {
+      await navigator.clipboard.writeText(finalBrief);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (error) {
+      console.error('Erreur lors de la copie:', error);
+    }
+  };
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Chat Interface */}
-            <div className="lg:col-span-2 flex flex-col space-y-4">
-              <Card className="flex-1">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Conversation avec l'IA</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col">
-                  {/* Messages Container with fixed height */}
-                  <div className="h-[400px] overflow-y-auto space-y-4 pr-2 mb-4">
-                    {messages.map((message) => (
-                      <ChatMessage
-                        key={message.id}
-                        message={message}
-                      />
-                    ))}
-                    {isLoading && (
-                      <div className="flex justify-start">
-                        <div className="bg-gray-100 rounded-lg p-3 max-w-md">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    <div ref={messagesEndRef} />
-                  </div>
+  const handleDownloadFinalBrief = () => {
+    const blob = new Blob([finalBrief], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `brief-${new Date().toISOString().split('T')[0]}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
-                  {/* Input Section */}
-                  <div className="border-t pt-4">
-                    <div className="flex space-x-2">
-                      <Textarea
-                        value={currentMessage}
-                        onChange={(e) => setCurrentMessage(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        placeholder="Décrivez vos attentes, vos contraintes ou dites juste 'Je ne sais pas'..."
-                        className="flex-1"
-                        rows={2}
-                      />
-                      <Button 
-                        onClick={handleSendMessage}
-                        disabled={!currentMessage.trim() || isLoading}
-                        className="px-4"
-                      >
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+  const renderConfigurationForm = () => (
+    <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+      <h3 className="font-medium">Configuration du Brief</h3>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <Select 
+          value={userPreferences.language} 
+          onValueChange={(value: 'fr' | 'en') => 
+            setUserPreferences({...userPreferences, language: value})
+          }
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="fr">Français</SelectItem>
+            <SelectItem value="en">English</SelectItem>
+          </SelectContent>
+        </Select>
 
-              {/* Suggestions - Now display only as reference */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-gray-700 flex items-center">
-                    <Lightbulb className="h-4 w-4 mr-2" />
-                    Questions pour vous aider à réfléchir
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {suggestions.map((suggestion, index) => (
-                      <Card key={index} className="border-gray-200">
-                        <CardContent className="p-3">
-                          <p className="text-sm text-gray-700">{suggestion}</p>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+        <Select 
+          value={userPreferences.seniority} 
+          onValueChange={(value: UserPreferences['seniority']) => 
+            setUserPreferences({...userPreferences, seniority: value})
+          }
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Stagiaire">Stagiaire</SelectItem>
+            <SelectItem value="Junior">Junior</SelectItem>
+            <SelectItem value="Senior">Senior</SelectItem>
+            <SelectItem value="C-level">C-level</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="text-sm font-medium">Sections à inclure :</h4>
+        <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto">
+          {SECTION_IDS.map((section, index) => (
+            <div key={index} className="flex items-center space-x-2">
+              <Checkbox
+                checked={userPreferences.sections[index] || false}
+                onCheckedChange={(checked) => handleSectionToggle(index, Boolean(checked))}
+              />
+              <span className="text-xs">{section}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Button 
+        onClick={handleConfigSubmit} 
+        disabled={userPreferences.sections.filter(Boolean).length === 0}
+        className="w-full"
+      >
+        Confirmer la configuration
+      </Button>
+    </div>
+  );
+
+  const renderDataEntryForm = () => {
+    if (activeSections.length === 0) return null;
+    
+    const currentSection = activeSections[currentSectionIndex];
+    const sectionData = briefData[currentSection] || {};
+
+    return (
+      <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+        <h3 className="font-medium">Section : {currentSection}</h3>
+        
+        <Textarea
+          placeholder={`Saisissez les informations pour "${currentSection}"...`}
+          value={sectionData.content || ''}
+          onChange={(e) => handleDataUpdate(currentSection, { content: e.target.value })}
+          rows={3}
+        />
+
+        <div className="flex space-x-2">
+          <Button 
+            onClick={handleGenerate}
+            disabled={isGenerating}
+            className="flex-1"
+          >
+            {isGenerating ? 'Génération...' : 'Générer'}
+          </Button>
+        </div>
+
+        {generatedMarkdown && (
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-medium">Confiance :</span>
+              <div className="flex items-center space-x-2">
+                <div className={`w-16 h-2 rounded ${confidence >= 0.8 ? 'bg-green-500' : confidence >= 0.6 ? 'bg-yellow-500' : 'bg-red-500'}`} />
+                <span className="text-sm">{Math.round(confidence * 100)}%</span>
+              </div>
+              {fallbackNeeded && (
+                <Badge variant="destructive" className="flex items-center space-x-1">
+                  <AlertTriangle className="h-3 w-3" />
+                  <span>Révision suggérée</span>
+                </Badge>
+              )}
             </div>
 
-            {/* Brief Summary */}
-            <div className="space-y-6">
-              <InteractiveBriefSummary 
-                briefData={briefData}
-                completionState={completionState}
-                onCompletionChange={handleCompletionChange}
-              />
-              
-              {/* Tools */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center">
-                    <Briefcase className="h-5 w-5 mr-2" />
-                    Outils d'aide
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full justify-start"
-                    onClick={() => navigate('/job-templates')}
-                  >
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    Bibliothèque de postes types
-                  </Button>
-                  
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full justify-start opacity-50 cursor-not-allowed"
-                        disabled
-                      >
-                        🔍 Analyser une fiche existante
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Fonctionnalité à venir prochainement</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full justify-start opacity-50 cursor-not-allowed"
-                        disabled
-                      >
-                        📈 Benchmark marché
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Fonctionnalité à venir prochainement</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </CardContent>
-              </Card>
+            <div className="p-3 bg-white rounded border">
+              <pre className="whitespace-pre-wrap text-sm">{generatedMarkdown}</pre>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="space-y-3">
+            <div className="space-y-2">
+              <Textarea
+                placeholder="Commentaires pour améliorer cette section..."
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+                rows={2}
+              />
+              <div className="flex space-x-2">
                 <Button 
-                  onClick={handleSaveBrief}
                   variant="outline"
-                  className="w-full"
-                  size="lg"
+                  onClick={handleReformulate}
+                  disabled={!feedbackText.trim() || isReforming}
+                  className="flex items-center space-x-1"
                 >
-                  💾 Sauvegarder le brief
+                  <RefreshCw className="h-4 w-4" />
+                  <span>{isReforming ? 'Reformulation...' : 'Reformuler'}</span>
                 </Button>
-                
                 <Button 
-                  className="w-full" 
-                  size="lg"
-                  disabled={!isBriefComplete}
-                  onClick={handleGenerateJobPosting}
+                  onClick={handleValidateSection}
+                  className="flex-1"
                 >
-                  <FileText className="h-5 w-5 mr-2" />
-                  Générer la fiche de poste
+                  Valider cette section
                 </Button>
               </div>
             </div>
           </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderFinalBrief = () => (
+    <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+      <div className="flex items-center justify-between">
+        <h3 className="font-medium">Brief Final</h3>
+        <div className="flex space-x-2">
+          <Button variant="outline" onClick={handleCopyFinalBrief} size="sm">
+            {isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            {isCopied ? 'Copié!' : 'Copier'}
+          </Button>
+          <Button variant="outline" onClick={handleDownloadFinalBrief} size="sm">
+            <Download className="h-4 w-4" />
+            Télécharger
+          </Button>
         </div>
       </div>
-    </TooltipProvider>
+      
+      <div className="max-h-96 overflow-y-auto p-4 bg-white rounded border">
+        <pre className="whitespace-pre-wrap text-sm">{finalBrief}</pre>
+      </div>
+    </div>
+  );
+
+  const handleSendMessage = () => {
+    if (!inputMessage.trim()) return;
+    
+    addMessage(inputMessage, false);
+    
+    // Logique de réponse basée sur l'étape actuelle
+    if (currentStep === 'config') {
+      addMessage("Parfait ! Configurons maintenant votre brief. Veuillez sélectionner les sections et paramètres souhaités :", true, renderConfigurationForm());
+    }
+    
+    setInputMessage('');
+  };
+
+  // Initialisation avec le message de configuration
+  React.useEffect(() => {
+    if (messages.length === 0) {
+      addMessage("Bonjour ! Je vais vous aider à créer votre brief de poste. Commençons par configurer les sections que vous souhaitez inclure.", true, renderConfigurationForm());
+    }
+  }, []);
+
+  return (
+    <div className="ml-64 min-h-screen bg-bgLight">
+      <div className="p-6">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            🤖 Assistant Brief IA
+          </h1>
+          <p className="text-gray-600">
+            Créez votre brief de poste en quelques minutes avec l'aide de l'IA
+          </p>
+        </div>
+
+        {/* Barre de progression */}
+        {currentStep !== 'config' && activeSections.length > 0 && (
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium">
+                  {currentStep === 'data-entry' && `Section ${currentSectionIndex + 1}/${activeSections.length}: ${activeSections[currentSectionIndex]}`}
+                  {currentStep === 'final' && 'Brief Final Généré'}
+                </span>
+                <span className="text-sm text-gray-600">
+                  {Math.round(progress)}% terminé
+                </span>
+              </div>
+              <Progress value={progress} className="h-2" />
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Chat principal */}
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>Conversation avec l'IA</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4 max-h-96 overflow-y-auto mb-4">
+                {messages.map((message) => (
+                  <div key={message.id}>
+                    <ChatMessage message={message} />
+                    {message.component && (
+                      <div className="mt-2">
+                        {message.component}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Interface de saisie selon l'étape */}
+              {currentStep === 'data-entry' && renderDataEntryForm()}
+              {currentStep === 'final' && renderFinalBrief()}
+
+              <div className="flex space-x-2 mt-4">
+                <Input
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  placeholder="Tapez votre message..."
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                />
+                <Button onClick={handleSendMessage}>
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Panneau latéral - Navigation des sections */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Progression</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {activeSections.length > 0 && (
+                <div className="space-y-2">
+                  {activeSections.map((section, index) => (
+                    <div
+                      key={index}
+                      className={`p-2 rounded text-xs ${
+                        index === currentSectionIndex && currentStep === 'data-entry'
+                          ? 'bg-blue-100 text-blue-800'
+                          : completedSections.has(section)
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      {index + 1}. {section}
+                      {completedSections.has(section) && (
+                        <Check className="h-3 w-3 inline ml-1" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
   );
 };
 
