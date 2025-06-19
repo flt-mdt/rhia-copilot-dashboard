@@ -1,7 +1,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
-const BRIEF_API_BASE = import.meta.env.VITE_API_BRIEF_URL || 'http://localhost:8000';
+const BRIEF_API_BASE = 'https://rhia-copilot-dashboard.onrender.com';
 
 export interface UserPreferences {
   sections: boolean[]; // 18 sections
@@ -40,6 +40,11 @@ export class BriefBackendApi {
   }
 
   async storeUserPreferences(preferences: UserPreferences): Promise<void> {
+    console.log('Sending config to backend:', {
+      session_id: this.sessionId,
+      ...preferences
+    });
+
     const response = await fetch(`${BRIEF_API_BASE}/v1/config`, {
       method: 'POST',
       headers: {
@@ -47,13 +52,20 @@ export class BriefBackendApi {
       },
       body: JSON.stringify({
         session_id: this.sessionId,
-        ...preferences
+        sections: preferences.sections,
+        language: preferences.language,
+        seniority: preferences.seniority
       })
     });
 
     if (!response.ok) {
-      throw new Error('Erreur lors de la sauvegarde des préférences');
+      const errorText = await response.text();
+      console.error('API Error:', response.status, errorText);
+      throw new Error(`Erreur lors de la sauvegarde des préférences: ${response.status}`);
     }
+
+    const result = await response.json();
+    console.log('Config saved successfully:', result);
   }
 
   async updateBriefData(sectionId: string, data: Record<string, any>): Promise<void> {

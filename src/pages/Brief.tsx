@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -97,13 +96,20 @@ const Brief = () => {
   };
 
   const handleConfigSubmit = async () => {
+    const selectedCount = userPreferences.sections.filter(Boolean).length;
+    if (selectedCount === 0) {
+      addMessage("Veuillez sélectionner au moins une section avant de continuer.", true);
+      return;
+    }
+
     try {
+      console.log('Saving user preferences:', userPreferences);
       await briefBackendApi.storeUserPreferences(userPreferences);
-      addMessage("Configuration sauvegardée ! Passons maintenant à la saisie des données pour chaque section.", true);
+      addMessage(`Configuration sauvegardée ! ${selectedCount} section(s) sélectionnée(s). Passons maintenant à la saisie des données.`, true);
       setCurrentStep('data-entry');
     } catch (error) {
       console.error('Erreur lors de la sauvegarde des préférences:', error);
-      addMessage("Erreur lors de la sauvegarde. Veuillez réessayer.", true);
+      addMessage("Erreur lors de la sauvegarde des préférences. Veuillez vérifier votre connexion et réessayer.", true);
     }
   };
 
@@ -394,21 +400,15 @@ const Brief = () => {
     if (!inputMessage.trim()) return;
     
     addMessage(inputMessage, false);
-    
-    // Logique de réponse basée sur l'étape actuelle
-    if (currentStep === 'config') {
-      addMessage("Parfait ! Configurons maintenant votre brief. Veuillez sélectionner les sections et paramètres souhaités :", true, renderConfigurationForm());
-    }
-    
     setInputMessage('');
   };
 
-  // Initialisation avec le message de configuration
+  // Initialisation avec le formulaire de configuration directement
   React.useEffect(() => {
-    if (messages.length === 0) {
-      addMessage("Bonjour ! Je vais vous aider à créer votre brief de poste. Commençons par configurer les sections que vous souhaitez inclure.", true, renderConfigurationForm());
+    if (messages.length === 0 && currentStep === 'config') {
+      addMessage("Bienvenue ! Configurons votre brief de poste en sélectionnant les sections et paramètres souhaités :", true, renderConfigurationForm());
     }
-  }, []);
+  }, [currentStep]);
 
   return (
     <div className="ml-64 min-h-screen bg-bgLight">
