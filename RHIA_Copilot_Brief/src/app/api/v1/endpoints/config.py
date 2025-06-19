@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from app.models.schemas import UserPreferences
+from app.models.user_pref import UserPreferences
 
 router = APIRouter()
 
