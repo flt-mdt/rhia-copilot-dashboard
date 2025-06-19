@@ -95,6 +95,20 @@ const Brief = () => {
     });
   };
 
+  const handleLanguageChange = (language: 'fr' | 'en') => {
+    setUserPreferences({
+      ...userPreferences,
+      language
+    });
+  };
+
+  const handleSeniorityChange = (seniority: UserPreferences['seniority']) => {
+    setUserPreferences({
+      ...userPreferences,
+      seniority
+    });
+  };
+
   const handleConfigSubmit = async () => {
     const selectedCount = userPreferences.sections.filter(Boolean).length;
     if (selectedCount === 0) {
@@ -238,37 +252,33 @@ const Brief = () => {
       <h3 className="font-medium">Configuration du Brief</h3>
       
       <div className="grid grid-cols-2 gap-4">
-        <Select 
-          value={userPreferences.language} 
-          onValueChange={(value: 'fr' | 'en') => 
-            setUserPreferences({...userPreferences, language: value})
-          }
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="fr">Français</SelectItem>
-            <SelectItem value="en">English</SelectItem>
-          </SelectContent>
-        </Select>
+        <div>
+          <label className="text-sm font-medium mb-2 block">Langue</label>
+          <Select value={userPreferences.language} onValueChange={handleLanguageChange}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="fr">Français</SelectItem>
+              <SelectItem value="en">English</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        <Select 
-          value={userPreferences.seniority} 
-          onValueChange={(value: UserPreferences['seniority']) => 
-            setUserPreferences({...userPreferences, seniority: value})
-          }
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Stagiaire">Stagiaire</SelectItem>
-            <SelectItem value="Junior">Junior</SelectItem>
-            <SelectItem value="Senior">Senior</SelectItem>
-            <SelectItem value="C-level">C-level</SelectItem>
-          </SelectContent>
-        </Select>
+        <div>
+          <label className="text-sm font-medium mb-2 block">Niveau de séniorité</label>
+          <Select value={userPreferences.seniority} onValueChange={handleSeniorityChange}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Stagiaire">Stagiaire</SelectItem>
+              <SelectItem value="Junior">Junior</SelectItem>
+              <SelectItem value="Senior">Senior</SelectItem>
+              <SelectItem value="C-level">C-level</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -277,13 +287,20 @@ const Brief = () => {
           {SECTION_IDS.map((section, index) => (
             <div key={index} className="flex items-center space-x-2">
               <Checkbox
-                checked={userPreferences.sections[index] || false}
+                id={`section-${index}`}
+                checked={userPreferences.sections[index]}
                 onCheckedChange={(checked) => handleSectionToggle(index, Boolean(checked))}
               />
-              <span className="text-xs">{section}</span>
+              <label htmlFor={`section-${index}`} className="text-xs cursor-pointer">
+                {section}
+              </label>
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="text-xs text-gray-500 mb-2">
+        {userPreferences.sections.filter(Boolean).length} section(s) sélectionnée(s)
       </div>
 
       <Button 
@@ -408,7 +425,7 @@ const Brief = () => {
     if (messages.length === 0 && currentStep === 'config') {
       addMessage("Bienvenue ! Configurons votre brief de poste en sélectionnant les sections et paramètres souhaités :", true, renderConfigurationForm());
     }
-  }, [currentStep]);
+  }, []);
 
   return (
     <div className="ml-64 min-h-screen bg-bgLight">
