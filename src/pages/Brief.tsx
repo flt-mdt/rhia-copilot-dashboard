@@ -461,37 +461,119 @@ const Brief = () => {
           {/* Chat principal */}
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle>Conversation avec l'IA</CardTitle>
+              <CardTitle>
+                {currentStep === 'config' ? 'Configuration du Brief' : 'Conversation avec l\'IA'}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4 max-h-96 overflow-y-auto mb-4">
-                {messages.map((message) => (
-                  <div key={message.id}>
-                    <ChatMessage message={message} />
-                    {message.component && (
-                      <div className="mt-2">
-                        {message.component}
-                      </div>
-                    )}
+              {/* Étape de configuration */}
+              {currentStep === 'config' && (
+                <div className="space-y-4">
+                  <div className="mb-4">
+                    <p className="text-gray-600 mb-4">
+                      Bienvenue ! Configurons votre brief de poste en sélectionnant les sections et paramètres souhaités :
+                    </p>
                   </div>
-                ))}
-              </div>
 
-              {/* Interface de saisie selon l'étape */}
-              {currentStep === 'data-entry' && renderDataEntryForm()}
-              {currentStep === 'final' && renderFinalBrief()}
+                  <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+                    <h3 className="font-medium">Configuration du Brief</h3>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Langue</label>
+                        <Select value={userPreferences.language} onValueChange={handleLanguageChange}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="fr">Français</SelectItem>
+                            <SelectItem value="en">English</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-              <div className="flex space-x-2 mt-4">
-                <Input
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="Tapez votre message..."
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                />
-                <Button onClick={handleSendMessage}>
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Niveau de séniorité</label>
+                        <Select value={userPreferences.seniority} onValueChange={handleSeniorityChange}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Stagiaire">Stagiaire</SelectItem>
+                            <SelectItem value="Junior">Junior</SelectItem>
+                            <SelectItem value="Senior">Senior</SelectItem>
+                            <SelectItem value="C-level">C-level</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium">Sections à inclure :</h4>
+                      <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto">
+                        {SECTION_IDS.map((section, index) => (
+                          <div key={index} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`section-${index}`}
+                              checked={userPreferences.sections[index]}
+                              onCheckedChange={(checked) => handleSectionToggle(index, Boolean(checked))}
+                            />
+                            <label htmlFor={`section-${index}`} className="text-xs cursor-pointer">
+                              {section}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="text-xs text-gray-500 mb-2">
+                      {userPreferences.sections.filter(Boolean).length} section(s) sélectionnée(s)
+                    </div>
+
+                    <Button 
+                      onClick={handleConfigSubmit} 
+                      disabled={userPreferences.sections.filter(Boolean).length === 0}
+                      className="w-full"
+                    >
+                      Confirmer la configuration
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Chat pour les autres étapes */}
+              {currentStep !== 'config' && (
+                <>
+                  <div className="space-y-4 max-h-96 overflow-y-auto mb-4">
+                    {messages.map((message) => (
+                      <div key={message.id}>
+                        <ChatMessage message={message} />
+                        {message.component && (
+                          <div className="mt-2">
+                            {message.component}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Interface de saisie selon l'étape */}
+                  {currentStep === 'data-entry' && renderDataEntryForm()}
+                  {currentStep === 'final' && renderFinalBrief()}
+
+                  <div className="flex space-x-2 mt-4">
+                    <Input
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      placeholder="Tapez votre message..."
+                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    />
+                    <Button onClick={handleSendMessage}>
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -501,7 +583,12 @@ const Brief = () => {
               <CardTitle>Progression</CardTitle>
             </CardHeader>
             <CardContent>
-              {activeSections.length > 0 && (
+              {currentStep === 'config' && (
+                <div className="text-sm text-gray-600">
+                  Commencez par configurer votre brief avec les sections et paramètres souhaités.
+                </div>
+              )}
+              {activeSections.length > 0 && currentStep !== 'config' && (
                 <div className="space-y-2">
                   {activeSections.map((section, index) => (
                     <div
