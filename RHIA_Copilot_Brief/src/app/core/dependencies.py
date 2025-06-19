@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from app.redis_client import get_session_data
-from app.models.schemas import UserPreferences
+from app.models.user_pref import UserPreferences
 
 
 async def load_user_preferences(session_id: str) -> UserPreferences:
