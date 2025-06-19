@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -51,5 +52,5 @@ def create_app() -> FastAPI:
 app = create_app()
 
 if __name__ == "__main__":
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
-
+    port = int(os.environ.get("PORT", 8000))  # ← CORRECTION ICI
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=True)
