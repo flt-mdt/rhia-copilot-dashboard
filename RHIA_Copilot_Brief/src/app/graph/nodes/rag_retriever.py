@@ -6,10 +6,18 @@ from app.core.constants import QDRANT_COLLECTION_BRIEF
 qdrant = get_qdrant_client()
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
+
+def get_embedder():
+    # Singleton-like instantiation (optionnel en fonction des besoins)
+    if not hasattr(get_embedder, "_model"):
+        get_embedder._model = SentenceTransformer("all-MiniLM-L6-v2")
+    return get_embedder._model
+
 async def query_chunks(section: str, job_function: str, seniority: str, language: str) -> list[dict]:
     query = f"{section} pour un rôle de {job_function} niveau {seniority}"
+    
+    embedder = get_embedder()  # ✅ on charge seulement ici
     vector = embedder.encode(query).tolist()
-
     filters = Filter(
         must=[
             FieldCondition(key="type", match=MatchValue(value="brief")),
