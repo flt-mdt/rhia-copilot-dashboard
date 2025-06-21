@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Dict, Any
-from app.graph.brief_generator import feedback_graph  # variante du graphe pour reformulation
+from app.graph.brief_generator import brief_graph
 from app.models.user_pref import UserPreferences
 
 router = APIRouter()
@@ -32,7 +32,7 @@ async def revise_section(payload: FeedbackRequest):
         "brief_data": payload.brief_data
     }
 
-    result = feedback_graph.invoke(state)
+    result = brief_graph.invoke(state)
 
     return FeedbackResponse(
         markdown=result["draft"],
