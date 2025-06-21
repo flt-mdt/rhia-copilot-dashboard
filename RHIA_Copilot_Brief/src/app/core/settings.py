@@ -3,16 +3,17 @@ from pydantic import Field, validator
 from functools import lru_cache
 from typing import Literal
 
+
 class AppSettings(BaseSettings):
     # ENV
     environment: Literal["dev", "test", "prod"] = "dev"
     production_guard: bool = False
 
     # API & Orchestration
-    openai_api_key: str = Field(..., env="OPENAI_API_KEY")
+    openai_api_key: str = Field(..., alias="OPENAI_API_KEY")
     openai_model: str = "gpt-4"
     temperature: float = 0.7
-    llm_timeout: int = 20  # seconds
+    llm_timeout: int = 20
 
     # Qdrant
     qdrant_host: str = "qdrant"
@@ -32,9 +33,11 @@ class AppSettings(BaseSettings):
     enable_otlp: bool = True
     log_format: Literal["json", "plain"] = "json"
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": True
+    }
 
     @validator("temperature")
     def validate_temperature(cls, v):
@@ -46,4 +49,3 @@ class AppSettings(BaseSettings):
 @lru_cache()
 def get_settings() -> AppSettings:
     return AppSettings()
- 
