@@ -71,6 +71,11 @@ class SectionMapper:
         """
         labels = self._LABELS_FR if self.language == "fr" else self._LABELS_EN
         return labels.get(section_id, section_id.replace("_", " ").capitalize())
+    
+    def __call__(self, state: dict) -> dict:
+        section_id = state.get("current_section")
+        section_name = SECTION_IDS[section_id]
+        return {**state, "section_id": section_name}
 
 
 # Aliases connus pour chaque section
