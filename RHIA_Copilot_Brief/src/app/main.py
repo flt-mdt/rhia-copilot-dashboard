@@ -23,7 +23,7 @@ def create_app() -> FastAPI:
     # === Middleware sécurité ===
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[],  # CORS fermé
+        allow_origins=["https://preview--rhia-copilot.lovable.app, https://dashboard.rekrut.pro"],  # CORS fermé
         allow_credentials=True,
         allow_methods=["POST", "GET"],
         allow_headers=["Authorization", "Content-Type"],
