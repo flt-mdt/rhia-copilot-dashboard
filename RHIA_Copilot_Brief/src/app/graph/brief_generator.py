@@ -26,10 +26,9 @@ graph.add_edge("call_llm", "verify")
 # 4. Condition : si confiance faible → reboucler sur build_prompt (clarification UX plus tard)
 graph.add_conditional_edges(
     "verify",
-    condition=lambda state: state.get("fallback_needed", False),
-    then_edge="build_prompt",  # reboucle pour affiner
-    else_edge="output"         # termine la génération
+    lambda state: "build_prompt" if state.get("fallback_needed") else "output"
 )
+
 
 # 5. Compiler le graphe
 brief_graph = graph.compile()
