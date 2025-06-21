@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import PlainTextResponse
 from app.redis_client import get_session_data
-from app.services.brief_template import render_brief_markdown
+from app.services.brief_template import render_final_brief
 from app.core.constants import SECTION_IDS  # en haut du fichier
 
 router = APIRouter()
