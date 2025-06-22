@@ -8,7 +8,7 @@ class LLMAgent:
     def __init__(self):
         pass
 
-    def generate_section(self, state: Dict[str, Any]) -> Dict[str, Any]:
+    async def generate_section(self, state: Dict[str, Any]) -> Dict[str, Any]:
         prompt = build_prompt(
             section_id=state["section_id"],
             rag_context="\n\n".join([c["text"] for c in state.get("rag_chunks", [])]),
@@ -16,7 +16,7 @@ class LLMAgent:
             user_preferences=state["user_preferences"]
         )
 
-        response = call_llm(prompt)
+        response = await call_llm(prompt)
 
         return {
             **state,
@@ -26,7 +26,7 @@ class LLMAgent:
             "fallback_needed": response["confidence"] < THRESHOLD_CONFIDENCE_LLM
         }
 
-    def revise_section(self, state: Dict[str, Any]) -> Dict[str, Any]:
+    async def revise_section(self, state: Dict[str, Any]) -> Dict[str, Any]:
         prompt = build_feedback_prompt(
             section_id=state["section_id"],
             previous_output=state["previous_output"],
@@ -35,7 +35,7 @@ class LLMAgent:
             user_preferences=state["user_preferences"]
         )
 
-        response = call_llm(prompt)
+        response = await call_llm(prompt)
 
         return {
             **state,
