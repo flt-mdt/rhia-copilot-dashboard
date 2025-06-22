@@ -10,7 +10,7 @@ def get_embedder():
         get_embedder._model = SentenceTransformer("all-MiniLM-L6-v2")
     return get_embedder._model
 
-async def retrieve_chunks(section: str, job_function: str, seniority: str, language: str) -> list[dict]:
+def retrieve_chunks(section: str, job_function: str, seniority: str, language: str) -> list[dict]:
     """
     Interroge Qdrant pour retrouver les meilleurs chunks contextuels selon
     la section, le rôle, la séniorité et la langue.
