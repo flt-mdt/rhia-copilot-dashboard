@@ -1,8 +1,15 @@
 import redis.asyncio as redis
 import json
 from typing import Any
+import os
 
-r = redis.Redis(host="redis", port=6379, decode_responses=True)
+r = redis.Redis(
+    host=os.getenv("REDIS_HOST"),
+    port=int(os.getenv("REDIS_PORT")),
+    password=os.getenv("REDIS_PASSWORD"),
+    decode_responses=True
+)
+
 
 async def set_session_data(session_id: str, key: str, value: Any):
     redis_key = f"brief:{session_id}:{key}"
