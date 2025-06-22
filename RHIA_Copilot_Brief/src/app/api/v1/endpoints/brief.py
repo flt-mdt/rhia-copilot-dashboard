@@ -22,14 +22,21 @@ async def get_final_brief(session_id: str):
     # Vérifie si toutes les sections togglées sont validées
     for idx, included in enumerate(user_preferences["sections"]):
         if included:
-            section_name = section_name = SECTION_IDS[idx]
+            section_name = SECTION_IDS[idx]
             if not approvals.get(section_name):
                 raise HTTPException(status_code=409, detail=f"Section '{section_name}' non validée.")
 
+    validated_sections = {
+        idx: approvals[SECTION_IDS[idx]]["markdown"]
+        for idx, included in enumerate(user_preferences["sections"])
+        if included and approvals.get(SECTION_IDS[idx])
+    }
+
     markdown = render_final_brief(
-        user_preferences=user_preferences,
-        brief_data=brief_data,
-        approvals=approvals
+        validated_sections=validated_sections,
+        sections_enabled=user_preferences["sections"],
+        seniority=user_preferences.get("seniority", "Senior"),
+        language=user_preferences.get("language", "fr"),
     )
 
     return markdown

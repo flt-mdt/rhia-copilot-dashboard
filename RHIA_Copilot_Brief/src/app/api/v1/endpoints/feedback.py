@@ -32,7 +32,7 @@ async def revise_section(payload: FeedbackRequest):
         "brief_data": payload.brief_data
     }
 
-    result = brief_graph.invoke(state)
+    result = await brief_graph.ainvoke(state)
 
     return FeedbackResponse(
         markdown=result["draft"],
