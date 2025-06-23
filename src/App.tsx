@@ -32,6 +32,7 @@ import RootRedirect from "./components/RootRedirect";
 import Presentation from "./pages/Presentation";
 import Privacy from "./pages/Privacy";
 import ScheduleDemo from "./pages/ScheduleDemo";
+import Tracking from "./pages/Tracking";
 
 const App: React.FC = () => {
   const [queryClient] = React.useState(() => new QueryClient({
@@ -63,6 +64,12 @@ const App: React.FC = () => {
                   <ProtectedRoute>
                     <Sidebar />
                     <Index />
+                  </ProtectedRoute>
+                } />
+                <Route path="/tracking" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <Tracking />
                   </ProtectedRoute>
                 } />
                 <Route path="/candidates" element={
