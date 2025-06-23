@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { Plus, TrendingUp, TrendingDown, Users, Target, Star, MapPin } from "lucide-react";
 import { useCandidates } from "@/hooks/useCandidatesData";
-import GeographicMap from "@/components/tracking/GeographicMap";
+import InteractiveGlobe from "@/components/tracking/InteractiveGlobe";
 
 const Tracking = () => {
   const [timePeriod, setTimePeriod] = useState("month");
@@ -248,7 +249,7 @@ const Tracking = () => {
             </CardContent>
           </Card>
 
-          {/* Geographic Distribution with Interactive Map */}
+          {/* Geographic Distribution with Interactive Globe */}
           <Card className="bg-white rounded-xl shadow-sm border border-gray-100">
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-gray-900">Répartition géographique</CardTitle>
@@ -268,9 +269,9 @@ const Tracking = () => {
                   ))}
                 </div>
                 
-                {/* Interactive World Map */}
+                {/* Interactive 3D Globe */}
                 <div className="mt-6">
-                  <GeographicMap locationData={locationData} />
+                  <InteractiveGlobe locationData={locationData} />
                 </div>
               </div>
             </CardContent>
