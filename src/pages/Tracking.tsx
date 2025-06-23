@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { Plus, TrendingUp, TrendingDown, Users, Target, Star, MapPin } from "lucide-react";
 import { useCandidates } from "@/hooks/useCandidatesData";
+import GeographicMap from "@/components/tracking/GeographicMap";
 
 const Tracking = () => {
   const [timePeriod, setTimePeriod] = useState("month");
@@ -49,13 +49,13 @@ const Tracking = () => {
   ];
 
   const locationData = [
-    { country: "France", percentage: 42, flag: "🇫🇷" },
-    { country: "Belgique", percentage: 23, flag: "🇧🇪" },
-    { country: "Maroc", percentage: 12, flag: "🇲🇦" },
-    { country: "Tunisie", percentage: 8, flag: "🇹🇳" },
-    { country: "Canada", percentage: 7, flag: "🇨🇦" },
-    { country: "Suisse", percentage: 5, flag: "🇨🇭" },
-    { country: "Algérie", percentage: 3, flag: "🇩🇿" }
+    { country: "France", percentage: 42, flag: "🇫🇷", coordinates: [2.3522, 48.8566] as [number, number] },
+    { country: "Belgique", percentage: 23, flag: "🇧🇪", coordinates: [4.3517, 50.8503] as [number, number] },
+    { country: "Maroc", percentage: 12, flag: "🇲🇦", coordinates: [-6.8498, 34.0209] as [number, number] },
+    { country: "Tunisie", percentage: 8, flag: "🇹🇳", coordinates: [10.1815, 36.8065] as [number, number] },
+    { country: "Canada", percentage: 7, flag: "🇨🇦", coordinates: [-106.3468, 56.1304] as [number, number] },
+    { country: "Suisse", percentage: 5, flag: "🇨🇭", coordinates: [8.2275, 46.8182] as [number, number] },
+    { country: "Algérie", percentage: 3, flag: "🇩🇿", coordinates: [1.6596, 28.0339] as [number, number] }
   ];
 
   const StatCard = ({ 
@@ -248,14 +248,15 @@ const Tracking = () => {
             </CardContent>
           </Card>
 
-          {/* Geographic Distribution */}
+          {/* Geographic Distribution with Interactive Map */}
           <Card className="bg-white rounded-xl shadow-sm border border-gray-100">
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-gray-900">Répartition géographique</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="space-y-4 flex-1">
+              <div className="space-y-6">
+                {/* Country List */}
+                <div className="space-y-4">
                   {locationData.map((location, index) => (
                     <div key={location.country} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -266,8 +267,10 @@ const Tracking = () => {
                     </div>
                   ))}
                 </div>
-                <div className="w-32 h-32 bg-green-100 rounded-lg flex items-center justify-center ml-6">
-                  <MapPin size={32} className="text-green-600" />
+                
+                {/* Interactive World Map */}
+                <div className="mt-6">
+                  <GeographicMap locationData={locationData} />
                 </div>
               </div>
             </CardContent>
