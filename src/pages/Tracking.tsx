@@ -7,10 +7,12 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { Plus, TrendingUp, TrendingDown, Users, Target, Star, MapPin } from "lucide-react";
 import { useCandidates } from "@/hooks/useCandidatesData";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Tracking = () => {
   const [timePeriod, setTimePeriod] = useState("month");
   const { data: candidates = [] } = useCandidates();
+  const { t } = useLanguage();
 
   // Calculate statistics from real data
   const totalCandidates = candidates.length;
@@ -40,12 +42,12 @@ const Tracking = () => {
   ];
 
   const sourceData = [
-    { name: "LinkedIn", value: 35, color: "#4F46E5" },
-    { name: "Welcome to the Jungle", value: 25, color: "#06B6D4" },
-    { name: "Site Carrière", value: 15, color: "#10B981" },
-    { name: "Referral", value: 12, color: "#F59E0B" },
-    { name: "Job Boards", value: 8, color: "#EF4444" },
-    { name: "Autres", value: 5, color: "#8B5CF6" }
+    { name: t('tracking.sources.linkedin'), value: 35, color: "#4F46E5" },
+    { name: t('tracking.sources.welcomeToTheJungle'), value: 25, color: "#06B6D4" },
+    { name: t('tracking.sources.careerSite'), value: 15, color: "#10B981" },
+    { name: t('tracking.sources.referral'), value: 12, color: "#F59E0B" },
+    { name: t('tracking.sources.jobBoards'), value: 8, color: "#EF4444" },
+    { name: t('tracking.sources.others'), value: 5, color: "#8B5CF6" }
   ];
 
   const locationData = [
@@ -90,11 +92,11 @@ const Tracking = () => {
 
   const chartConfig = {
     candidatures: {
-      label: "Candidatures reçues",
+      label: t('tracking.charts.applicationsReceived'),
       color: "#3B82F6",
     },
     selections: {
-      label: "Candidats shortlistés",
+      label: t('tracking.charts.shortlistedCandidates'),
       color: "#F97316",
     },
   };
@@ -107,21 +109,21 @@ const Tracking = () => {
       <div className="p-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Tracking</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('tracking.title')}</h1>
           <div className="flex items-center gap-4">
             <Select value={timePeriod} onValueChange={setTimePeriod}>
               <SelectTrigger className="w-40 bg-white">
                 <SelectValue placeholder="Période" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="week">Cette semaine</SelectItem>
-                <SelectItem value="month">Ce mois</SelectItem>
-                <SelectItem value="quarter">Ce trimestre</SelectItem>
+                <SelectItem value="week">{t('tracking.timePeriod.week')}</SelectItem>
+                <SelectItem value="month">{t('tracking.timePeriod.month')}</SelectItem>
+                <SelectItem value="quarter">{t('tracking.timePeriod.quarter')}</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" className="bg-white border-gray-200 hover:bg-gray-50">
               <Plus size={16} className="mr-2" />
-              Ajouter une source
+              {t('tracking.addSource')}
             </Button>
           </div>
         </div>
@@ -129,28 +131,28 @@ const Tracking = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
-            title="Total candidats"
+            title={t('tracking.stats.totalCandidates')}
             value={totalCandidates.toLocaleString()}
             change="2.5%"
             isPositive={true}
             icon={Users}
           />
           <StatCard
-            title="Taux de qualification"
+            title={t('tracking.stats.qualificationRate')}
             value={`${qualificationRate}%`}
             change="0.5%"
             isPositive={true}
             icon={Target}
           />
           <StatCard
-            title="Score moyen"
+            title={t('tracking.stats.averageScore')}
             value={`${averageScore}/100`}
             change="0.2%"
             isPositive={false}
             icon={Star}
           />
           <StatCard
-            title="Conversions entretien"
+            title={t('tracking.stats.interviewConversions')}
             value={interviewCandidates.toString()}
             change="0.12%"
             isPositive={true}
@@ -162,15 +164,15 @@ const Tracking = () => {
         <Card className="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-xl font-semibold text-gray-900">Candidatures vs Sélections</CardTitle>
+              <CardTitle className="text-xl font-semibold text-gray-900">{t('tracking.charts.applicationsVsSelections')}</CardTitle>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Candidatures reçues</span>
+                  <span className="text-sm text-gray-600">{t('tracking.charts.applicationsReceived')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Candidats shortlistés</span>
+                  <span className="text-sm text-gray-600">{t('tracking.charts.shortlistedCandidates')}</span>
                 </div>
               </div>
             </div>
@@ -210,7 +212,7 @@ const Tracking = () => {
           {/* Sources Chart */}
           <Card className="bg-white rounded-xl shadow-sm border border-gray-100">
             <CardHeader>
-              <CardTitle className="text-xl font-semibold text-gray-900">Sources de candidatures</CardTitle>
+              <CardTitle className="text-xl font-semibold text-gray-900">{t('tracking.charts.applicationSources')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
@@ -253,7 +255,7 @@ const Tracking = () => {
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-gray-900 flex items-center gap-2">
                 <MapPin size={20} />
-                Répartition géographique
+                {t('tracking.charts.geographicDistribution')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -278,7 +280,7 @@ const Tracking = () => {
                       <div>
                         <span className="text-base font-medium text-gray-900">{location.country}</span>
                         <div className="text-sm text-gray-500">
-                          {location.candidatures} candidatures • {location.matchPercentage}% match moyen
+                          {location.candidatures} {t('tracking.geographic.applications')} • {location.matchPercentage}% {t('tracking.geographic.averageMatch')}
                         </div>
                       </div>
                     </div>

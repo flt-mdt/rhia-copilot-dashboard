@@ -7,6 +7,7 @@ import { settingsTranslations } from './settings';
 import { subscriptionTranslations } from './subscription';
 import { authTranslations } from './auth';
 import { commonTranslations } from './common';
+import { trackingTranslations } from './tracking';
 
 // Tous les modules thématiques sont maintenant importés et exposés.
 export const frTranslations = {
@@ -18,4 +19,5 @@ export const frTranslations = {
   subscription: subscriptionTranslations,
   login: authTranslations,
   common: commonTranslations,
+  tracking: trackingTranslations,
 };

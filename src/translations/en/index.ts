@@ -1,3 +1,4 @@
+
 import { dashboardTranslations } from './dashboard';
 import { candidatesTranslations } from './candidates';
 import { candidateProfileTranslations } from './candidateProfile';
@@ -9,6 +10,7 @@ import { hunterTranslations } from './hunter';
 import { briefTranslations } from './brief';
 import { subscriptionTranslations } from './subscription';
 import { commonTranslations } from './common';
+import { trackingTranslations } from './tracking';
 
 export const enTranslations = {
   dashboard: dashboardTranslations,
@@ -22,4 +24,5 @@ export const enTranslations = {
   brief: briefTranslations,
   subscription: subscriptionTranslations,
   common: commonTranslations,
+  tracking: trackingTranslations,
 };
