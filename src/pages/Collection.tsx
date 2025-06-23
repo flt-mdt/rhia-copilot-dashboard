@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -106,7 +107,8 @@ const Collection = () => {
   const isLoading = profilesLoading || briefsLoading;
 
   return (
-    <div className="min-h-screen bg-gray-50 ml-64">
+    <div className="min-h-screen bg-gray-50 transition-all duration-300 ease-in-out"
+         style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
       <div className="p-6">
         {/* Header */}
         <div className="mb-8">
