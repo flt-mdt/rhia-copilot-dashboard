@@ -122,6 +122,9 @@ const Hunter = () => {
     );
   }
 
+  // Get user's display name
+  const userName = user?.user_metadata?.name || user?.user_metadata?.full_name || 'Utilisateur';
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header avec sphère bleue et message de bienvenue */}
@@ -131,10 +134,10 @@ const Hunter = () => {
         
         {/* Message de bienvenue */}
         <h1 className="text-4xl font-semibold text-gray-800 mb-4 text-center">
-          Salut ! 👋
+          Bonjour {userName} ! 👋
         </h1>
         <p className="text-lg text-gray-600 mb-12 text-center max-w-md">
-          Dites-nous ce dont vous avez besoin, et nous nous occupons du reste.
+          Décrivez-nous le profil candidat recherché, nous nous occupons du reste.
         </p>
 
         {/* Grille des cartes principales */}
@@ -144,17 +147,17 @@ const Hunter = () => {
             <CardContent className="p-6">
               <div className="flex items-center mb-4">
                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-3">
-                  <span className="text-gray-800 font-semibold text-sm">SL</span>
+                  <span className="text-gray-800 font-semibold text-sm">RC</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold">Sam Lee</h3>
+                  <h3 className="font-semibold">RHIA Copilot</h3>
                   <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-                    Assistant Données
+                    Assistant RH IA
                   </span>
                 </div>
               </div>
               <p className="text-gray-300 text-sm">
-                Conçu pour aider à gérer les processus de vente et maximiser l'engagement client.
+                Conçu pour optimiser vos processus de recrutement et identifier les meilleurs candidats pour vos postes.
               </p>
             </CardContent>
           </Card>
@@ -164,16 +167,16 @@ const Hunter = () => {
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="flex items-center text-sm text-gray-600">
-                  <span>📄</span>
-                  <span className="ml-2">Répondre à la documentation RFP</span>
+                  <span>👥</span>
+                  <span className="ml-2">Sourcer des candidats qualifiés</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
-                  <span>📄</span>
-                  <span className="ml-2">Effectuer une analyse concurrentielle</span>
+                  <span>🎯</span>
+                  <span className="ml-2">Analyser les profils et compétences</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
-                  <span>📄</span>
-                  <span className="ml-2">Fournir des commentaires sur la communication</span>
+                  <span>📊</span>
+                  <span className="ml-2">Générer des rapports de matching</span>
                 </div>
               </div>
               <div className="mt-4 text-right">
@@ -182,7 +185,7 @@ const Hunter = () => {
                 </span>
               </div>
               <div className="mt-4 text-xs text-gray-500">
-                Tâches
+                Fonctionnalités
               </div>
             </CardContent>
           </Card>
@@ -191,10 +194,10 @@ const Hunter = () => {
           <Card className="shadow-sm border border-gray-200">
             <CardContent className="p-6">
               <h4 className="text-sm font-medium text-gray-800 mb-3">
-                Quels sont les principaux avantages du Produit 1 que je devrais mettre en avant pour les clients potentiels ?
+                Recherche un développeur React senior avec 5+ ans d'expérience, maîtrisant TypeScript et Node.js, basé à Paris
               </h4>
               <p className="text-xs text-gray-500">
-                Suggestion de prompt
+                Suggestion de recherche
               </p>
             </CardContent>
           </Card>
@@ -204,19 +207,19 @@ const Hunter = () => {
         <div className="flex flex-wrap gap-4 mb-12">
           <Button variant="outline" className="rounded-full bg-white border-gray-200 hover:bg-gray-50">
             <CalendarIcon className="w-4 h-4 mr-2" />
-            Connecter l'agenda
+            Planifier entretiens
           </Button>
           <Button variant="outline" className="rounded-full bg-white border-gray-200 hover:bg-gray-50">
             <PlayIcon className="w-4 h-4 mr-2" />
-            Tâche démo
+            Recherche démo
           </Button>
           <Button variant="outline" className="rounded-full bg-white border-gray-200 hover:bg-gray-50">
             <GridIcon className="w-4 h-4 mr-2" />
-            Parcourir les intégrations
+            Parcourir les sources
           </Button>
           <Button variant="outline" className="rounded-full bg-white border-gray-200 hover:bg-gray-50">
             <ShareIcon className="w-4 h-4 mr-2" />
-            Partagé dans les notes
+            Profils sauvegardés
           </Button>
         </div>
       </div>
@@ -229,7 +232,7 @@ const Hunter = () => {
               <Textarea
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Demandez-moi n'importe quoi..."
+                placeholder="Décrivez le profil recherché (compétences, expérience, localisation, etc.)..."
                 className="border-0 bg-transparent resize-none focus:ring-0 focus:outline-none text-gray-700 placeholder-gray-500"
                 rows={1}
                 onKeyPress={(e) => {
@@ -243,12 +246,13 @@ const Hunter = () => {
             <div className="flex items-center gap-2">
               <Select>
                 <SelectTrigger className="w-32 border-0 bg-transparent text-sm text-gray-600">
-                  <SelectValue placeholder="Sélectionner la source" />
+                  <SelectValue placeholder="Source" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Toutes</SelectItem>
                   <SelectItem value="linkedin">LinkedIn</SelectItem>
                   <SelectItem value="github">GitHub</SelectItem>
+                  <SelectItem value="indeed">Indeed</SelectItem>
                 </SelectContent>
               </Select>
               <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
@@ -271,8 +275,8 @@ const Hunter = () => {
 
       {/* Footer */}
       <div className="text-center py-4 text-xs text-gray-500">
-        Centra peut afficher des informations inexactes, veuillez donc vérifier la réponse.{' '}
-        <span className="underline cursor-pointer">Votre confidentialité et Orbita GPT</span>
+        RHIA Copilot peut afficher des informations inexactes, veuillez donc vérifier les résultats.{' '}
+        <span className="underline cursor-pointer">Votre confidentialité et RHIA Copilot</span>
       </div>
     </div>
   );
