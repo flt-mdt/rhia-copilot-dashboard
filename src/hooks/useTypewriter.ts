@@ -20,8 +20,15 @@ export const useTypewriter = ({
   const [currentText, setCurrentText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    // Démarrer immédiatement l'animation
+    if (!isInitialized) {
+      setIsInitialized(true);
+      return;
+    }
+
     const currentWord = words[currentWordIndex];
     
     const timeout = setTimeout(() => {
@@ -52,7 +59,7 @@ export const useTypewriter = ({
     }, isPaused ? pauseAfterComplete : (isDeleting ? deleteSpeed : typeSpeed));
 
     return () => clearTimeout(timeout);
-  }, [currentText, isDeleting, isPaused, currentWordIndex, words, typeSpeed, deleteSpeed, delayBetweenWords, pauseAfterComplete]);
+  }, [currentText, isDeleting, isPaused, currentWordIndex, words, typeSpeed, deleteSpeed, delayBetweenWords, pauseAfterComplete, isInitialized]);
 
   return currentText;
 };
