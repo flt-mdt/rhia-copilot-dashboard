@@ -1,7 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare, Folders, PanelLeftClose, PanelLeftOpen, BarChart } from "lucide-react";
+import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare, Folders, PanelLeftClose, PanelLeftOpen, BarChart, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -195,6 +194,20 @@ const Sidebar = () => {
             </div>
           )}
           <ul className="space-y-1">
+            <li>
+              <Link 
+                to="/help" 
+                className={`flex items-center gap-3 px-4 py-3 ${
+                  isActive("/help") 
+                  ? "bg-blue-50 text-primary font-medium" 
+                  : "text-textGray hover:bg-gray-100"
+                }`}
+                title={isCollapsed ? "Centre d'Aide" : ""}
+              >
+                <HelpCircle size={20} className="flex-shrink-0" />
+                {!isCollapsed && "Centre d'Aide"}
+              </Link>
+            </li>
             <li>
               <Link 
                 to="/settings" 

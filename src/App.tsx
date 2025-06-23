@@ -18,6 +18,7 @@ import CreateJobForm from "./components/job/CreateJobForm";
 import EditJobForm from "./components/job/EditJobForm";
 import DuplicateJobForm from "./components/job/DuplicateJobForm";
 import Settings from "./pages/Settings";
+import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Hunter from "./pages/Hunter";
@@ -110,6 +111,12 @@ const App: React.FC = () => {
                   <ProtectedRoute>
                     <Sidebar />
                     <Settings />
+                  </ProtectedRoute>
+                } />
+                <Route path="/help" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <Help />
                   </ProtectedRoute>
                 } />
                 <Route path="/hunter" element={
