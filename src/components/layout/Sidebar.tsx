@@ -1,14 +1,17 @@
+
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare, Folders } from "lucide-react";
+import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare, Folders, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, signOut } = useAuth();
+  const [isCollapsed, setIsCollapsed] = useState(false);
   
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -31,15 +34,36 @@ const Sidebar = () => {
     }
   };
 
+  const toggleSidebar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   return (
-    <div className="w-64 h-screen bg-white fixed left-0 top-0 shadow-md flex flex-col">
-      <div className="p-4 flex items-center gap-3">
-        <img 
-          src="/lovable-uploads/add27bbf-284b-4ea1-ab3e-b9ec42eb3ce3.png" 
-          alt="RHIA Copilot" 
-          className="h-10 w-auto"
-        />
-        <span className="font-jakarta font-extrabold text-lg">RHIA Copilot</span>
+    <div className={`${isCollapsed ? 'w-16' : 'w-64'} h-screen bg-white fixed left-0 top-0 shadow-md flex flex-col transition-all duration-300 ease-in-out`}>
+      {/* Header avec logo et bouton collapse */}
+      <div className="p-4 flex items-center justify-between">
+        {!isCollapsed && (
+          <div className="flex items-center gap-3">
+            <img 
+              src="/lovable-uploads/add27bbf-284b-4ea1-ab3e-b9ec42eb3ce3.png" 
+              alt="RHIA Copilot" 
+              className="h-10 w-auto"
+            />
+            <span className="font-jakarta font-extrabold text-lg">RHIA Copilot</span>
+          </div>
+        )}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleSidebar}
+          className="p-2 hover:bg-gray-100 rounded-md"
+        >
+          {isCollapsed ? (
+            <PanelLeftOpen className="h-5 w-5 text-gray-600" />
+          ) : (
+            <PanelLeftClose className="h-5 w-5 text-gray-600" />
+          )}
+        </Button>
       </div>
       
       <nav className="mt-8">
@@ -52,15 +76,16 @@ const Sidebar = () => {
                 ? "bg-blue-50 text-primary font-medium" 
                 : "text-textGray hover:bg-gray-100"
               }`}
+              title={isCollapsed ? "Dashboard" : ""}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" 
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" 
                 stroke={isActive("/dashboard") ? "#2563EB" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="3" width="7" height="7"></rect>
                 <rect x="14" y="3" width="7" height="7"></rect>
                 <rect x="14" y="14" width="7" height="7"></rect>
                 <rect x="3" y="14" width="7" height="7"></rect>
               </svg>
-              Dashboard
+              {!isCollapsed && "Dashboard"}
             </Link>
           </li>
           <li>
@@ -71,9 +96,10 @@ const Sidebar = () => {
                 ? "bg-blue-50 text-primary font-medium" 
                 : "text-textGray hover:bg-gray-100"
               }`}
+              title={isCollapsed ? "Candidates" : ""}
             >
-              <Users size={20} />
-              Candidates
+              <Users size={20} className="flex-shrink-0" />
+              {!isCollapsed && "Candidates"}
             </Link>
           </li>
           <li>
@@ -84,9 +110,10 @@ const Sidebar = () => {
                 ? "bg-blue-50 text-primary font-medium" 
                 : "text-textGray hover:bg-gray-100"
               }`}
+              title={isCollapsed ? "Job Postings" : ""}
             >
-              <Briefcase size={20} />
-              Job Postings
+              <Briefcase size={20} className="flex-shrink-0" />
+              {!isCollapsed && "Job Postings"}
             </Link>
           </li>
           <li>
@@ -97,9 +124,10 @@ const Sidebar = () => {
                 ? "bg-blue-50 text-primary font-medium" 
                 : "text-textGray hover:bg-gray-100"
               }`}
+              title={isCollapsed ? "Hunter" : ""}
             >
-              <Search size={20} />
-              Hunter
+              <Search size={20} className="flex-shrink-0" />
+              {!isCollapsed && "Hunter"}
             </Link>
           </li>
           <li>
@@ -110,9 +138,10 @@ const Sidebar = () => {
                 ? "bg-blue-50 text-primary font-medium" 
                 : "text-textGray hover:bg-gray-100"
               }`}
+              title={isCollapsed ? "Collection" : ""}
             >
-              <Folders size={20} />
-              Collection
+              <Folders size={20} className="flex-shrink-0" />
+              {!isCollapsed && "Collection"}
             </Link>
           </li>
           <li>
@@ -123,9 +152,10 @@ const Sidebar = () => {
                 ? "bg-blue-50 text-primary font-medium" 
                 : "text-textGray hover:bg-gray-100"
               }`}
+              title={isCollapsed ? "Brief avec l'IA" : ""}
             >
-              <MessageSquare size={20} />
-              Brief avec l'IA
+              <MessageSquare size={20} className="flex-shrink-0" />
+              {!isCollapsed && "Brief avec l'IA"}
             </Link>
           </li>
           <li>
@@ -136,9 +166,10 @@ const Sidebar = () => {
                 ? "bg-blue-50 text-primary font-medium" 
                 : "text-textGray hover:bg-gray-100"
               }`}
+              title={isCollapsed ? "Settings" : ""}
             >
-              <Settings size={20} />
-              Settings
+              <Settings size={20} className="flex-shrink-0" />
+              {!isCollapsed && "Settings"}
             </Link>
           </li>
         </ul>
@@ -147,35 +178,39 @@ const Sidebar = () => {
       <div className="mt-auto mb-4 mx-4 pt-4 border-t border-gray-200">
         {user ? (
           <div className="flex flex-col">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-600 font-medium">
-                  {user.user_metadata?.name?.split(' ').map((n: string) => n[0]).join('') || 
-                   user.email?.substring(0, 2).toUpperCase()}
-                </span>
-              </div>
-              <div>
-                <div className="text-sm font-medium">
-                  {user.user_metadata?.name || user.email}
+            {!isCollapsed && (
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                  <span className="text-gray-600 font-medium">
+                    {user.user_metadata?.name?.split(' ').map((n: string) => n[0]).join('') || 
+                     user.email?.substring(0, 2).toUpperCase()}
+                  </span>
                 </div>
-                <div className="text-xs text-gray-500">HR Manager</div>
+                <div>
+                  <div className="text-sm font-medium">
+                    {user.user_metadata?.name || user.email}
+                  </div>
+                  <div className="text-xs text-gray-500">HR Manager</div>
+                </div>
               </div>
-            </div>
+            )}
             <button 
               onClick={handleLogout}
-              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-red-50 hover:text-red-600 transition-colors"
+              className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-red-50 hover:text-red-600 transition-colors ${isCollapsed ? 'justify-center' : ''}`}
+              title={isCollapsed ? "Déconnexion" : ""}
             >
-              <LogOut size={16} />
-              Déconnexion
+              <LogOut size={16} className="flex-shrink-0" />
+              {!isCollapsed && "Déconnexion"}
             </button>
           </div>
         ) : (
           <Link 
             to="/login"
-            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors"
+            className={`flex items-center gap-2 px-3 py-2 text-sm text-gray-700 rounded-md hover:bg-blue-50 hover:text-blue-600 transition-colors ${isCollapsed ? 'justify-center' : ''}`}
+            title={isCollapsed ? "Connexion" : ""}
           >
-            <LogIn size={16} />
-            Connexion
+            <LogIn size={16} className="flex-shrink-0" />
+            {!isCollapsed && "Connexion"}
           </Link>
         )}
       </div>

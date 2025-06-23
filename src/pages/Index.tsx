@@ -36,7 +36,7 @@ const Index = () => {
   const activeJobs = jobPostings.filter(job => job.is_active).slice(0, 2);
   
   return (
-    <div className="ml-64 p-8">
+    <div className="p-8 transition-all duration-300 ease-in-out" style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
       <Header title={t('dashboard.title')} />
       
       {/* Stats Grid */}
