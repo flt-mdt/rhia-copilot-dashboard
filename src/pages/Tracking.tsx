@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,13 +49,13 @@ const Tracking = () => {
   ];
 
   const locationData = [
-    { country: "France", percentage: 42, flag: "🇫🇷", coordinates: [2.3522, 48.8566] as [number, number] },
-    { country: "Belgique", percentage: 23, flag: "🇧🇪", coordinates: [4.3517, 50.8503] as [number, number] },
-    { country: "Maroc", percentage: 12, flag: "🇲🇦", coordinates: [-6.8498, 34.0209] as [number, number] },
-    { country: "Tunisie", percentage: 8, flag: "🇹🇳", coordinates: [10.1815, 36.8065] as [number, number] },
-    { country: "Canada", percentage: 7, flag: "🇨🇦", coordinates: [-106.3468, 56.1304] as [number, number] },
-    { country: "Suisse", percentage: 5, flag: "🇨🇭", coordinates: [8.2275, 46.8182] as [number, number] },
-    { country: "Algérie", percentage: 3, flag: "🇩🇿", coordinates: [1.6596, 28.0339] as [number, number] }
+    { country: "France", percentage: 42, flag: "🇫🇷", flagCode: "FR", coordinates: [2.3522, 48.8566] as [number, number] },
+    { country: "Belgique", percentage: 23, flag: "🇧🇪", flagCode: "BE", coordinates: [4.3517, 50.8503] as [number, number] },
+    { country: "Maroc", percentage: 12, flag: "🇲🇦", flagCode: "MA", coordinates: [-6.8498, 34.0209] as [number, number] },
+    { country: "Tunisie", percentage: 8, flag: "🇹🇳", flagCode: "TN", coordinates: [10.1815, 36.8065] as [number, number] },
+    { country: "Canada", percentage: 7, flag: "🇨🇦", flagCode: "CA", coordinates: [-106.3468, 56.1304] as [number, number] },
+    { country: "Suisse", percentage: 5, flag: "🇨🇭", flagCode: "CH", coordinates: [8.2275, 46.8182] as [number, number] },
+    { country: "Algérie", percentage: 3, flag: "🇩🇿", flagCode: "DZ", coordinates: [1.6596, 28.0339] as [number, number] }
   ];
 
   const StatCard = ({ 
@@ -261,19 +260,31 @@ const Tracking = () => {
                   {locationData.map((location, index) => (
                     <div key={location.country} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                       <div className="flex items-center gap-4">
-                        <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center">
-                          <span className="text-xl">{location.flag}</span>
+                        <div className="w-10 h-10 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden relative">
+                          <span 
+                            className="text-2xl leading-none select-none"
+                            style={{ 
+                              fontFamily: "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Segoe UI Symbol'",
+                              fontSize: '20px'
+                            }}
+                          >
+                            {location.flag}
+                          </span>
+                          {/* Fallback avec code pays si le drapeau ne s'affiche pas */}
+                          <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-600 opacity-0 hover:opacity-100 transition-opacity">
+                            {location.flagCode}
+                          </div>
                         </div>
                         <span className="text-sm font-medium text-gray-700">{location.country}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="flex items-center gap-3">
+                        <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                            className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500 ease-out"
                             style={{ width: `${location.percentage}%` }}
                           />
                         </div>
-                        <span className="text-sm font-semibold text-gray-900 min-w-[40px] text-right">{location.percentage}%</span>
+                        <span className="text-sm font-semibold text-gray-900 min-w-[45px] text-right">{location.percentage}%</span>
                       </div>
                     </div>
                   ))}
