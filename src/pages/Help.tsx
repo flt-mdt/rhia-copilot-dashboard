@@ -6,16 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { 
-  Search, 
   Settings, 
   Server, 
   Shield, 
   UserCog, 
   Users, 
-  HelpCircle,
-  MessageSquare,
   BookOpen,
-  Wrench
+  MessageSquare
 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -50,42 +47,42 @@ const Help = () => {
       title: "Prise en main",
       description: "Tout ce que vous devez savoir pour commencer à utiliser RHIA Copilot efficacement.",
       color: "text-green-600",
-      bgColor: "bg-green-50"
+      bgColor: "bg-green-100"
     },
     {
       icon: Settings,
       title: "Configuration Système",
       description: "Apprenez à configurer votre espace de travail et vos préférences utilisateur.",
       color: "text-red-600",
-      bgColor: "bg-red-50"
+      bgColor: "bg-red-100"
     },
     {
       icon: Server,
       title: "Intégrations",
       description: "Connectez et automatisez vos outils RH. Découvrez la puissance des intégrations.",
       color: "text-blue-600",
-      bgColor: "bg-blue-50"
+      bgColor: "bg-blue-100"
     },
     {
       icon: UserCog,
-      title: "Gestion des Comptes",
-      description: "Authentification, gestion des utilisateurs et configuration des équipes.",
+      title: "Connexion et Vérification",
+      description: "Découvrez comment vous connecter avec votre adresse email ou vos comptes Apple et Google.",
       color: "text-blue-600",
-      bgColor: "bg-blue-50"
+      bgColor: "bg-blue-100"
     },
     {
       icon: Users,
-      title: "Gestion des Candidats",
-      description: "Ajustez vos profils et préférences pour optimiser l'expérience candidat.",
-      color: "text-purple-600",
-      bgColor: "bg-purple-50"
+      title: "Configuration du Compte",
+      description: "Ajustez vos profils et préférences pour optimiser l'expérience RHIA Copilot.",
+      color: "text-pink-600",
+      bgColor: "bg-pink-100"
     },
     {
       icon: Shield,
-      title: "Sécurité & Confidentialité",
+      title: "Confiance & Sécurité",
       description: "Découvrez nos mesures de sécurité et comment nous protégeons vos données RH.",
       color: "text-orange-600",
-      bgColor: "bg-orange-50"
+      bgColor: "bg-orange-100"
     }
   ];
 
@@ -95,60 +92,49 @@ const Help = () => {
     "Hunter de profils",
     "Brief avec l'IA",
     "Analytics et rapports",
-    "Intégrations",
-    "Facturation",
-    "Sécurité des données"
+    "Intégrations"
   ];
 
   return (
     <div 
-      className="min-h-screen bg-gray-50 transition-all duration-300 ease-in-out"
+      className="min-h-screen bg-white transition-all duration-300 ease-in-out"
       style={{ marginLeft: 'var(--sidebar-width, 256px)' }}
     >
-      <div className="p-6 max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Centre d'Aide</h1>
-          <p className="text-gray-600">
-            Utilisez RHIA Copilot ? Connectez-vous pour que nous puissions vous aider. 
-            Si ce n'est pas possible, envoyez-nous votre demande manuellement.
-          </p>
-        </div>
+      <div className="max-w-6xl mx-auto px-8 py-12">
+        {/* Contact Section */}
+        <div className="grid lg:grid-cols-2 gap-16 mb-20">
+          {/* Left Column - Contact Form */}
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Nous Contacter</h1>
+            <p className="text-gray-600 mb-8 text-lg leading-relaxed">
+              Utilisez RHIA Copilot ? Connectez-vous pour que nous puissions vous aider. 
+              Si ce n'est pas possible, envoyez-nous votre demande manuellement.
+            </p>
+          </div>
 
-        {/* Contact Form */}
-        <Card className="mb-12">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              Nous Contacter
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="email">Votre Adresse Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Entrez votre email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              <div></div>
+          {/* Right Column - Form */}
+          <div className="space-y-6">
+            <div>
+              <Label htmlFor="email" className="text-gray-700 font-medium mb-2 block">Votre Adresse Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Entrez votre email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-12 text-base"
+              />
             </div>
 
             <div>
-              <Label className="text-sm font-medium mb-3 block">Sélectionnez votre sujet :</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+              <div className="grid grid-cols-2 gap-3 mb-4">
                 {supportTopics.map((topicOption) => (
                   <Button
                     key={topicOption}
                     variant={topic === topicOption ? "default" : "outline"}
                     size="sm"
                     onClick={() => setTopic(topicOption)}
-                    className="text-xs"
+                    className="text-sm py-2 h-auto whitespace-normal"
                   >
                     {topicOption}
                   </Button>
@@ -156,80 +142,50 @@ const Help = () => {
               </div>
             </div>
 
-            <div className="text-center text-gray-500 text-sm">OU</div>
+            <div className="text-center text-gray-400 font-medium">OU</div>
 
             <div>
-              <Label htmlFor="custom-topic">Vous ne trouvez pas votre sujet ? Décrivez-le ci-dessous :</Label>
+              <Label htmlFor="custom-topic" className="text-gray-700 font-medium mb-2 block">
+                Vous ne trouvez pas votre sujet ? Décrivez-le ci-dessous :
+              </Label>
               <Textarea
                 id="custom-topic"
-                placeholder="Décrivez votre problème ou question..."
+                placeholder="Entrez votre sujet"
                 value={topic.includes("Décrivez votre problème") ? topic : ""}
                 onChange={(e) => setTopic(e.target.value)}
-                className="mt-1"
+                className="min-h-[80px] text-base"
                 rows={3}
               />
             </div>
 
             <Button 
               onClick={handleSubmitRequest}
-              className="w-full bg-gray-800 hover:bg-gray-900"
+              className="w-full bg-gray-800 hover:bg-gray-900 h-12 text-base font-medium"
             >
               Envoyer votre demande
             </Button>
-          </CardContent>
-        </Card>
-
-        {/* Help Categories */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Besoin d'Aide ?</h2>
-          <p className="text-gray-600 mb-6">
-            Une réponse rapide ? Sélectionnez votre référence ci-dessous pour nos réponses.
-          </p>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {helpCategories.map((category) => (
-              <Card key={category.title} className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader className="pb-4">
-                  <div className={`w-12 h-12 rounded-lg ${category.bgColor} flex items-center justify-center mb-3`}>
-                    <category.icon className={`h-6 w-6 ${category.color}`} />
-                  </div>
-                  <CardTitle className="text-lg">{category.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-sm leading-relaxed">
-                    {category.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-lg p-6 border">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Wrench className="h-5 w-5" />
-            Actions Rapides
-          </h3>
-          <div className="grid md:grid-cols-3 gap-4">
-            <Button variant="outline" className="justify-start h-auto p-4">
-              <div className="text-left">
-                <div className="font-medium">Documentation API</div>
-                <div className="text-sm text-gray-500">Intégrez RHIA Copilot à vos outils</div>
+        {/* Help Categories Section */}
+        <div>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Besoin d'Aide ?</h2>
+          <p className="text-gray-600 mb-12 text-lg">
+            Une réponse rapide ? Sélectionnez votre référence ci-dessous pour nos réponses.
+          </p>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {helpCategories.map((category) => (
+              <div key={category.title} className="text-center cursor-pointer group">
+                <div className={`w-16 h-16 rounded-full ${category.bgColor} flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-200`}>
+                  <category.icon className={`h-8 w-8 ${category.color}`} />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">{category.title}</h3>
+                <p className="text-gray-600 leading-relaxed text-base">
+                  {category.description}
+                </p>
               </div>
-            </Button>
-            <Button variant="outline" className="justify-start h-auto p-4">
-              <div className="text-left">
-                <div className="font-medium">Tutoriels Vidéo</div>
-                <div className="text-sm text-gray-500">Guides pas à pas</div>
-              </div>
-            </Button>
-            <Button variant="outline" className="justify-start h-auto p-4">
-              <div className="text-left">
-                <div className="font-medium">Planifier une Démo</div>
-                <div className="text-sm text-gray-500">Session personnalisée</div>
-              </div>
-            </Button>
+            ))}
           </div>
         </div>
       </div>
