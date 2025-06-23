@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -184,7 +183,8 @@ const Candidates = () => {
 
   if (isLoading) {
     return (
-      <div className="ml-64 p-8">
+      <div className="p-8 transition-all duration-300 ease-in-out"
+           style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
         <Header title="Candidates" />
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
@@ -197,7 +197,8 @@ const Candidates = () => {
   }
 
   return (
-    <div className="ml-64 p-8">
+    <div className="p-8 transition-all duration-300 ease-in-out"
+         style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
       <Header title="Candidates" />
 
       <div className="mb-6">

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -428,7 +429,8 @@ const Brief = () => {
   }, []);
 
   return (
-    <div className="ml-64 min-h-screen bg-bgLight">
+    <div className="min-h-screen bg-bgLight transition-all duration-300 ease-in-out"
+         style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
       <div className="p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
