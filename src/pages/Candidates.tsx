@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -339,7 +340,7 @@ const Candidates = () => {
           {filteredCandidates.map((candidate, index) => (
             <Card 
               key={candidate.id} 
-              className="overflow-hidden border border-gray-100 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1 cursor-pointer animate-fade-in opacity-0 group"
+              className="overflow-hidden border border-gray-100 transition-all duration-500 ease-out hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-2 cursor-pointer animate-fade-in opacity-0 group relative"
               style={{ 
                 animationDelay: `${600 + index * 100}ms`,
                 animationFillMode: 'forwards'
@@ -349,14 +350,16 @@ const Candidates = () => {
               <div className="p-6">
                 <div className="flex justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12 bg-gray-100 transition-transform duration-300 group-hover:scale-110">
-                      <AvatarFallback className="text-gray-600">
+                    <Avatar className="h-12 w-12 bg-gray-100 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
+                      <AvatarFallback className="text-gray-600 transition-colors duration-300 group-hover:text-blue-600">
                         {candidate.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <h3 className="font-medium text-lg transition-colors duration-300 group-hover:text-blue-600">{candidate.name}</h3>
-                      <p className="text-gray-500 text-sm">
+                      <h3 className="font-medium text-lg transition-all duration-300 group-hover:text-blue-600 group-hover:scale-105 transform-gpu">
+                        {candidate.name}
+                      </h3>
+                      <p className="text-gray-500 text-sm transition-colors duration-300 group-hover:text-gray-700">
                         {candidate.current_position || candidate.job_postings?.title || 'No position'}
                       </p>
                     </div>
@@ -370,7 +373,7 @@ const Candidates = () => {
                         'contacted': 'bg-yellow-100 text-yellow-700',
                         'hired': 'bg-emerald-100 text-emerald-700',
                         'rejected': 'bg-red-100 text-red-700',
-                      }[candidate.status] || 'bg-gray-100 text-gray-700' : 'bg-gray-100 text-gray-700'} font-normal text-xs px-3 transition-all duration-300 hover:scale-105`}
+                      }[candidate.status] || 'bg-gray-100 text-gray-700' : 'bg-gray-100 text-gray-700'} font-normal text-xs px-3 transition-all duration-300 hover:scale-105 group-hover:shadow-md`}
                       variant="outline"
                     >
                       {candidate.status ? {
@@ -382,7 +385,7 @@ const Candidates = () => {
                         'rejected': 'Rejected',
                       }[candidate.status] || candidate.status : 'New'}
                     </Badge>
-                    <span className="text-gray-500 text-xs mt-1">
+                    <span className="text-gray-500 text-xs mt-1 transition-colors duration-300 group-hover:text-gray-700">
                       {candidate.created_at ? new Date(candidate.created_at).toLocaleDateString('fr-FR', { 
                         day: 'numeric', 
                         month: 'long', 
@@ -394,59 +397,62 @@ const Candidates = () => {
 
                 <div className="mb-5">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm text-gray-600">Overall Match</span>
-                    <span className="font-medium">
+                    <span className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-800">Overall Match</span>
+                    <span className="font-medium transition-all duration-300 group-hover:scale-105 group-hover:text-blue-600">
                       <AnimatedCounter end={candidate.ai_score || 0} suffix="%" />
                     </span>
                   </div>
-                  <Progress value={candidate.ai_score || 0} className="h-2 transition-all duration-1000" />
+                  <Progress 
+                    value={candidate.ai_score || 0} 
+                    className="h-2 transition-all duration-500 group-hover:h-3"
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-y-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="p-1 bg-blue-50 rounded text-blue-500">
+                  <div className="flex items-center gap-2 transition-all duration-300 group-hover:scale-105">
+                    <span className="p-1 bg-blue-50 rounded text-blue-500 transition-all duration-300 group-hover:bg-blue-100 group-hover:scale-110">
                       <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M3 3a1 1 0 000 2h14a1 1 0 100-2H3zm0 6a1 1 0 000 2h14a1 1 0 100-2H3zm0 6a1 1 0 000 2h14a1 1 0 100-2H3z" clipRule="evenodd" />
                       </svg>
                     </span>
-                    <span className="text-sm text-gray-600">Technical: <span className="font-medium">-/5</span></span>
+                    <span className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-800">Technical: <span className="font-medium">-/5</span></span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="p-1 bg-purple-50 rounded text-purple-500">
+                  <div className="flex items-center gap-2 transition-all duration-300 group-hover:scale-105">
+                    <span className="p-1 bg-purple-50 rounded text-purple-500 transition-all duration-300 group-hover:bg-purple-100 group-hover:scale-110">
                       <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                       </svg>
                     </span>
-                    <span className="text-sm text-gray-600">Experience: <span className="font-medium">{candidate.experience_years || 0} ans</span></span>
+                    <span className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-800">Experience: <span className="font-medium">{candidate.experience_years || 0} ans</span></span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="p-1 bg-green-50 rounded text-green-500">
+                  <div className="flex items-center gap-2 transition-all duration-300 group-hover:scale-105">
+                    <span className="p-1 bg-green-50 rounded text-green-500 transition-all duration-300 group-hover:bg-green-100 group-hover:scale-110">
                       <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
                       </svg>
                     </span>
-                    <span className="text-sm text-gray-600">Education: <span className="font-medium">-/5</span></span>
+                    <span className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-800">Education: <span className="font-medium">-/5</span></span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="p-1 bg-yellow-50 rounded text-yellow-500">
+                  <div className="flex items-center gap-2 transition-all duration-300 group-hover:scale-105">
+                    <span className="p-1 bg-yellow-50 rounded text-yellow-500 transition-all duration-300 group-hover:bg-yellow-100 group-hover:scale-110">
                       <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
                       </svg>
                     </span>
-                    <span className="text-sm text-gray-600">Location: <span className="font-medium">{candidate.location || 'N/A'}</span></span>
+                    <span className="text-sm text-gray-600 transition-colors duration-300 group-hover:text-gray-800">Location: <span className="font-medium">{candidate.location || 'N/A'}</span></span>
                   </div>
                 </div>
 
                 <button 
-                  className="w-full flex justify-center items-center gap-1 text-gray-500 text-sm py-1 hover:bg-gray-50 rounded-md transition-all duration-200 hover:scale-105"
+                  className="w-full flex justify-center items-center gap-1 text-gray-500 text-sm py-1 hover:bg-gray-50 rounded-md transition-all duration-300 hover:scale-105 group/show-more"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(`/candidates/${candidate.id}`);
                   }}
                 >
-                  <span>Show More</span>
+                  <span className="transition-colors duration-300 group-hover/show-more:text-blue-600">Show More</span>
                   <svg 
-                    className="w-4 h-4 transition-transform duration-300 group-hover:translate-y-1" 
+                    className="w-4 h-4 transition-all duration-300 group-hover:translate-y-1 group-hover/show-more:text-blue-600" 
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -457,7 +463,7 @@ const Candidates = () => {
 
                 <div className="border-t border-gray-100 mt-4 pt-4 flex justify-between items-center">
                   <button 
-                    className="text-blue-600 text-sm font-medium hover:underline view-cv-button transition-all duration-200 hover:scale-105"
+                    className="text-blue-600 text-sm font-medium hover:underline view-cv-button transition-all duration-300 hover:scale-105 hover:text-blue-700"
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedCVCandidate(candidate.id);
@@ -468,7 +474,7 @@ const Candidates = () => {
                   
                   <Popover>
                     <PopoverTrigger asChild>
-                      <button className="text-gray-600 text-sm hover:text-gray-900 status-change-button transition-all duration-200 hover:scale-105" onClick={(e) => e.stopPropagation()}>
+                      <button className="text-gray-600 text-sm hover:text-gray-900 status-change-button transition-all duration-300 hover:scale-105" onClick={(e) => e.stopPropagation()}>
                         Change Status
                       </button>
                     </PopoverTrigger>
@@ -499,8 +505,8 @@ const Candidates = () => {
                 </div>
               </div>
 
-              {/* Animated glow effect on hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg pointer-events-none" />
+              {/* Subtle border effect on hover */}
+              <div className="absolute inset-0 rounded-lg border-2 border-transparent group-hover:border-gray-200/50 transition-all duration-500 pointer-events-none" />
             </Card>
           ))}
         </div>
