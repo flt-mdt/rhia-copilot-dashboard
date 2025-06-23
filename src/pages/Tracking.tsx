@@ -101,6 +101,29 @@ const Tracking = () => {
     },
   };
 
+  // Component for improved flag display
+  const FlagDisplay = ({ flag, flagCode }: { flag: string; flagCode: string }) => (
+    <div className="w-10 h-10 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center relative overflow-hidden">
+      <span 
+        className="text-xl leading-none select-none flex items-center justify-center w-full h-full"
+        style={{ 
+          fontFamily: "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Segoe UI Symbol', 'Android Emoji', 'EmojiOne Color', 'Twemoji', sans-serif",
+          fontSize: '20px',
+          lineHeight: '1',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        {flag}
+      </span>
+      {/* Fallback text overlay - shows on hover or if emoji fails */}
+      <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 bg-white/90 opacity-0 hover:opacity-100 transition-opacity duration-200">
+        {flagCode}
+      </div>
+    </div>
+  );
+
   return (
     <div 
       className="min-h-screen bg-gray-50 transition-all duration-300 ease-in-out"
@@ -250,7 +273,7 @@ const Tracking = () => {
             </CardContent>
           </Card>
 
-          {/* Geographic Distribution - Simple List */}
+          {/* Geographic Distribution - Improved Flag Display */}
           <Card className="bg-white rounded-xl shadow-sm border border-gray-100">
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-gray-900 flex items-center gap-2">
@@ -263,20 +286,7 @@ const Tracking = () => {
                 {locationData.map((location, index) => (
                   <div key={location.country} className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden relative">
-                        <span 
-                          className="text-2xl leading-none select-none"
-                          style={{ 
-                            fontFamily: "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Segoe UI Symbol'",
-                            fontSize: '24px'
-                          }}
-                        >
-                          {location.flag}
-                        </span>
-                        <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-600 opacity-0 hover:opacity-100 transition-opacity bg-white/80">
-                          {location.flagCode}
-                        </div>
-                      </div>
+                      <FlagDisplay flag={location.flag} flagCode={location.flagCode} />
                       <div>
                         <span className="text-base font-medium text-gray-900">{location.country}</span>
                         <div className="text-sm text-gray-500">
