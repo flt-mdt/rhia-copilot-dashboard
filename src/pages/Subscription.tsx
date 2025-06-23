@@ -227,8 +227,8 @@ const Subscription = () => {
                 
                 <Button 
                   onClick={() => handleSubscribe(plan.priceId, plan.name)}
-                  variant="ghost"
-                  className="mt-auto w-full justify-center h-12 text-md font-semibold hover:bg-blue-100 text-blue-600"
+                  variant="light-blue"
+                  className="mt-auto w-full justify-center h-12 text-md font-semibold"
                 >
                   Choisir ce plan
                 </Button>
