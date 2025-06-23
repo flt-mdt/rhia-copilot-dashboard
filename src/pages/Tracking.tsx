@@ -49,13 +49,13 @@ const Tracking = () => {
   ];
 
   const locationData = [
-    { country: "France", percentage: 42, flag: "🇫🇷", flagCode: "FR", coordinates: [2.3522, 48.8566] as [number, number] },
-    { country: "Belgique", percentage: 23, flag: "🇧🇪", flagCode: "BE", coordinates: [4.3517, 50.8503] as [number, number] },
-    { country: "Maroc", percentage: 12, flag: "🇲🇦", flagCode: "MA", coordinates: [-6.8498, 34.0209] as [number, number] },
-    { country: "Tunisie", percentage: 8, flag: "🇹🇳", flagCode: "TN", coordinates: [10.1815, 36.8065] as [number, number] },
-    { country: "Canada", percentage: 7, flag: "🇨🇦", flagCode: "CA", coordinates: [-106.3468, 56.1304] as [number, number] },
-    { country: "Suisse", percentage: 5, flag: "🇨🇭", flagCode: "CH", coordinates: [8.2275, 46.8182] as [number, number] },
-    { country: "Algérie", percentage: 3, flag: "🇩🇿", flagCode: "DZ", coordinates: [1.6596, 28.0339] as [number, number] }
+    { country: "France", percentage: 42, flag: "🇫🇷", flagCode: "FR", coordinates: [2.3522, 48.8566] as [number, number], candidatures: 340, matchPercentage: 78 },
+    { country: "Belgique", percentage: 23, flag: "🇧🇪", flagCode: "BE", coordinates: [4.3517, 50.8503] as [number, number], candidatures: 185, matchPercentage: 82 },
+    { country: "Maroc", percentage: 12, flag: "🇲🇦", flagCode: "MA", coordinates: [-6.8498, 34.0209] as [number, number], candidatures: 97, matchPercentage: 71 },
+    { country: "Tunisie", percentage: 8, flag: "🇹🇳", flagCode: "TN", coordinates: [10.1815, 36.8065] as [number, number], candidatures: 64, matchPercentage: 75 },
+    { country: "Canada", percentage: 7, flag: "🇨🇦", flagCode: "CA", coordinates: [-106.3468, 56.1304] as [number, number], candidatures: 56, matchPercentage: 84 },
+    { country: "Suisse", percentage: 5, flag: "🇨🇭", flagCode: "CH", coordinates: [8.2275, 46.8182] as [number, number], candidatures: 40, matchPercentage: 89 },
+    { country: "Algérie", percentage: 3, flag: "🇩🇿", flagCode: "DZ", coordinates: [1.6596, 28.0339] as [number, number], candidatures: 24, matchPercentage: 68 }
   ];
 
   const StatCard = ({ 
