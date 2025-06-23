@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare, Folders, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare, Folders, PanelLeftClose, PanelLeftOpen, BarChart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -74,113 +74,143 @@ const Sidebar = () => {
         </Button>
       </div>
       
-      <nav className="mt-8">
-        <ul className="space-y-1">
-          <li>
-            <Link 
-              to="/dashboard" 
-              className={`flex items-center gap-3 px-4 py-3 ${
-                isActive("/dashboard") 
-                ? "bg-blue-50 text-primary font-medium" 
-                : "text-textGray hover:bg-gray-100"
-              }`}
-              title={isCollapsed ? "Dashboard" : ""}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" 
-                stroke={isActive("/dashboard") ? "#2563EB" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7"></rect>
-                <rect x="14" y="3" width="7" height="7"></rect>
-                <rect x="14" y="14" width="7" height="7"></rect>
-                <rect x="3" y="14" width="7" height="7"></rect>
-              </svg>
-              {!isCollapsed && "Dashboard"}
-            </Link>
-          </li>
-          <li>
-            <Link 
-              to="/candidates" 
-              className={`flex items-center gap-3 px-4 py-3 ${
-                location.pathname.includes("/candidates") 
-                ? "bg-blue-50 text-primary font-medium" 
-                : "text-textGray hover:bg-gray-100"
-              }`}
-              title={isCollapsed ? "Candidates" : ""}
-            >
-              <Users size={20} className="flex-shrink-0" />
-              {!isCollapsed && "Candidates"}
-            </Link>
-          </li>
-          <li>
-            <Link 
-              to="/job-postings" 
-              className={`flex items-center gap-3 px-4 py-3 ${
-                location.pathname.includes("/job-postings") 
-                ? "bg-blue-50 text-primary font-medium" 
-                : "text-textGray hover:bg-gray-100"
-              }`}
-              title={isCollapsed ? "Job Postings" : ""}
-            >
-              <Briefcase size={20} className="flex-shrink-0" />
-              {!isCollapsed && "Job Postings"}
-            </Link>
-          </li>
-          <li>
-            <Link 
-              to="/hunter" 
-              className={`flex items-center gap-3 px-4 py-3 ${
-                isActive("/hunter") 
-                ? "bg-blue-50 text-primary font-medium" 
-                : "text-textGray hover:bg-gray-100"
-              }`}
-              title={isCollapsed ? "Hunter" : ""}
-            >
-              <Search size={20} className="flex-shrink-0" />
-              {!isCollapsed && "Hunter"}
-            </Link>
-          </li>
-          <li>
-            <Link 
-              to="/collection" 
-              className={`flex items-center gap-3 px-4 py-3 ${
-                isActive("/collection") 
-                ? "bg-blue-50 text-primary font-medium" 
-                : "text-textGray hover:bg-gray-100"
-              }`}
-              title={isCollapsed ? "Collection" : ""}
-            >
-              <Folders size={20} className="flex-shrink-0" />
-              {!isCollapsed && "Collection"}
-            </Link>
-          </li>
-          <li>
-            <Link 
-              to="/brief" 
-              className={`flex items-center gap-3 px-4 py-3 ${
-                isActive("/brief") 
-                ? "bg-blue-50 text-primary font-medium" 
-                : "text-textGray hover:bg-gray-100"
-              }`}
-              title={isCollapsed ? "Brief avec l'IA" : ""}
-            >
-              <MessageSquare size={20} className="flex-shrink-0" />
-              {!isCollapsed && "Brief avec l'IA"}
-            </Link>
-          </li>
-          <li>
-            <Link 
-              to="/settings" 
-              className={`flex items-center gap-3 px-4 py-3 ${
-                isActive("/settings") 
-                ? "bg-blue-50 text-primary font-medium" 
-                : "text-textGray hover:bg-gray-100"
-              }`}
-              title={isCollapsed ? "Settings" : ""}
-            >
-              <Settings size={20} className="flex-shrink-0" />
-              {!isCollapsed && "Settings"}
-            </Link>
-          </li>
-        </ul>
+      <nav className="mt-4 flex-1 overflow-y-auto">
+        {/* ANALYTICS Section */}
+        <div className="mb-6">
+          {!isCollapsed && (
+            <div className="px-4 mb-2">
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">ANALYTICS</span>
+            </div>
+          )}
+          <ul className="space-y-1">
+            <li>
+              <Link 
+                to="/dashboard" 
+                className={`flex items-center gap-3 px-4 py-3 ${
+                  isActive("/dashboard") 
+                  ? "bg-blue-50 text-primary font-medium" 
+                  : "text-textGray hover:bg-gray-100"
+                }`}
+                title={isCollapsed ? "Dashboard" : ""}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" 
+                  stroke={isActive("/dashboard") ? "#2563EB" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                {!isCollapsed && "Dashboard"}
+              </Link>
+            </li>
+            <li>
+              <Link 
+                to="/collection" 
+                className={`flex items-center gap-3 px-4 py-3 ${
+                  isActive("/collection") 
+                  ? "bg-blue-50 text-primary font-medium" 
+                  : "text-textGray hover:bg-gray-100"
+                }`}
+                title={isCollapsed ? "Collection" : ""}
+              >
+                <BarChart size={20} className="flex-shrink-0" />
+                {!isCollapsed && "Collection"}
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* TOOLS Section */}
+        <div className="mb-6">
+          {!isCollapsed && (
+            <div className="px-4 mb-2">
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">TOOLS</span>
+            </div>
+          )}
+          <ul className="space-y-1">
+            <li>
+              <Link 
+                to="/hunter" 
+                className={`flex items-center gap-3 px-4 py-3 ${
+                  isActive("/hunter") 
+                  ? "bg-blue-50 text-primary font-medium" 
+                  : "text-textGray hover:bg-gray-100"
+                }`}
+                title={isCollapsed ? "Hunter" : ""}
+              >
+                <Search size={20} className="flex-shrink-0" />
+                {!isCollapsed && "Hunter"}
+              </Link>
+            </li>
+            <li>
+              <Link 
+                to="/brief" 
+                className={`flex items-center gap-3 px-4 py-3 ${
+                  isActive("/brief") 
+                  ? "bg-blue-50 text-primary font-medium" 
+                  : "text-textGray hover:bg-gray-100"
+                }`}
+                title={isCollapsed ? "Brief avec l'IA" : ""}
+              >
+                <MessageSquare size={20} className="flex-shrink-0" />
+                {!isCollapsed && "Brief avec l'IA"}
+              </Link>
+            </li>
+            <li>
+              <Link 
+                to="/candidates" 
+                className={`flex items-center gap-3 px-4 py-3 ${
+                  location.pathname.includes("/candidates") 
+                  ? "bg-blue-50 text-primary font-medium" 
+                  : "text-textGray hover:bg-gray-100"
+                }`}
+                title={isCollapsed ? "Candidates" : ""}
+              >
+                <Users size={20} className="flex-shrink-0" />
+                {!isCollapsed && "Candidates"}
+              </Link>
+            </li>
+            <li>
+              <Link 
+                to="/job-postings" 
+                className={`flex items-center gap-3 px-4 py-3 ${
+                  location.pathname.includes("/job-postings") 
+                  ? "bg-blue-50 text-primary font-medium" 
+                  : "text-textGray hover:bg-gray-100"
+                }`}
+                title={isCollapsed ? "Job Postings" : ""}
+              >
+                <Briefcase size={20} className="flex-shrink-0" />
+                {!isCollapsed && "Job Postings"}
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* SUPPORT Section */}
+        <div className="mb-6">
+          {!isCollapsed && (
+            <div className="px-4 mb-2">
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">SUPPORT</span>
+            </div>
+          )}
+          <ul className="space-y-1">
+            <li>
+              <Link 
+                to="/settings" 
+                className={`flex items-center gap-3 px-4 py-3 ${
+                  isActive("/settings") 
+                  ? "bg-blue-50 text-primary font-medium" 
+                  : "text-textGray hover:bg-gray-100"
+                }`}
+                title={isCollapsed ? "Settings" : ""}
+              >
+                <Settings size={20} className="flex-shrink-0" />
+                {!isCollapsed && "Settings"}
+              </Link>
+            </li>
+          </ul>
+        </div>
       </nav>
       
       <div className="mt-auto mb-4 mx-4 pt-4 border-t border-gray-200">
