@@ -13,6 +13,14 @@ const Sidebar = () => {
   const { user, signOut } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   
+  // Update CSS variable when sidebar state changes
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--sidebar-width', 
+      isCollapsed ? '64px' : '256px'
+    );
+  }, [isCollapsed]);
+  
   const isActive = (path: string) => {
     return location.pathname === path;
   };
@@ -39,7 +47,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className={`${isCollapsed ? 'w-16' : 'w-64'} h-screen bg-white fixed left-0 top-0 shadow-md flex flex-col transition-all duration-300 ease-in-out`}>
+    <div className={`${isCollapsed ? 'w-16' : 'w-64'} h-screen bg-white fixed left-0 top-0 shadow-md flex flex-col transition-all duration-300 ease-in-out z-50`}>
       {/* Header avec logo et bouton collapse */}
       <div className="p-4 flex items-center justify-between">
         {!isCollapsed && (

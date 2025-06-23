@@ -23,10 +23,11 @@ const Dashboard = () => {
   const { data: stats, isLoading } = useDashboardStats();
 
   return (
-    <div className="ml-64 p-8 bg-[#F9FAFB]">
+    <div className="transition-all duration-300 ease-in-out p-4 md:p-8 bg-[#F9FAFB] min-h-screen" 
+         style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
       <Header title={t('dashboard.title')} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
         <StatCard
           icon={<TrendingUp className="w-7 h-7" />}
           title={t('dashboard.stats.newApplications')}
@@ -53,7 +54,7 @@ const Dashboard = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
         <TopCandidates />
         <ActiveJobs />
       </div>

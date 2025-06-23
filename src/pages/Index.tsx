@@ -36,11 +36,12 @@ const Index = () => {
   const activeJobs = jobPostings.filter(job => job.is_active).slice(0, 2);
   
   return (
-    <div className="p-8 transition-all duration-300 ease-in-out" style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
+    <div className="transition-all duration-300 ease-in-out p-4 md:p-8 min-h-screen" 
+         style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
       <Header title={t('dashboard.title')} />
       
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
         <StatCard
           icon={<Mail className="h-6 w-6" />}
           title={t('dashboard.stats.newApplications')}
@@ -70,12 +71,12 @@ const Index = () => {
         />
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
         {/* Top Candidates */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 md:p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">{t('dashboard.topCandidates')}</h2>
-            <Link to="/candidates" className="text-primary text-sm flex items-center">
+            <Link to="/candidates" className="text-primary text-sm flex items-center hover:underline">
               {t('dashboard.viewAll')}
               <svg className="h-4 w-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -107,10 +108,10 @@ const Index = () => {
         </div>
         
         {/* Active Job Postings */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 md:p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">{t('dashboard.activeJobs')}</h2>
-            <Link to="/job-postings" className="text-primary text-sm flex items-center">
+            <Link to="/job-postings" className="text-primary text-sm flex items-center hover:underline">
               {t('dashboard.viewAll')}
               <svg className="h-4 w-4 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
