@@ -38,25 +38,24 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, searchQuery })
   const [isSaved, setIsSaved] = useState(false);
 
   const handleSaveCandidate = async () => {
-  try {
-    await hunterApi.patch(`/results/${candidate.id}`, {
-      is_shortlisted: true
-    });
-    setIsSaved(true);
-    toast({
-      title: t('hunter.saved'),
-      description: t('hunter.profileMarkedAsSaved'),
-    });
-  } catch (error) {
-    console.error('Erreur API PATCH:', error);
-    toast({
-      title: t('hunter.saveError'),
-      description: t('hunter.profileSaveFailed'),
-      variant: 'destructive',
-    });
-  }
-};
-
+    try {
+      await hunterApi.patch(`/results/${candidate.id}`, {
+        is_shortlisted: true
+      });
+      setIsSaved(true);
+      toast({
+        title: t('hunter.saved'),
+        description: t('hunter.profileMarkedAsSaved'),
+      });
+    } catch (error) {
+      console.error('Erreur API PATCH:', error);
+      toast({
+        title: t('hunter.saveError'),
+        description: t('hunter.profileSaveFailed'),
+        variant: 'destructive',
+      });
+    }
+  };
 
   const handleImportCandidate = () => {
     toast({
@@ -66,83 +65,96 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, searchQuery })
   };
 
   return (
-    <Card className="rounded-xl bg-white shadow-md">
-      <CardContent className="p-4">
+    <Card className="rounded-3xl bg-white shadow-lg border border-gray-100 max-w-4xl mx-auto">
+      <CardContent className="p-8">
         <div className="flex justify-between items-start">
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-bold">{candidate.name}</h3>
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-3">
+              <h3 className="text-xl font-bold text-gray-900">{candidate.name}</h3>
               {candidate.isNew && (
-                <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+                <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-0 rounded-full px-3 py-1">
                   {t('hunter.new')}
                 </Badge>
               )}
               {isSaved && (
-                <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-0 rounded-full px-3 py-1">
                   <Check className="mr-1 h-3 w-3" />
                   {t('hunter.saved')}
                 </Badge>
               )}
             </div>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge variant="outline" className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-0">
+            
+            <div className="flex items-center gap-4 mb-3">
+              <Badge variant="outline" className="bg-gray-50 text-gray-600 hover:bg-gray-50 border-0 rounded-full px-3 py-1">
                 {candidate.source}
               </Badge>
-              <span className="text-sm text-gray-500">
+              <span className="text-gray-600">
                 {candidate.location} • {candidate.languages.join(', ')}
               </span>
             </div>
-            <div className="text-sm text-gray-500 mt-1">
+            
+            <div className="text-gray-600 mb-4">
               {t('hunter.availability')}: {candidate.availability}
             </div>
-          </div>
-          <div className="bg-green-100 text-green-700 text-sm font-semibold rounded-full w-12 h-12 flex items-center justify-center">
-            {candidate.matchScore}%
-          </div>
-        </div>
 
-        <div className="flex flex-wrap gap-2 mt-3">
-          {candidate.skills?.map((skill, index) => (
-            <Badge key={index} variant="outline" className="bg-gray-100 text-gray-700 hover:bg-gray-100 border-0">
-              {skill.name}
-            </Badge>
-          ))}
-        </div>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {candidate.skills?.map((skill, index) => (
+                <Badge 
+                  key={index} 
+                  variant="outline" 
+                  className="bg-blue-50 text-blue-700 hover:bg-blue-50 border-blue-200 rounded-full px-3 py-1"
+                >
+                  {skill.name}
+                </Badge>
+              ))}
+            </div>
 
-        <div className="flex gap-2 mt-4">
-          <Button
-            size="sm"
-            variant="outline"
-            className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-0"
-            onClick={() => window.open(candidate.profileUrl, '_blank')}
-          >
-            <ExternalLink className="mr-1 h-4 w-4" />
-            {t('hunter.viewProfile')}
-          </Button>
-          <Button 
-            size="sm" 
-            variant="outline" 
-            className={`border-0 ${
-              isSaved ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-gray-200 hover:bg-gray-300'
-            }`}
-            onClick={handleSaveCandidate}
-            disabled={isSaved || isSaving}
-          >
-            {isSaved ? (
-              <><Check className="mr-1 h-4 w-4" /> {t('hunter.saved')}</>
-            ) : (
-              <><Save className="mr-1 h-4 w-4" /> {t('hunter.save')}</>
-            )}
-          </Button>
-          <Button 
-            size="sm" 
-            variant="outline" 
-            className="bg-green-100 hover:bg-green-200 border-0"
-            onClick={handleImportCandidate}
-          >
-            <Download className="mr-1 h-4 w-4" />
-            {t('hunter.import')}
-          </Button>
+            <div className="flex gap-3">
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200 rounded-full px-4 py-2"
+                onClick={() => window.open(candidate.profileUrl, '_blank')}
+              >
+                <ExternalLink className="mr-2 h-4 w-4" />
+                {t('hunter.viewProfile')}
+              </Button>
+              
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className={`rounded-full px-4 py-2 border-0 ${
+                  isSaved 
+                    ? 'bg-green-50 text-green-700 hover:bg-green-100' 
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={handleSaveCandidate}
+                disabled={isSaved || isSaving}
+              >
+                {isSaved ? (
+                  <><Check className="mr-2 h-4 w-4" /> {t('hunter.saved')}</>
+                ) : (
+                  <><Save className="mr-2 h-4 w-4" /> {t('hunter.save')}</>
+                )}
+              </Button>
+              
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="bg-purple-50 text-purple-700 hover:bg-purple-100 border-purple-200 rounded-full px-4 py-2"
+                onClick={handleImportCandidate}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                {t('hunter.import')}
+              </Button>
+            </div>
+          </div>
+          
+          <div className="ml-6">
+            <div className="bg-gradient-to-br from-green-100 to-emerald-100 text-green-800 text-lg font-bold rounded-2xl w-16 h-16 flex items-center justify-center shadow-sm">
+              {candidate.matchScore}%
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
