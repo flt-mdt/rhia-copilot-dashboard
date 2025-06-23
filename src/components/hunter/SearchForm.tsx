@@ -76,24 +76,22 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
   };
 
   const pollSearchStatus = async (id: string) => {
-  try {
-    const res = await hunterApi.get(`/search/${id}/status`);
-    const { status, is_terminal } = res.data;
+    try {
+      const res = await hunterApi.get(`/search/${id}/status`);
+      const { status, is_terminal } = res.data;
 
-    if (status === 'done') {
-      fetchResults();
-    } else if (is_terminal) {
+      if (status === 'done') {
+        fetchResults();
+      } else if (is_terminal) {
+        setStatus('idle');
+      } else {
+        setTimeout(() => pollSearchStatus(id), 3000);
+      }
+    } catch (err) {
+      console.error('Polling error:', err);
       setStatus('idle');
-      // Optionnel : afficher un message d'erreur ou "aucun résultat"
-    } else {
-      setTimeout(() => pollSearchStatus(id), 3000);
     }
-  } catch (err) {
-    console.error('Polling error:', err);
-    setStatus('idle');
-  }
-};
-
+  };
 
   const fetchResults = async () => {
     try {
@@ -109,16 +107,16 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
   };
 
   return (
-    <Card className="rounded-xl bg-white shadow-sm max-w-3xl mx-auto">
+    <Card className="rounded-xl bg-white shadow-sm max-w-3xl mx-auto transition-all duration-300 hover:shadow-lg hover:scale-[1.01] group">
       <CardHeader className="pb-2">
-        <CardTitle className="text-2xl font-bold text-gray-800">
+        <CardTitle className="text-2xl font-bold text-gray-800 transition-colors duration-300 group-hover:text-blue-600">
           {t('hunter.subtitle')}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="search-criteria" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="search-criteria" className="block text-sm font-medium text-gray-700 mb-2 transition-colors duration-300 group-hover:text-gray-900">
               {t('hunter.description')}
             </label>
             <Textarea
@@ -126,18 +124,22 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
               value={searchCriteria}
               onChange={handleChange}
               placeholder={t('hunter.placeholder')}
-              className="rounded-md bg-gray-50 text-sm focus:outline-blue-600 resize-none"
+              className="rounded-md bg-gray-50 text-sm focus:outline-blue-600 resize-none transition-all duration-300 hover:bg-gray-100 focus:bg-white focus:shadow-lg"
               rows={5}
             />
           </div>
 
           {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-4 animate-fade-in">
               {tags.map((tag, index) => (
                 <Badge
                   key={index}
                   variant="outline"
-                  className="bg-blue-50 text-blue-600 hover:bg-blue-50 border-0"
+                  className="bg-blue-50 text-blue-600 hover:bg-blue-50 border-0 transition-all duration-300 hover:scale-105 hover:shadow-md animate-fade-in"
+                  style={{ 
+                    animationDelay: `${index * 100}ms`,
+                    animationFillMode: 'both'
+                  }}
                 >
                   {tag}
                 </Badge>
@@ -147,7 +149,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
 
           <Button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md w-full md:w-auto"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md w-full md:w-auto transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:hover:scale-100 group/btn"
             disabled={isLoading || searchCriteria.trim().length < 10}
           >
             {isLoading ? (
@@ -176,7 +178,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
               </>
             ) : (
               <>
-                <Search className="mr-2 h-5 w-5" />
+                <Search className="mr-2 h-5 w-5 transition-transform duration-300 group-hover/btn:scale-110" />
                 {t('hunter.searchButton')}
               </>
             )}
