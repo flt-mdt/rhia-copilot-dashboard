@@ -256,15 +256,25 @@ const Tracking = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {/* Country List */}
-                <div className="space-y-4">
+                {/* Country List with Modern Flag Display */}
+                <div className="space-y-3">
                   {locationData.map((location, index) => (
-                    <div key={location.country} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-lg">{location.flag}</span>
-                        <span className="text-sm text-gray-700">{location.country}</span>
+                    <div key={location.country} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center">
+                          <span className="text-xl">{location.flag}</span>
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">{location.country}</span>
                       </div>
-                      <span className="text-sm font-medium text-gray-900">{location.percentage}%</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                            style={{ width: `${location.percentage}%` }}
+                          />
+                        </div>
+                        <span className="text-sm font-semibold text-gray-900 min-w-[40px] text-right">{location.percentage}%</span>
+                      </div>
                     </div>
                   ))}
                 </div>
