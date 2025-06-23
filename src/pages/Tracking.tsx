@@ -51,13 +51,13 @@ const Tracking = () => {
   ];
 
   const locationData = [
-    { country: "France", percentage: 42, flag: "🇫🇷", flagCode: "FR", candidatures: 340, matchPercentage: 78 },
-    { country: "Belgique", percentage: 23, flag: "🇧🇪", flagCode: "BE", candidatures: 185, matchPercentage: 82 },
-    { country: "Maroc", percentage: 12, flag: "🇲🇦", flagCode: "MA", candidatures: 97, matchPercentage: 71 },
-    { country: "Tunisie", percentage: 8, flag: "🇹🇳", flagCode: "TN", candidatures: 64, matchPercentage: 75 },
-    { country: "Canada", percentage: 7, flag: "🇨🇦", flagCode: "CA", candidatures: 56, matchPercentage: 84 },
-    { country: "Suisse", percentage: 5, flag: "🇨🇭", flagCode: "CH", candidatures: 40, matchPercentage: 89 },
-    { country: "Algérie", percentage: 3, flag: "🇩🇿", flagCode: "DZ", candidatures: 24, matchPercentage: 68 }
+    { country: "France", percentage: 42, flagCode: "FR", candidatures: 340, matchPercentage: 78 },
+    { country: "Belgique", percentage: 23, flagCode: "BE", candidatures: 185, matchPercentage: 82 },
+    { country: "Maroc", percentage: 12, flagCode: "MA", candidatures: 97, matchPercentage: 71 },
+    { country: "Tunisie", percentage: 8, flagCode: "TN", candidatures: 64, matchPercentage: 75 },
+    { country: "Canada", percentage: 7, flagCode: "CA", candidatures: 56, matchPercentage: 84 },
+    { country: "Suisse", percentage: 5, flagCode: "CH", candidatures: 40, matchPercentage: 89 },
+    { country: "Algérie", percentage: 3, flagCode: "DZ", candidatures: 24, matchPercentage: 68 }
   ];
 
   const StatCard = ({ 
@@ -101,24 +101,21 @@ const Tracking = () => {
     },
   };
 
-  // Component for improved flag display
-  const FlagDisplay = ({ flag, flagCode }: { flag: string; flagCode: string }) => (
+  // Component for improved flag display with SVG flags
+  const FlagDisplay = ({ flagCode }: { flagCode: string }) => (
     <div className="w-10 h-10 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center relative overflow-hidden">
-      <span 
-        className="text-xl leading-none select-none flex items-center justify-center w-full h-full"
-        style={{ 
-          fontFamily: "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Segoe UI Symbol', 'Android Emoji', 'EmojiOne Color', 'Twemoji', sans-serif",
-          fontSize: '20px',
-          lineHeight: '1',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
+      <img
+        src={`https://flagcdn.com/w40/${flagCode.toLowerCase()}.png`}
+        alt={`Flag of ${flagCode}`}
+        className="w-6 h-4 object-cover rounded-sm"
+        onError={(e) => {
+          // Fallback to a colored circle with country code if flag image fails
+          const target = e.target as HTMLImageElement;
+          target.style.display = 'none';
+          target.nextElementSibling!.classList.remove('hidden');
         }}
-      >
-        {flag}
-      </span>
-      {/* Fallback text overlay - shows on hover or if emoji fails */}
-      <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 bg-white/90 opacity-0 hover:opacity-100 transition-opacity duration-200">
+      />
+      <div className="hidden absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 bg-gradient-to-br from-blue-500 to-green-500 text-white">
         {flagCode}
       </div>
     </div>
@@ -273,7 +270,7 @@ const Tracking = () => {
             </CardContent>
           </Card>
 
-          {/* Geographic Distribution - Improved Flag Display */}
+          {/* Geographic Distribution - Colored Flag Display */}
           <Card className="bg-white rounded-xl shadow-sm border border-gray-100">
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-gray-900 flex items-center gap-2">
@@ -286,7 +283,7 @@ const Tracking = () => {
                 {locationData.map((location, index) => (
                   <div key={location.country} className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                     <div className="flex items-center gap-4">
-                      <FlagDisplay flag={location.flag} flagCode={location.flagCode} />
+                      <FlagDisplay flagCode={location.flagCode} />
                       <div>
                         <span className="text-base font-medium text-gray-900">{location.country}</span>
                         <div className="text-sm text-gray-500">
