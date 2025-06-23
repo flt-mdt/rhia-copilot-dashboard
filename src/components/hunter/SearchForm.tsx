@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, ChevronRight } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -76,22 +76,24 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
   };
 
   const pollSearchStatus = async (id: string) => {
-    try {
-      const res = await hunterApi.get(`/search/${id}/status`);
-      const { status, is_terminal } = res.data;
+  try {
+    const res = await hunterApi.get(`/search/${id}/status`);
+    const { status, is_terminal } = res.data;
 
-      if (status === 'done') {
-        fetchResults();
-      } else if (is_terminal) {
-        setStatus('idle');
-      } else {
-        setTimeout(() => pollSearchStatus(id), 3000);
-      }
-    } catch (err) {
-      console.error('Polling error:', err);
+    if (status === 'done') {
+      fetchResults();
+    } else if (is_terminal) {
       setStatus('idle');
+      // Optionnel : afficher un message d'erreur ou "aucun résultat"
+    } else {
+      setTimeout(() => pollSearchStatus(id), 3000);
     }
-  };
+  } catch (err) {
+    console.error('Polling error:', err);
+    setStatus('idle');
+  }
+};
+
 
   const fetchResults = async () => {
     try {
@@ -107,120 +109,81 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, onResults, isLoading,
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Main Search Input */}
-        <div className="relative">
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-8">
+    <Card className="rounded-xl bg-white shadow-sm max-w-3xl mx-auto">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-2xl font-bold text-gray-800">
+          {t('hunter.subtitle')}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="search-criteria" className="block text-sm font-medium text-gray-700 mb-2">
+              {t('hunter.description')}
+            </label>
             <Textarea
               id="search-criteria"
               value={searchCriteria}
               onChange={handleChange}
-              placeholder="Décrivez votre besoin de formation (métier, niveau d'expertise, matériel...)"
-              className="w-full border-0 bg-transparent text-lg placeholder:text-gray-400 resize-none focus:ring-0 min-h-[120px] p-0"
-              rows={4}
+              placeholder={t('hunter.placeholder')}
+              className="rounded-md bg-gray-50 text-sm focus:outline-blue-600 resize-none"
+              rows={5}
             />
-            
-            <div className="flex items-center justify-between mt-6">
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="bg-blue-50 text-blue-600 hover:bg-blue-50 border-blue-200 px-3 py-1"
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-              
-              <Button
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-full shadow-lg flex items-center gap-2 text-base h-12"
-                disabled={isLoading || searchCriteria.trim().length < 10}
-              >
-                {isLoading ? (
-                  <>
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Recherche...
-                  </>
-                ) : (
-                  <>
-                    <ChevronRight className="h-5 w-5" />
-                  </>
-                )}
-              </Button>
+          </div>
+
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {tags.map((tag, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="bg-blue-50 text-blue-600 hover:bg-blue-50 border-0"
+                >
+                  {tag}
+                </Badge>
+              ))}
             </div>
-          </div>
-        </div>
+          )}
 
-        {/* Category Pills */}
-        <div className="flex justify-center gap-4">
-          <div className="flex items-center gap-2 bg-gray-100 text-gray-600 px-6 py-3 rounded-full">
-            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-            <span className="text-sm font-medium">Métier</span>
-          </div>
-          <div className="flex items-center gap-2 bg-gray-100 text-gray-600 px-6 py-3 rounded-full">
-            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-            <span className="text-sm font-medium">Expertise</span>
-          </div>
-          <div className="flex items-center gap-2 bg-gray-100 text-gray-600 px-6 py-3 rounded-full">
-            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-            <span className="text-sm font-medium">Matériel</span>
-          </div>
-        </div>
-
-        {/* Suggestions Section */}
-        <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-700 mb-6">Suggestions</h3>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              className="bg-white hover:bg-blue-50 text-blue-600 border-blue-200 rounded-full px-6 py-2 font-medium"
-              onClick={() => setSearchCriteria('Installateur photovoltaïque débutant')}
-            >
-              Installateur photovoltaïque débutant
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="bg-white hover:bg-blue-50 text-blue-600 border-blue-200 rounded-full px-6 py-2 font-medium"
-              onClick={() => setSearchCriteria('Mise à niveau onduleur')}
-            >
-              Mise à niveau onduleur
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="bg-white hover:bg-blue-50 text-blue-600 border-blue-200 rounded-full px-6 py-2 font-medium"
-              onClick={() => setSearchCriteria('Pose sur tuiles')}
-            >
-              Pose sur tuiles
-            </Button>
-          </div>
-        </div>
-      </form>
-    </div>
+          <Button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md w-full md:w-auto"
+            disabled={isLoading || searchCriteria.trim().length < 10}
+          >
+            {isLoading ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                {t('hunter.searching')}
+              </>
+            ) : (
+              <>
+                <Search className="mr-2 h-5 w-5" />
+                {t('hunter.searchButton')}
+              </>
+            )}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -65,39 +64,15 @@ const Hunter = () => {
   };
 
   return (
-    <div className="ml-64 min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="ml-64 p-8 bg-[#F9FAFB]">
       <Header title={t('hunter.title')} />
-      
-      <div className="max-w-6xl mx-auto px-8 py-12">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm font-medium mb-6">
-            <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-              </svg>
-            </div>
-            Powered by AI
-          </div>
-          
-          <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
-            Votre ingénieur pédagogique
-          </h1>
-          
-          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-            Spécialisé dans le photovoltaïque
-          </p>
-        </div>
-
-        {/* Search Form - Redesigned */}
-        <div className="mb-16">
-          <SearchForm
-            userId={user.id}
-            onSearch={handleSearch}
-            onResults={handleResults}
-            isLoading={isLoading}
-          />
-        </div>
+      <div className="max-w-7xl mx-auto">
+        <SearchForm
+          userId={user.id}
+          onSearch={handleSearch}
+          onResults={handleResults}
+          isLoading={isLoading}
+        />
 
         {hasSearched && (
           <>
@@ -105,9 +80,9 @@ const Hunter = () => {
 
             {isLoading ? (
               <div className="space-y-6 mt-8">
-                <Skeleton className="h-[120px] w-full max-w-4xl mx-auto rounded-2xl" />
-                <Skeleton className="h-[120px] w-full max-w-4xl mx-auto rounded-2xl" />
-                <Skeleton className="h-[120px] w-full max-w-4xl mx-auto rounded-2xl" />
+                <Skeleton className="h-[120px] w-full max-w-3xl mx-auto rounded-xl" />
+                <Skeleton className="h-[120px] w-full max-w-3xl mx-auto rounded-xl" />
+                <Skeleton className="h-[120px] w-full max-w-3xl mx-auto rounded-xl" />
               </div>
             ) : (
               <>
@@ -123,8 +98,8 @@ const Hunter = () => {
                       />
                     ))
                   ) : (
-                    <div className="text-center p-12 bg-white rounded-3xl shadow-sm max-w-4xl mx-auto border border-gray-100">
-                      <h3 className="text-xl font-semibold text-gray-700 mb-3">{t('hunter.noResults')}</h3>
+                    <div className="text-center p-8 bg-white rounded-xl shadow-sm max-w-3xl mx-auto">
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('hunter.noResults')}</h3>
                       <p className="text-gray-500">{t('hunter.noResultsDesc')}</p>
                     </div>
                   )}
