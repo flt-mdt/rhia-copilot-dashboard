@@ -69,7 +69,8 @@ const JobDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="ml-64 p-8 bg-[#F9FAFB] min-h-screen">
+      <div className="transition-all duration-300 ease-in-out p-4 md:p-8 bg-[#F9FAFB] min-h-screen"
+           style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
         <Header title={t('jobDetail.title')} />
         <div className="flex justify-center items-center h-64">
           <p>{t('jobDetail.loading')}</p>
@@ -80,7 +81,8 @@ const JobDetail = () => {
 
   if (!job) {
     return (
-      <div className="ml-64 p-8 bg-[#F9FAFB] min-h-screen">
+      <div className="transition-all duration-300 ease-in-out p-4 md:p-8 bg-[#F9FAFB] min-h-screen"
+           style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
         <Header title={t('jobDetail.title')} />
         <div className="flex justify-center items-center h-64">
           <p>{t('jobDetail.notFound')}</p>
@@ -90,7 +92,8 @@ const JobDetail = () => {
   }
 
   return (
-    <div className="ml-64 p-8 bg-[#F9FAFB] min-h-screen">
+    <div className="transition-all duration-300 ease-in-out p-4 md:p-8 bg-[#F9FAFB] min-h-screen"
+         style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
       <Header title={t('jobDetail.myJobs')} />
       
       <Button

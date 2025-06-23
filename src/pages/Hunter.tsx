@@ -78,7 +78,8 @@ const Hunter = () => {
 
   if (hasSearched) {
     return (
-      <div className="min-h-screen bg-white p-8">
+      <div className="min-h-screen bg-white transition-all duration-300 ease-in-out p-4 md:p-8"
+           style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
         <div className="max-w-7xl mx-auto">
           <SearchForm
             userId={user.id}
@@ -126,7 +127,8 @@ const Hunter = () => {
   const userName = user?.user_metadata?.name || user?.user_metadata?.full_name || 'Utilisateur';
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col transition-all duration-300 ease-in-out"
+         style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
       {/* Header avec sphère bleue et message de bienvenue */}
       <div className="flex-1 flex flex-col items-center justify-center px-8 py-12">
         {/* Sphère bleue avec dégradé */}

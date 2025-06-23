@@ -118,7 +118,8 @@ const Settings = () => {
 
   return (
     <TooltipProvider>
-      <div className="ml-64 p-8 bg-[#F9FAFB]">
+      <div className="transition-all duration-300 ease-in-out p-4 md:p-8 bg-[#F9FAFB]"
+           style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
         <Header title={t('settings.title')} />
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Language Selector */}
@@ -252,4 +253,3 @@ const Settings = () => {
 };
 
 export default Settings;
-
