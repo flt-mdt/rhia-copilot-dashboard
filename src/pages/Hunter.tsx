@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -43,6 +42,17 @@ const Hunter = () => {
     typeSpeed: 80,
     deleteSpeed: 40,
     delayBetweenWords: 3000
+  });
+
+  // Get user's display name
+  const userName = user?.user_metadata?.name || user?.user_metadata?.full_name || 'Utilisateur';
+
+  // Typewriter animation for greeting
+  const greetingText = useTypewriter({
+    words: [`Bonjour ${userName} !`],
+    typeSpeed: 100,
+    deleteSpeed: 0,
+    delayBetweenWords: 0
   });
 
   const handleSearch = (criteria: string) => {
@@ -169,9 +179,6 @@ const Hunter = () => {
     );
   }
 
-  // Get user's display name
-  const userName = user?.user_metadata?.name || user?.user_metadata?.full_name || 'Utilisateur';
-
   return (
     <div className="min-h-screen bg-white flex flex-col transition-all duration-300 ease-in-out"
          style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
@@ -181,10 +188,13 @@ const Hunter = () => {
         <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mb-8 shadow-lg animate-fade-in transform transition-all duration-300 hover:scale-110 hover:shadow-xl animate-[pulse_3s_ease-in-out_infinite]"
              style={{ animationDelay: '100ms', animationFillMode: 'both' }}></div>
         
-        {/* Message de bienvenue */}
-        <h1 className="text-4xl font-semibold text-gray-800 mb-4 text-center animate-fade-in transform transition-all duration-300 hover:text-blue-600"
+        {/* Message de bienvenue avec animation typewriter */}
+        <h1 className="text-4xl font-semibold text-gray-800 mb-4 text-center animate-fade-in transform transition-all duration-300 hover:text-blue-600 min-h-[3rem] flex items-center"
             style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
-          Bonjour {userName} ! 👋
+          <span className="inline-block">
+            {greetingText}
+            <span className="inline-block w-0.5 h-8 bg-blue-600 ml-1 animate-pulse"></span>
+          </span>
         </h1>
         <p className="text-lg text-gray-600 mb-12 text-center max-w-md animate-fade-in"
            style={{ animationDelay: '300ms', animationFillMode: 'both' }}>
