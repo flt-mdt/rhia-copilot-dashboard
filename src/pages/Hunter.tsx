@@ -219,16 +219,16 @@ const Hunter = () => {
                 style={{ animationDelay: '500ms', animationFillMode: 'both' }}>
             <CardContent className="p-6">
               <div className="space-y-4">
-                <div className="flex items-center text-sm text-gray-600 transition-all duration-300 hover:text-blue-600 hover:scale-105">
-                  <span className="transform transition-transform duration-300 hover:scale-125">👥</span>
+                <div className="flex items-center text-sm text-gray-600">
+                  <span>👥</span>
                   <span className="ml-2">Sourcer des candidats qualifiés</span>
                 </div>
-                <div className="flex items-center text-sm text-gray-600 transition-all duration-300 hover:text-blue-600 hover:scale-105">
-                  <span className="transform transition-transform duration-300 hover:scale-125">🎯</span>
+                <div className="flex items-center text-sm text-gray-600">
+                  <span>🎯</span>
                   <span className="ml-2">Analyser les profils et compétences</span>
                 </div>
-                <div className="flex items-center text-sm text-gray-600 transition-all duration-300 hover:text-blue-600 hover:scale-105">
-                  <span className="transform transition-transform duration-300 hover:scale-125">📊</span>
+                <div className="flex items-center text-sm text-gray-600">
+                  <span>📊</span>
                   <span className="ml-2">Générer des rapports de matching</span>
                 </div>
               </div>
