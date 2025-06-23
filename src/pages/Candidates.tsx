@@ -29,6 +29,10 @@ import {
 import { FileUploader } from '@/components/candidate/FileUploader';
 import { useToast } from "@/hooks/use-toast";
 import { useCandidates, useCreateCandidate, useUpdateCandidateStatus, type Candidate } from '@/hooks/useCandidatesData';
+import { CandidateSkeletonGrid } from '@/components/ui/candidate-skeleton';
+import { AnimatedCounter } from '@/components/ui/animated-counter';
+import { AnimatedSearch } from '@/components/ui/animated-search';
+import { AnimatedButton } from '@/components/ui/animated-button';
 
 const Candidates = () => {
   const navigate = useNavigate();
@@ -186,12 +190,28 @@ const Candidates = () => {
       <div className="p-8 transition-all duration-300 ease-in-out"
            style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
         <Header title="Candidates" />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-gray-500">Loading candidates...</p>
+        <div className="mb-6">
+          <div className="relative mb-6">
+            <AnimatedSearch
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search by name or position..."
+              className="animate-fade-in"
+            />
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-4 animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
+            <div className="flex items-center gap-4">
+              <div className="w-[180px] h-10 bg-gray-100 rounded animate-pulse"></div>
+              <div className="w-[180px] h-10 bg-gray-100 rounded animate-pulse"></div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-20 h-8 bg-gray-100 rounded animate-pulse"></div>
+              <div className="w-20 h-8 bg-gray-100 rounded animate-pulse"></div>
+              <div className="w-28 h-10 bg-gray-100 rounded animate-pulse"></div>
+            </div>
           </div>
         </div>
+        <CandidateSkeletonGrid count={9} />
       </div>
     );
   }
@@ -203,34 +223,18 @@ const Candidates = () => {
 
       <div className="mb-6">
         <div className="relative mb-6">
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <svg 
-              className="h-5 w-5 text-gray-400" 
-              viewBox="0 0 20 20" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2"
-            >
-              <path 
-                d="M19 19L13 13M15 8A7 7 0 111 8a7 7 0 0114 0z" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <input 
-            type="text" 
-            placeholder="Search by name or position..." 
-            className="pl-10 pr-4 py-3 w-full border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <AnimatedSearch
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={setSearchQuery}
+            placeholder="Search by name or position..."
+            className="animate-fade-in"
           />
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'both' }}>
           <div className="flex items-center gap-4">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[180px] transition-all duration-200 hover:border-blue-300">
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
@@ -245,12 +249,16 @@ const Candidates = () => {
             </Select>
 
             <Select value={jobFilter} onValueChange={setJobFilter}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[180px] transition-all duration-200 hover:border-blue-300">
                 <SelectValue placeholder="All Jobs" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Jobs</SelectItem>
-                {availableJobs.map((job) => (
+                {Array.from(new Set(
+                  candidates
+                    .filter(c => c.job_postings?.title)
+                    .map(c => c.job_postings!.title)
+                )).map((job) => (
                   <SelectItem key={job} value={job}>
                     {job}
                   </SelectItem>
@@ -262,7 +270,7 @@ const Candidates = () => {
           <div className="flex items-center gap-2">
             <Popover>
               <PopoverTrigger asChild>
-                <button className="px-3 py-1 bg-blue-50 text-blue-600 rounded-md flex items-center gap-1">
+                <button className="px-3 py-1 bg-blue-50 text-blue-600 rounded-md flex items-center gap-1 transition-all duration-200 hover:bg-blue-100 hover:scale-105">
                   <BarChart className="w-4 h-4" />
                   Score
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -272,11 +280,16 @@ const Candidates = () => {
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-0">
                 <div className="p-2">
-                  {scoreOptions.map((option) => (
+                  {[
+                    { label: 'All Scores', value: 0 },
+                    { label: '≥ 90%', value: 90 },
+                    { label: '≥ 80%', value: 80 },
+                    { label: '≥ 70%', value: 70 }
+                  ].map((option) => (
                     <button 
                       key={option.value}
                       onClick={() => setScoreFilter(option.value)}
-                      className={`w-full text-left px-3 py-2 text-sm rounded-md ${
+                      className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
                         scoreFilter === option.value 
                           ? 'bg-blue-50 text-blue-600' 
                           : 'hover:bg-gray-100'
@@ -291,7 +304,7 @@ const Candidates = () => {
             
             <Popover>
               <PopoverTrigger asChild>
-                <button className="px-3 py-1 text-gray-600 rounded-md flex items-center gap-1 hover:bg-gray-100">
+                <button className="px-3 py-1 text-gray-600 rounded-md flex items-center gap-1 hover:bg-gray-100 transition-all duration-200 hover:scale-105">
                   <Calendar className="w-4 h-4" />
                   Date
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -309,34 +322,40 @@ const Candidates = () => {
               </PopoverContent>
             </Popover>
 
-            <Button onClick={() => setShowUploadDialog(true)} className="flex items-center gap-2">
-              <Upload className="h-4 w-4" />
+            <AnimatedButton onClick={() => setShowUploadDialog(true)} className="flex items-center gap-2">
+              <Upload className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
               Upload CV
-            </Button>
+            </AnimatedButton>
           </div>
         </div>
       </div>
 
-      <p className="text-gray-500 mb-6">{filteredCandidates.length} candidates found</p>
+      <p className="text-gray-500 mb-6 animate-fade-in" style={{ animationDelay: '400ms', animationFillMode: 'both' }}>
+        <AnimatedCounter end={filteredCandidates.length} /> candidates found
+      </p>
 
       {filteredCandidates.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCandidates.map((candidate) => (
+          {filteredCandidates.map((candidate, index) => (
             <Card 
               key={candidate.id} 
-              className="overflow-hidden border border-gray-100 transition-shadow hover:shadow-md cursor-pointer" 
+              className="overflow-hidden border border-gray-100 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1 cursor-pointer animate-fade-in opacity-0 group"
+              style={{ 
+                animationDelay: `${600 + index * 100}ms`,
+                animationFillMode: 'forwards'
+              }}
               onClick={(e) => handleCandidateClick(candidate.id, e)}
             >
               <div className="p-6">
                 <div className="flex justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12 bg-gray-100">
+                    <Avatar className="h-12 w-12 bg-gray-100 transition-transform duration-300 group-hover:scale-110">
                       <AvatarFallback className="text-gray-600">
-                        {getInitials(candidate.name)}
+                        {candidate.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <h3 className="font-medium text-lg">{candidate.name}</h3>
+                      <h3 className="font-medium text-lg transition-colors duration-300 group-hover:text-blue-600">{candidate.name}</h3>
                       <p className="text-gray-500 text-sm">
                         {candidate.current_position || candidate.job_postings?.title || 'No position'}
                       </p>
@@ -344,13 +363,31 @@ const Candidates = () => {
                   </div>
                   <div className="flex flex-col items-end">
                     <Badge 
-                      className={`${getStatusColor(candidate.status || 'to_analyze')} font-normal text-xs px-3`}
+                      className={`${candidate.status ? {
+                        'interview_scheduled': 'bg-green-100 text-green-700',
+                        'in_review': 'bg-purple-100 text-purple-700',
+                        'to_analyze': 'bg-blue-100 text-blue-700',
+                        'contacted': 'bg-yellow-100 text-yellow-700',
+                        'hired': 'bg-emerald-100 text-emerald-700',
+                        'rejected': 'bg-red-100 text-red-700',
+                      }[candidate.status] || 'bg-gray-100 text-gray-700' : 'bg-gray-100 text-gray-700'} font-normal text-xs px-3 transition-all duration-300 hover:scale-105`}
                       variant="outline"
                     >
-                      {getStatusLabel(candidate.status || 'to_analyze')}
+                      {candidate.status ? {
+                        'to_analyze': 'New',
+                        'in_review': 'Reviewed',
+                        'interview_scheduled': 'Interview',
+                        'contacted': 'Contacted',
+                        'hired': 'Hired',
+                        'rejected': 'Rejected',
+                      }[candidate.status] || candidate.status : 'New'}
                     </Badge>
                     <span className="text-gray-500 text-xs mt-1">
-                      {candidate.created_at ? formatDate(candidate.created_at) : 'No date'}
+                      {candidate.created_at ? new Date(candidate.created_at).toLocaleDateString('fr-FR', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric' 
+                      }) : 'No date'}
                     </span>
                   </div>
                 </div>
@@ -358,9 +395,11 @@ const Candidates = () => {
                 <div className="mb-5">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-sm text-gray-600">Overall Match</span>
-                    <span className="font-medium">{candidate.ai_score || 0}%</span>
+                    <span className="font-medium">
+                      <AnimatedCounter end={candidate.ai_score || 0} suffix="%" />
+                    </span>
                   </div>
-                  <Progress value={candidate.ai_score || 0} className="h-2" />
+                  <Progress value={candidate.ai_score || 0} className="h-2 transition-all duration-1000" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-y-3 mb-4">
@@ -399,7 +438,7 @@ const Candidates = () => {
                 </div>
 
                 <button 
-                  className="w-full flex justify-center items-center gap-1 text-gray-500 text-sm py-1 hover:bg-gray-50 rounded-md"
+                  className="w-full flex justify-center items-center gap-1 text-gray-500 text-sm py-1 hover:bg-gray-50 rounded-md transition-all duration-200 hover:scale-105"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(`/candidates/${candidate.id}`);
@@ -407,7 +446,7 @@ const Candidates = () => {
                 >
                   <span>Show More</span>
                   <svg 
-                    className="w-4 h-4" 
+                    className="w-4 h-4 transition-transform duration-300 group-hover:translate-y-1" 
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -418,10 +457,10 @@ const Candidates = () => {
 
                 <div className="border-t border-gray-100 mt-4 pt-4 flex justify-between items-center">
                   <button 
-                    className="text-blue-600 text-sm font-medium hover:underline view-cv-button"
+                    className="text-blue-600 text-sm font-medium hover:underline view-cv-button transition-all duration-200 hover:scale-105"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleViewCV(candidate.id, e);
+                      setSelectedCVCandidate(candidate.id);
                     }}
                   >
                     View Resume
@@ -429,59 +468,45 @@ const Candidates = () => {
                   
                   <Popover>
                     <PopoverTrigger asChild>
-                      <button className="text-gray-600 text-sm hover:text-gray-900 status-change-button" onClick={(e) => e.stopPropagation()}>
+                      <button className="text-gray-600 text-sm hover:text-gray-900 status-change-button transition-all duration-200 hover:scale-105" onClick={(e) => e.stopPropagation()}>
                         Change Status
                       </button>
                     </PopoverTrigger>
                     <PopoverContent className="w-[200px] p-0" onClick={(e) => e.stopPropagation()}>
                       <div className="p-2">
-                        <button
-                          onClick={() => handleChangeStatus(candidate.id, 'to_analyze')}
-                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-blue-50"
-                        >
-                          New
-                        </button>
-                        <button
-                          onClick={() => handleChangeStatus(candidate.id, 'in_review')}
-                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-purple-50"
-                        >
-                          Reviewed
-                        </button>
-                        <button
-                          onClick={() => handleChangeStatus(candidate.id, 'interview_scheduled')}
-                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-green-50"
-                        >
-                          Interview
-                        </button>
-                        <button
-                          onClick={() => handleChangeStatus(candidate.id, 'contacted')}
-                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-yellow-50"
-                        >
-                          Contacted
-                        </button>
-                        <button
-                          onClick={() => handleChangeStatus(candidate.id, 'hired')}
-                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-emerald-50"
-                        >
-                          Hired
-                        </button>
-                        <button
-                          onClick={() => handleChangeStatus(candidate.id, 'rejected')}
-                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-red-50"
-                        >
-                          Rejected
-                        </button>
+                        {[
+                          { value: 'to_analyze', label: 'New', color: 'hover:bg-blue-50' },
+                          { value: 'in_review', label: 'Reviewed', color: 'hover:bg-purple-50' },
+                          { value: 'interview_scheduled', label: 'Interview', color: 'hover:bg-green-50' },
+                          { value: 'contacted', label: 'Contacted', color: 'hover:bg-yellow-50' },
+                          { value: 'hired', label: 'Hired', color: 'hover:bg-emerald-50' },
+                          { value: 'rejected', label: 'Rejected', color: 'hover:bg-red-50' }
+                        ].map((status) => (
+                          <button
+                            key={status.value}
+                            onClick={() => updateCandidateStatusMutation.mutate({ 
+                              id: candidate.id, 
+                              status: status.value as any 
+                            })}
+                            className={`w-full text-left px-3 py-2 text-sm rounded-md transition-all duration-200 ${status.color} hover:scale-105`}
+                          >
+                            {status.label}
+                          </button>
+                        ))}
                       </div>
                     </PopoverContent>
                   </Popover>
                 </div>
               </div>
+
+              {/* Animated glow effect on hover */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg pointer-events-none" />
             </Card>
           ))}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <div className="inline-block p-3 rounded-full bg-gray-100 mb-4">
+        <div className="text-center py-12 animate-fade-in" style={{ animationDelay: '600ms', animationFillMode: 'both' }}>
+          <div className="inline-block p-3 rounded-full bg-gray-100 mb-4 animate-bounce-subtle">
             <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M12 14a3 3 0 100-6 3 3 0 000 6z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -489,7 +514,7 @@ const Candidates = () => {
           </div>
           <h3 className="text-lg font-medium text-gray-900">No candidates found</h3>
           <p className="text-gray-500 mt-1">No candidates match your current filters</p>
-          <Button 
+          <AnimatedButton 
             className="mt-4"
             onClick={() => {
               setSearchQuery('');
@@ -500,7 +525,7 @@ const Candidates = () => {
             }}
           >
             Clear all filters
-          </Button>
+          </AnimatedButton>
         </div>
       )}
       
