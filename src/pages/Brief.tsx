@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertTriangle, Check, RefreshCw, Send, Download, Copy } from 'lucide-react';
+import { AlertTriangle, Check, RefreshCw, Send, Download, Copy, FileText, Settings, Bot } from 'lucide-react';
 import { UserPreferences, BriefData, briefBackendApi } from '@/services/briefBackendApi';
 import ChatMessage from '@/components/brief/ChatMessage';
 
@@ -248,172 +247,6 @@ const Brief = () => {
     URL.revokeObjectURL(url);
   };
 
-  const renderConfigurationForm = () => (
-    <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-      <h3 className="font-medium">Configuration du Brief</h3>
-      
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium mb-2 block">Langue</label>
-          <Select value={userPreferences.language} onValueChange={handleLanguageChange}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fr">Français</SelectItem>
-              <SelectItem value="en">English</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="text-sm font-medium mb-2 block">Niveau de séniorité</label>
-          <Select value={userPreferences.seniority} onValueChange={handleSeniorityChange}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Stagiaire">Stagiaire</SelectItem>
-              <SelectItem value="Junior">Junior</SelectItem>
-              <SelectItem value="Senior">Senior</SelectItem>
-              <SelectItem value="C-level">C-level</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <h4 className="text-sm font-medium">Sections à inclure :</h4>
-        <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto">
-          {SECTION_IDS.map((section, index) => (
-            <div key={index} className="flex items-center space-x-2">
-              <Checkbox
-                id={`section-${index}`}
-                checked={userPreferences.sections[index]}
-                onCheckedChange={(checked) => handleSectionToggle(index, Boolean(checked))}
-              />
-              <label htmlFor={`section-${index}`} className="text-xs cursor-pointer">
-                {section}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="text-xs text-gray-500 mb-2">
-        {userPreferences.sections.filter(Boolean).length} section(s) sélectionnée(s)
-      </div>
-
-      <Button 
-        onClick={handleConfigSubmit} 
-        disabled={userPreferences.sections.filter(Boolean).length === 0}
-        className="w-full"
-      >
-        Confirmer la configuration
-      </Button>
-    </div>
-  );
-
-  const renderDataEntryForm = () => {
-    if (activeSections.length === 0) return null;
-    
-    const currentSection = activeSections[currentSectionIndex];
-    const sectionData = briefData[currentSection] || {};
-
-    return (
-      <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-        <h3 className="font-medium">Section : {currentSection}</h3>
-        
-        <Textarea
-          placeholder={`Saisissez les informations pour "${currentSection}"...`}
-          value={sectionData.content || ''}
-          onChange={(e) => handleDataUpdate(currentSection, { content: e.target.value })}
-          rows={3}
-        />
-
-        <div className="flex space-x-2">
-          <Button 
-            onClick={handleGenerate}
-            disabled={isGenerating}
-            className="flex-1"
-          >
-            {isGenerating ? 'Génération...' : 'Générer'}
-          </Button>
-        </div>
-
-        {generatedMarkdown && (
-          <div className="space-y-3">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium">Confiance :</span>
-              <div className="flex items-center space-x-2">
-                <div className={`w-16 h-2 rounded ${confidence >= 0.8 ? 'bg-green-500' : confidence >= 0.6 ? 'bg-yellow-500' : 'bg-red-500'}`} />
-                <span className="text-sm">{Math.round(confidence * 100)}%</span>
-              </div>
-              {fallbackNeeded && (
-                <Badge variant="destructive" className="flex items-center space-x-1">
-                  <AlertTriangle className="h-3 w-3" />
-                  <span>Révision suggérée</span>
-                </Badge>
-              )}
-            </div>
-
-            <div className="p-3 bg-white rounded border">
-              <pre className="whitespace-pre-wrap text-sm">{generatedMarkdown}</pre>
-            </div>
-
-            <div className="space-y-2">
-              <Textarea
-                placeholder="Commentaires pour améliorer cette section..."
-                value={feedbackText}
-                onChange={(e) => setFeedbackText(e.target.value)}
-                rows={2}
-              />
-              <div className="flex space-x-2">
-                <Button 
-                  variant="outline"
-                  onClick={handleReformulate}
-                  disabled={!feedbackText.trim() || isReforming}
-                  className="flex items-center space-x-1"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                  <span>{isReforming ? 'Reformulation...' : 'Reformuler'}</span>
-                </Button>
-                <Button 
-                  onClick={handleValidateSection}
-                  className="flex-1"
-                >
-                  Valider cette section
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderFinalBrief = () => (
-    <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-      <div className="flex items-center justify-between">
-        <h3 className="font-medium">Brief Final</h3>
-        <div className="flex space-x-2">
-          <Button variant="outline" onClick={handleCopyFinalBrief} size="sm">
-            {isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-            {isCopied ? 'Copié!' : 'Copier'}
-          </Button>
-          <Button variant="outline" onClick={handleDownloadFinalBrief} size="sm">
-            <Download className="h-4 w-4" />
-            Télécharger
-          </Button>
-        </div>
-      </div>
-      
-      <div className="max-h-96 overflow-y-auto p-4 bg-white rounded border">
-        <pre className="whitespace-pre-wrap text-sm">{finalBrief}</pre>
-      </div>
-    </div>
-  );
-
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
     
@@ -421,199 +254,347 @@ const Brief = () => {
     setInputMessage('');
   };
 
+  // Quick action cards for configuration
+  const quickActionCards = [
+    {
+      icon: FileText,
+      title: "Créer un brief complet",
+      description: "Toutes les sections pour un brief détaillé",
+      color: "bg-orange-100 text-orange-700",
+      onClick: () => {
+        const newSections = new Array(18).fill(true);
+        setUserPreferences({ ...userPreferences, sections: newSections });
+      }
+    },
+    {
+      icon: Settings,
+      title: "Brief personnalisé",
+      description: "Sélectionnez vos sections préférées",
+      color: "bg-blue-100 text-blue-700",
+      onClick: () => {
+        // Keep current selection
+      }
+    },
+    {
+      icon: Bot,
+      title: "Brief IA recommandé",
+      description: "Sections essentielles sélectionnées par l'IA",
+      color: "bg-green-100 text-green-700",
+      onClick: () => {
+        const recommendedSections = new Array(18).fill(false);
+        [0, 1, 2, 3, 4, 7, 8].forEach(i => recommendedSections[i] = true);
+        setUserPreferences({ ...userPreferences, sections: recommendedSections });
+      }
+    }
+  ];
+
   // Initialisation avec le formulaire de configuration directement
   React.useEffect(() => {
     if (messages.length === 0 && currentStep === 'config') {
-      addMessage("Bienvenue ! Configurons votre brief de poste en sélectionnant les sections et paramètres souhaités :", true, renderConfigurationForm());
+      addMessage("Bienvenue ! Configurons votre brief de poste. Commencez par choisir une option ci-dessous ou personnalisez vos sections :", true);
     }
   }, []);
 
   return (
-    <div className="min-h-screen bg-bgLight transition-all duration-300 ease-in-out"
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100/50 transition-all duration-300 ease-in-out"
          style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
-      <div className="p-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            🤖 Assistant Brief IA
+      <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        {/* Header modernisé */}
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent mb-4">
+            Assistant Brief IA
           </h1>
-          <p className="text-gray-600">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
             Créez votre brief de poste en quelques minutes avec l'aide de l'IA
           </p>
         </div>
 
-        {/* Barre de progression */}
+        {/* Barre de progression moderne */}
         {currentStep !== 'config' && activeSections.length > 0 && (
-          <Card className="mb-6">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">
+          <div className="mb-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200/50">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-gray-700">
                   {currentStep === 'data-entry' && `Section ${currentSectionIndex + 1}/${activeSections.length}: ${activeSections[currentSectionIndex]}`}
                   {currentStep === 'final' && 'Brief Final Généré'}
                 </span>
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                   {Math.round(progress)}% terminé
                 </span>
               </div>
               <Progress value={progress} className="h-2" />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Chat principal */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>
-                {currentStep === 'config' ? 'Configuration du Brief' : 'Conversation avec l\'IA'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* Étape de configuration */}
-              {currentStep === 'config' && (
+        {/* Configuration moderne */}
+        {currentStep === 'config' && (
+          <div className="space-y-8">
+            {/* Quick actions cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {quickActionCards.map((card, index) => (
+                <button
+                  key={index}
+                  onClick={card.onClick}
+                  className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-gray-200/50 hover:shadow-md hover:scale-[1.02] transition-all duration-300 text-left"
+                >
+                  <div className={`w-12 h-12 rounded-xl ${card.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <card.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-2">{card.title}</h3>
+                  <p className="text-sm text-gray-600">{card.description}</p>
+                </button>
+              ))}
+            </div>
+
+            {/* Configuration détaillée */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-200/50">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">Configuration détaillée</h3>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                 <div className="space-y-4">
-                  <div className="mb-4">
-                    <p className="text-gray-600 mb-4">
-                      Bienvenue ! Configurons votre brief de poste en sélectionnant les sections et paramètres souhaités :
-                    </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Langue</label>
+                      <Select value={userPreferences.language} onValueChange={handleLanguageChange}>
+                        <SelectTrigger className="bg-white/80">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="fr">Français</SelectItem>
+                          <SelectItem value="en">English</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">Niveau de séniorité</label>
+                      <Select value={userPreferences.seniority} onValueChange={handleSeniorityChange}>
+                        <SelectTrigger className="bg-white/80">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Stagiaire">Stagiaire</SelectItem>
+                          <SelectItem value="Junior">Junior</SelectItem>
+                          <SelectItem value="Senior">Senior</SelectItem>
+                          <SelectItem value="C-level">C-level</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
-                  <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-                    <h3 className="font-medium">Configuration du Brief</h3>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Langue</label>
-                        <Select value={userPreferences.language} onValueChange={handleLanguageChange}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="fr">Français</SelectItem>
-                            <SelectItem value="en">English</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Niveau de séniorité</label>
-                        <Select value={userPreferences.seniority} onValueChange={handleSeniorityChange}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Stagiaire">Stagiaire</SelectItem>
-                            <SelectItem value="Junior">Junior</SelectItem>
-                            <SelectItem value="Senior">Senior</SelectItem>
-                            <SelectItem value="C-level">C-level</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium">Sections à inclure :</h4>
-                      <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto">
-                        {SECTION_IDS.map((section, index) => (
-                          <div key={index} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`section-${index}`}
-                              checked={userPreferences.sections[index]}
-                              onCheckedChange={(checked) => handleSectionToggle(index, Boolean(checked))}
-                            />
-                            <label htmlFor={`section-${index}`} className="text-xs cursor-pointer">
-                              {section}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="text-xs text-gray-500 mb-2">
+                  <div className="bg-gray-50/80 rounded-xl p-4">
+                    <div className="text-sm font-medium text-gray-700 mb-3">
                       {userPreferences.sections.filter(Boolean).length} section(s) sélectionnée(s)
                     </div>
-
                     <Button 
                       onClick={handleConfigSubmit} 
                       disabled={userPreferences.sections.filter(Boolean).length === 0}
-                      className="w-full"
+                      className="w-full bg-gray-900 hover:bg-gray-800 text-white rounded-xl h-12 font-medium transition-all duration-300 hover:scale-[1.02]"
                     >
-                      Confirmer la configuration
+                      Commencer la création du brief
                     </Button>
                   </div>
                 </div>
-              )}
 
-              {/* Chat pour les autres étapes */}
-              {currentStep !== 'config' && (
-                <>
-                  <div className="space-y-4 max-h-96 overflow-y-auto mb-4">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">Sections à inclure :</h4>
+                  <div className="bg-gray-50/80 rounded-xl p-4 max-h-80 overflow-y-auto space-y-2">
+                    {SECTION_IDS.map((section, index) => (
+                      <div key={index} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/60 transition-colors">
+                        <Checkbox
+                          id={`section-${index}`}
+                          checked={userPreferences.sections[index]}
+                          onCheckedChange={(checked) => handleSectionToggle(index, Boolean(checked))}
+                          className="rounded"
+                        />
+                        <label htmlFor={`section-${index}`} className="text-sm cursor-pointer flex-1">
+                          {section}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Interface de génération moderne */}
+        {currentStep !== 'config' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+            {/* Zone principale */}
+            <div className="lg:col-span-2">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 overflow-hidden">
+                <div className="p-6 border-b border-gray-100">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {currentStep === 'data-entry' ? 'Génération avec l\'IA' : 'Brief Final'}
+                  </h2>
+                </div>
+
+                <div className="p-6">
+                  {/* Messages de chat */}
+                  <div className="space-y-4 max-h-96 overflow-y-auto mb-6">
                     {messages.map((message) => (
                       <div key={message.id}>
                         <ChatMessage message={message} />
-                        {message.component && (
-                          <div className="mt-2">
-                            {message.component}
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>
 
                   {/* Interface de saisie selon l'étape */}
-                  {currentStep === 'data-entry' && renderDataEntryForm()}
-                  {currentStep === 'final' && renderFinalBrief()}
+                  {currentStep === 'data-entry' && (
+                    <div className="space-y-4">
+                      <div className="bg-gray-50/80 rounded-xl p-4">
+                        <h3 className="font-medium text-gray-900 mb-3">Section : {activeSections[currentSectionIndex]}</h3>
+                        
+                        <Textarea
+                          placeholder={`Saisissez les informations pour "${activeSections[currentSectionIndex]}"...`}
+                          value={briefData[activeSections[currentSectionIndex]]?.content || ''}
+                          onChange={(e) => handleDataUpdate(activeSections[currentSectionIndex], { content: e.target.value })}
+                          rows={3}
+                          className="bg-white/80 border-0 rounded-xl"
+                        />
 
-                  <div className="flex space-x-2 mt-4">
-                    <Input
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      placeholder="Tapez votre message..."
-                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    />
-                    <Button onClick={handleSendMessage}>
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                        <Button 
+                          onClick={handleGenerate}
+                          disabled={isGenerating}
+                          className="w-full mt-4 bg-gray-900 hover:bg-gray-800 text-white rounded-xl h-12 font-medium"
+                        >
+                          {isGenerating ? 'Génération en cours...' : 'Générer avec l\'IA'}
+                        </Button>
+                      </div>
 
-          {/* Panneau latéral - Navigation des sections */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Progression</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {currentStep === 'config' && (
-                <div className="text-sm text-gray-600">
-                  Commencez par configurer votre brief avec les sections et paramètres souhaités.
-                </div>
-              )}
-              {activeSections.length > 0 && currentStep !== 'config' && (
-                <div className="space-y-2">
-                  {activeSections.map((section, index) => (
-                    <div
-                      key={index}
-                      className={`p-2 rounded text-xs ${
-                        index === currentSectionIndex && currentStep === 'data-entry'
-                          ? 'bg-blue-100 text-blue-800'
-                          : completedSections.has(section)
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-600'
-                      }`}
-                    >
-                      {index + 1}. {section}
-                      {completedSections.has(section) && (
-                        <Check className="h-3 w-3 inline ml-1" />
+                      {generatedMarkdown && (
+                        <div className="space-y-4">
+                          <div className="flex items-center space-x-3 p-3 bg-gray-50/80 rounded-xl">
+                            <span className="text-sm font-medium text-gray-700">Confiance :</span>
+                            <div className="flex items-center space-x-2">
+                              <div className={`w-16 h-2 rounded-full ${confidence >= 0.8 ? 'bg-green-500' : confidence >= 0.6 ? 'bg-yellow-500' : 'bg-red-500'}`} />
+                              <span className="text-sm font-medium">{Math.round(confidence * 100)}%</span>
+                            </div>
+                            {fallbackNeeded && (
+                              <Badge variant="destructive" className="flex items-center space-x-1">
+                                <AlertTriangle className="h-3 w-3" />
+                                <span>Révision suggérée</span>
+                              </Badge>
+                            )}
+                          </div>
+
+                          <div className="bg-white rounded-xl p-4 border border-gray-200">
+                            <pre className="whitespace-pre-wrap text-sm text-gray-800">{generatedMarkdown}</pre>
+                          </div>
+
+                          <div className="space-y-3">
+                            <Textarea
+                              placeholder="Commentaires pour améliorer cette section..."
+                              value={feedbackText}
+                              onChange={(e) => setFeedbackText(e.target.value)}
+                              rows={2}
+                              className="bg-white/80 border-0 rounded-xl"
+                            />
+                            <div className="flex space-x-3">
+                              <Button 
+                                variant="outline"
+                                onClick={handleReformulate}
+                                disabled={!feedbackText.trim() || isReforming}
+                                className="flex items-center space-x-2 rounded-xl"
+                              >
+                                <RefreshCw className="h-4 w-4" />
+                                <span>{isReforming ? 'Reformulation...' : 'Reformuler'}</span>
+                              </Button>
+                              <Button 
+                                onClick={handleValidateSection}
+                                className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl"
+                              >
+                                Valider cette section
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
                       )}
                     </div>
-                  ))}
+                  )}
+
+                  {currentStep === 'final' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900">Brief Final</h3>
+                        <div className="flex space-x-2">
+                          <Button variant="outline" onClick={handleCopyFinalBrief} size="sm" className="rounded-xl">
+                            {isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                            {isCopied ? 'Copié!' : 'Copier'}
+                          </Button>
+                          <Button variant="outline" onClick={handleDownloadFinalBrief} size="sm" className="rounded-xl">
+                            <Download className="h-4 w-4" />
+                            Télécharger
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="max-h-96 overflow-y-auto bg-white rounded-xl p-4 border border-gray-200">
+                        <pre className="whitespace-pre-wrap text-sm text-gray-800">{finalBrief}</pre>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Zone de saisie de message */}
+                  {currentStep !== 'config' && (
+                    <div className="flex space-x-3 mt-6 p-4 bg-gray-50/80 rounded-xl">
+                      <Input
+                        value={inputMessage}
+                        onChange={(e) => setInputMessage(e.target.value)}
+                        placeholder="Tapez votre message..."
+                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                        className="bg-white/80 border-0 rounded-xl"
+                      />
+                      <Button onClick={handleSendMessage} className="bg-gray-900 hover:bg-gray-800 text-white rounded-xl px-6">
+                        <Send className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              </div>
+            </div>
+
+            {/* Panneau latéral moderne */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 h-fit">
+              <div className="p-6 border-b border-gray-100">
+                <h3 className="text-lg font-semibold text-gray-900">Progression</h3>
+              </div>
+              <div className="p-6">
+                {currentStep === 'config' && (
+                  <div className="text-sm text-gray-600">
+                    Commencez par configurer votre brief avec les sections et paramètres souhaités.
+                  </div>
+                )}
+                {activeSections.length > 0 && currentStep !== 'config' && (
+                  <div className="space-y-2">
+                    {activeSections.map((section, index) => (
+                      <div
+                        key={index}
+                        className={`p-3 rounded-xl text-sm transition-all duration-200 ${
+                          index === currentSectionIndex && currentStep === 'data-entry'
+                            ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                            : completedSections.has(section)
+                            ? 'bg-green-100 text-green-800 border border-green-200'
+                            : 'bg-gray-100 text-gray-600 border border-gray-200'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">{index + 1}. {section}</span>
+                          {completedSections.has(section) && (
+                            <Check className="h-4 w-4" />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
