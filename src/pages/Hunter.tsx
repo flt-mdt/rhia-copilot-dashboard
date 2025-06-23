@@ -50,9 +50,10 @@ const Hunter = () => {
   // Typewriter animation for greeting
   const greetingText = useTypewriter({
     words: [`Bonjour ${userName} !`],
-    typeSpeed: 100,
-    deleteSpeed: 0,
-    delayBetweenWords: 0
+    typeSpeed: 150,      // Plus lent pour la frappe
+    deleteSpeed: 100,    // Plus lent pour l'effacement  
+    delayBetweenWords: 0,
+    pauseAfterComplete: 8000  // Pause de 8 secondes avant de recommencer
   });
 
   const handleSearch = (criteria: string) => {
