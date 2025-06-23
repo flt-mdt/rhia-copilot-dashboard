@@ -1,7 +1,7 @@
 
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { 
   Popover,
   PopoverContent,
@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/popover";
 import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from "@/hooks/useNotifications";
 import NotificationItem from "@/components/notifications/NotificationItem";
-import { useAuth } from "@/contexts/AuthContext";
 
 interface HeaderProps {
   title: string;
@@ -17,8 +16,6 @@ interface HeaderProps {
 
 const Header = ({ title }: HeaderProps) => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { signOut } = useAuth();
   const isSettingsPage = location.pathname === "/settings";
   const { notifications, unreadCount } = useNotifications();
   const markAsReadMutation = useMarkNotificationAsRead();
@@ -30,15 +27,6 @@ const Header = ({ title }: HeaderProps) => {
 
   const handleMarkAllAsRead = () => {
     markAllAsReadMutation.mutate();
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      navigate('/login');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
   };
 
   return (
@@ -113,15 +101,6 @@ const Header = ({ title }: HeaderProps) => {
             </div>
           </PopoverContent>
         </Popover>
-        <button 
-          onClick={handleSignOut}
-          className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" className="text-white">
-            <path fill="currentColor" d="M16 17l5-5-5-5M21 12H9"/>
-          </svg>
-          Sign out
-        </button>
       </div>
     </div>
   );
