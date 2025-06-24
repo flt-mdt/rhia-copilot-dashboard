@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
@@ -146,17 +147,20 @@ const CreateJobForm = () => {
   };
 
   return (
-    <div className="ml-64 p-8 bg-[#F9FAFB]">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-center">Créer une offre d'emploi</h1>
+    <div className="transition-all duration-300 ease-in-out p-4 sm:p-6 lg:p-8 bg-[#F9FAFB] min-h-screen"
+         style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center">Créer une offre d'emploi</h1>
+        </div>
         
         {/* Import Section */}
-        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="import-draft">Importer un brouillon existant</Label>
+        <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-100 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="import-draft" className="text-sm font-medium">Importer un brouillon existant</Label>
               <Select onValueChange={handleImportDraft}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Sélectionner un brouillon" />
                 </SelectTrigger>
                 <SelectContent>
@@ -169,10 +173,10 @@ const CreateJobForm = () => {
               </Select>
             </div>
             
-            <div>
-              <Label htmlFor="import-template">Importer un modèle public</Label>
+            <div className="space-y-2">
+              <Label htmlFor="import-template" className="text-sm font-medium">Importer un modèle public</Label>
               <Select onValueChange={handleImportTemplate}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Sélectionner un modèle" />
                 </SelectTrigger>
                 <SelectContent>
@@ -187,11 +191,11 @@ const CreateJobForm = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 border border-gray-100">
           <form onSubmit={handleSubmit}>
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="title">Titre du poste</Label>
+                <Label htmlFor="title" className="text-sm font-medium">Titre du poste</Label>
                 <Input 
                   id="title"
                   name="title"
@@ -199,11 +203,12 @@ const CreateJobForm = () => {
                   value={formData.title}
                   onChange={handleInputChange}
                   required
+                  className="w-full"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="location">Lieu</Label>
+                <Label htmlFor="location" className="text-sm font-medium">Lieu</Label>
                 <Input 
                   id="location"
                   name="location"
@@ -211,17 +216,18 @@ const CreateJobForm = () => {
                   value={formData.location}
                   onChange={handleInputChange}
                   required
+                  className="w-full"
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="contract_type">Type de contrat</Label>
+                  <Label htmlFor="contract_type" className="text-sm font-medium">Type de contrat</Label>
                   <Select
                     value={formData.contract_type}
                     onValueChange={(value) => handleSelectChange('contract_type', value)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Sélectionner" />
                     </SelectTrigger>
                     <SelectContent>
@@ -235,12 +241,12 @@ const CreateJobForm = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="department">Département</Label>
+                  <Label htmlFor="department" className="text-sm font-medium">Département</Label>
                   <Select
                     value={formData.department}
                     onValueChange={(value) => handleSelectChange('department', value)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
                     <SelectContent>
@@ -255,9 +261,9 @@ const CreateJobForm = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="salary_min">Salaire minimum (€)</Label>
+                  <Label htmlFor="salary_min" className="text-sm font-medium">Salaire minimum (€)</Label>
                   <Input 
                     id="salary_min"
                     name="salary_min"
@@ -265,11 +271,12 @@ const CreateJobForm = () => {
                     placeholder="40000"
                     value={formData.salary_min}
                     onChange={handleInputChange}
+                    className="w-full"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="salary_max">Salaire maximum (€)</Label>
+                  <Label htmlFor="salary_max" className="text-sm font-medium">Salaire maximum (€)</Label>
                   <Input 
                     id="salary_max"
                     name="salary_max"
@@ -277,17 +284,18 @@ const CreateJobForm = () => {
                     placeholder="60000"
                     value={formData.salary_max}
                     onChange={handleInputChange}
+                    className="w-full"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="experience_level">Niveau d'expérience</Label>
+                <Label htmlFor="experience_level" className="text-sm font-medium">Niveau d'expérience</Label>
                 <Select
                   value={formData.experience_level}
                   onValueChange={(value) => handleSelectChange('experience_level', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Sélectionner" />
                   </SelectTrigger>
                   <SelectContent>
@@ -299,22 +307,22 @@ const CreateJobForm = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description" className="text-sm font-medium">Description</Label>
                 <Textarea 
                   id="description"
                   name="description"
                   placeholder="Décrivez les missions, les compétences requises, etc."
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="min-h-[120px]"
+                  className="min-h-[120px] w-full resize-y"
                   required
                 />
               </div>
               
-              <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center">
-                <label className="flex flex-col items-center cursor-pointer gap-2">
-                  <FileText className="h-6 w-6 text-gray-400" />
-                  <span className="text-gray-600">
+              <div className="border border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <label className="flex flex-col items-center cursor-pointer gap-3">
+                  <FileText className="h-8 w-8 text-gray-400" />
+                  <span className="text-gray-600 text-sm sm:text-base">
                     {fileUploaded ? fileUploaded.name : "Glissez-déposez votre fiche de poste ici"}
                   </span>
                   <input 
@@ -326,13 +334,22 @@ const CreateJobForm = () => {
                 </label>
               </div>
               
-              <div className="pt-4">
+              <div className="pt-4 flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button 
                   type="submit" 
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white w-32"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto px-8"
                   disabled={createJobMutation.isPending}
                 >
                   {createJobMutation.isPending ? "Création..." : "Créer"}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate('/job-postings')}
+                  className="w-full sm:w-auto"
+                >
+                  Annuler
                 </Button>
               </div>
             </div>
