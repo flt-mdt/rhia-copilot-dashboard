@@ -539,20 +539,18 @@ const Brief = () => {
                   )}
 
                   {/* Zone de saisie de message */}
-                  {currentStep !== 'config' && (
-                    <div className="flex space-x-3 mt-6 p-4 bg-gray-50/80 rounded-xl">
-                      <Input
-                        value={inputMessage}
-                        onChange={(e) => setInputMessage(e.target.value)}
-                        placeholder="Tapez votre message..."
-                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                        className="bg-white/80 border-0 rounded-xl"
-                      />
-                      <Button onClick={handleSendMessage} className="bg-gray-900 hover:bg-gray-800 text-white rounded-xl px-6">
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
+                  <div className="flex space-x-3 mt-6 p-4 bg-gray-50/80 rounded-xl">
+                    <Input
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      placeholder="Tapez votre message..."
+                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                      className="bg-white/80 border-0 rounded-xl"
+                    />
+                    <Button onClick={handleSendMessage} className="bg-gray-900 hover:bg-gray-800 text-white rounded-xl px-6">
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
