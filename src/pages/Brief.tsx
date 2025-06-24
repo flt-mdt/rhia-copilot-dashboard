@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -32,8 +33,16 @@ import SectionConfiguration from '@/components/brief/SectionConfiguration';
 import SectionGenerator from '@/components/brief/SectionGenerator';
 import ChatMessage from '@/components/brief/ChatMessage';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { UserPreferences } from '@/services/briefBackendApi';
 
 type WorkflowStep = 'config' | 'data-entry' | 'generation' | 'final';
+
+interface Message {
+  id: string;
+  type: 'ai' | 'user';
+  content: string;
+  timestamp: Date;
+}
 
 const Brief = () => {
   const { briefId } = useParams();
@@ -41,10 +50,10 @@ const Brief = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
   const [currentStep, setCurrentStep] = useState<WorkflowStep>('config');
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      type: 'ai' as const,
+      type: 'ai',
       content: "Bonjour ! Je suis votre assistant IA pour créer des briefs de recrutement personnalisés. Pour commencer, pouvez-vous me parler du poste que vous souhaitez pourvoir ?",
       timestamp: new Date()
     }
@@ -52,16 +61,17 @@ const Brief = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [briefData, setBriefData] = useState({
-    jobTitle: '',
-    company: '',
-    department: '',
+    missions: [] as string[],
+    hardSkills: [] as string[],
+    softSkills: [] as string[],
+    context: '',
     location: '',
-    contractType: '',
-    experience: '',
-    skills: [],
-    responsibilities: [],
-    requirements: [],
-    benefits: []
+    constraints: [] as string[]
+  });
+  const [userPreferences, setUserPreferences] = useState<UserPreferences>({
+    sections: new Array(18).fill(false),
+    language: 'fr',
+    seniority: 'Junior'
   });
   const [generatedSections, setGeneratedSections] = useState({});
   const [progress, setProgress] = useState(0);
@@ -78,9 +88,9 @@ const Brief = () => {
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
-    const newMessage = {
+    const newMessage: Message = {
       id: Date.now().toString(),
-      type: 'user' as const,
+      type: 'user',
       content: inputMessage,
       timestamp: new Date()
     };
@@ -91,9 +101,9 @@ const Brief = () => {
 
     // Simulate AI response
     setTimeout(() => {
-      const aiResponse = {
+      const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        type: 'ai' as const,
+        type: 'ai',
         content: "Merci pour ces informations ! Je comprends que vous recherchez un développeur senior. Pouvez-vous me donner plus de détails sur les technologies spécifiques requises et l'équipe avec laquelle cette personne travaillera ?",
         timestamp: new Date()
       };
@@ -109,7 +119,13 @@ const Brief = () => {
   const renderStepContent = () => {
     switch (currentStep) {
       case 'config':
-        return <SectionConfiguration onNext={() => handleStepChange('data-entry')} />;
+        return (
+          <SectionConfiguration 
+            preferences={userPreferences}
+            onPreferencesChange={setUserPreferences}
+            onNext={() => handleStepChange('data-entry')} 
+          />
+        );
       case 'data-entry':
         return (
           <div className="space-y-6">
@@ -127,7 +143,7 @@ const Brief = () => {
               <div className="bg-gray-50 rounded-lg p-4 mb-4 max-h-96 overflow-y-auto">
                 <div className="space-y-4">
                   {messages.map((message) => (
-                    <ChatMessage key={message.id} message={message} />
+                    <ChatMessage key={message.id} message={{ ...message, isAI: message.type === 'ai' }} />
                   ))}
                   {isGenerating && (
                     <div className="flex items-center gap-3">
@@ -188,7 +204,27 @@ const Brief = () => {
           </div>
         );
       case 'generation':
-        return <SectionGenerator onComplete={() => handleStepChange('final')} />;
+        return (
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold">Génération du brief</h2>
+            <p className="text-gray-600">Les sections sont en cours de génération...</p>
+            <div className="flex justify-between">
+              <Button 
+                variant="outline" 
+                onClick={() => handleStepChange('data-entry')}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Retour
+              </Button>
+              <Button 
+                onClick={() => handleStepChange('final')}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Terminer
+              </Button>
+            </div>
+          </div>
+        );
       case 'final':
         return <BriefSummary briefData={briefData} />;
       default:
