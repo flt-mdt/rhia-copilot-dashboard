@@ -40,7 +40,7 @@ export const useRecruiterTasks = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  // Fetch tasks with their tags and assignees
+  // Fetch tasks with their tags
   const fetchTasks = async () => {
     try {
       const { data: tasksData, error: tasksError } = await supabase
@@ -49,9 +49,6 @@ export const useRecruiterTasks = () => {
           *,
           task_tag_assignments(
             task_tags(id, name, color, category)
-          ),
-          task_assignees(
-            profiles(id, name, avatar_url)
           )
         `)
         .order('custom_order', { ascending: true });
@@ -61,11 +58,7 @@ export const useRecruiterTasks = () => {
       const formattedTasks = tasksData?.map(task => ({
         ...task,
         tags: task.task_tag_assignments?.map(tta => tta.task_tags).filter(Boolean) || [],
-        assignees: task.task_assignees?.map(ta => ({
-          id: ta.profiles?.id || '',
-          name: ta.profiles?.name || 'Unknown',
-          avatar: ta.profiles?.avatar_url || '/placeholder.svg'
-        })).filter(Boolean) || []
+        assignees: [] // Pour l'instant vide, on ajoutera les assignés plus tard
       })) || [];
 
       setTasks(formattedTasks);
@@ -95,7 +88,14 @@ export const useRecruiterTasks = () => {
   };
 
   // Create new task
-  const createTask = async (taskData: Partial<RecruiterTask>) => {
+  const createTask = async (taskData: {
+    title: string;
+    description?: string;
+    candidate_name: string;
+    priority: boolean;
+    due_date?: string;
+    selectedTags: string[];
+  }) => {
     try {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('User not authenticated');
@@ -105,7 +105,11 @@ export const useRecruiterTasks = () => {
       const { data, error } = await supabase
         .from('recruiter_tasks')
         .insert({
-          ...taskData,
+          title: taskData.title,
+          description: taskData.description,
+          candidate_name: taskData.candidate_name,
+          priority: taskData.priority,
+          due_date: taskData.due_date,
           user_id: userData.user.id,
           custom_order: maxOrder + 1
         })
@@ -113,6 +117,22 @@ export const useRecruiterTasks = () => {
         .single();
 
       if (error) throw error;
+
+      // Add tags to the task
+      if (taskData.selectedTags.length > 0) {
+        const tagAssignments = taskData.selectedTags.map(tagId => ({
+          task_id: data.id,
+          tag_id: tagId
+        }));
+
+        const { error: tagError } = await supabase
+          .from('task_tag_assignments')
+          .insert(tagAssignments);
+
+        if (tagError) {
+          console.error('Error adding tags:', tagError);
+        }
+      }
 
       toast({
         title: "Tâche créée",

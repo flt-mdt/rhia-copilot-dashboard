@@ -84,10 +84,16 @@ const CopiloteRH = () => {
     deleted: tasks.filter(t => t.is_deleted).length,
   }), [tasks]);
 
-  const handleCreateTask = async (taskData: any) => {
+  const handleCreateTask = async (taskData: {
+    title: string;
+    description?: string;
+    candidate_name: string;
+    priority: boolean;
+    due_date?: string;
+    selectedTags: string[];
+  }) => {
     try {
       await createTask(taskData);
-      // Tags will be handled separately if needed
       console.log('Task created successfully');
     } catch (error) {
       console.error('Failed to create task:', error);
