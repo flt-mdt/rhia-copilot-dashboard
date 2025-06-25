@@ -33,7 +33,7 @@ class RagRetriever:
             }
 
         except Exception as e:
-            logger.warning("RagRetriever failed", error=str(e))
+            logger.warning("RagRetriever failed: %s", e)
             return {
                 **state,
                 "rag_context": "",
