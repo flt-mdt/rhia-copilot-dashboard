@@ -1,162 +1,114 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import TopBarControls from '@/components/todo/TopBarControls';
 import RecruiterTaskCard from '@/components/todo/RecruiterTaskCard';
 import TaskFilterSidebar from '@/components/todo/TaskFilterSidebar';
-
-interface Task {
-  id: string;
-  title: string;
-  candidateName: string;
-  tags: Array<{
-    label: string;
-    color: string;
-  }>;
-  assignees: Array<{
-    id: string;
-    name: string;
-    avatar: string;
-  }>;
-  priority: boolean;
-  dueDate?: string;
-  isCompleted: boolean;
-  category: string;
-}
+import CreateTaskDialog from '@/components/todo/CreateTaskDialog';
+import { useRecruiterTasks } from '@/hooks/useRecruiterTasks';
+import { Loader2 } from 'lucide-react';
 
 const CopiloteRH = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [orderBy, setOrderBy] = useState('deadline');
+  const [orderBy, setOrderBy] = useState('custom_order');
   const [activeFilter, setActiveFilter] = useState('all');
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: '1',
-      title: 'Finaliser entretien technique avec le candidat',
-      candidateName: 'Sarah Martin',
-      tags: [
-        { label: 'Entretien', color: 'red' },
-        { label: 'Technique', color: 'blue' },
-      ],
-      assignees: [
-        { id: '1', name: 'Julie Laurent', avatar: '/placeholder.svg' },
-        { id: '2', name: 'Marc Dubois', avatar: '/placeholder.svg' },
-        { id: '3', name: 'Clara Petit', avatar: '/placeholder.svg' },
-        { id: '4', name: 'Tom Wilson', avatar: '/placeholder.svg' },
-      ],
-      priority: false,
-      dueDate: 'Aujourd\'hui',
-      isCompleted: false,
-      category: 'myTasks',
-    },
-    {
-      id: '2',
-      title: 'Préparer feedback manager pour Clara Dubois',
-      candidateName: 'Clara Dubois',
-      tags: [
-        { label: 'Feedback', color: 'orange' },
-        { label: 'Manager', color: 'purple' },
-      ],
-      assignees: [
-        { id: '1', name: 'Julie Laurent', avatar: '/placeholder.svg' },
-        { id: '2', name: 'Marc Dubois', avatar: '/placeholder.svg' },
-        { id: '3', name: 'Clara Petit', avatar: '/placeholder.svg' },
-      ],
-      priority: true,
-      dueDate: 'Demain',
-      isCompleted: false,
-      category: 'favorites',
-    },
-    {
-      id: '3',
-      title: 'Relancer Victor pour documents manquants',
-      candidateName: 'Victor Martin',
-      tags: [
-        { label: 'Documents', color: 'teal' },
-        { label: 'Relance', color: 'yellow' },
-      ],
-      assignees: [
-        { id: '1', name: 'Julie Laurent', avatar: '/placeholder.svg' },
-        { id: '2', name: 'Marc Dubois', avatar: '/placeholder.svg' },
-      ],
-      priority: false,
-      dueDate: 'Cette semaine',
-      isCompleted: false,
-      category: 'myTasks',
-    },
-    {
-      id: '4',
-      title: 'Programmer entretien RH avec candidat freelance',
-      candidateName: 'Alex Johnson',
-      tags: [
-        { label: 'Freelance', color: 'green' },
-        { label: 'RH', color: 'blue' },
-      ],
-      assignees: [
-        { id: '1', name: 'Julie Laurent', avatar: '/placeholder.svg' },
-      ],
-      priority: false,
-      isCompleted: true,
-      category: 'done',
-    },
-    {
-      id: '5',
-      title: 'Validation finale dossier candidature',
-      candidateName: 'Marie Rousseau',
-      tags: [
-        { label: 'Validation', color: 'purple' },
-        { label: 'Final', color: 'pink' },
-      ],
-      assignees: [
-        { id: '1', name: 'Julie Laurent', avatar: '/placeholder.svg' },
-        { id: '2', name: 'Marc Dubois', avatar: '/placeholder.svg' },
-      ],
-      priority: true,
-      isCompleted: false,
-      category: 'favorites',
-    },
-  ]);
 
-  const handleCompleteTask = (taskId: string) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, isCompleted: true, category: 'done' } : task
-    ));
-  };
+  const {
+    tasks,
+    tags,
+    loading,
+    createTask,
+    updateTask,
+    deleteTask,
+    toggleTaskCompletion,
+    toggleTaskPriority,
+    toggleTaskFavorite,
+    reorderTasks
+  } = useRecruiterTasks();
 
-  const handleTogglePriority = (taskId: string) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, priority: !task.priority } : task
-    ));
+  // Filter and sort tasks
+  const filteredAndSortedTasks = useMemo(() => {
+    let filtered = tasks.filter(task => {
+      const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           task.candidate_name.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      let matchesFilter = true;
+      switch (activeFilter) {
+        case 'myTasks':
+          matchesFilter = !task.is_completed && !task.is_deleted;
+          break;
+        case 'favorites':
+          matchesFilter = task.is_favorite && !task.is_deleted;
+          break;
+        case 'done':
+          matchesFilter = task.is_completed && !task.is_deleted;
+          break;
+        case 'deleted':
+          matchesFilter = task.is_deleted;
+          break;
+        default:
+          matchesFilter = !task.is_deleted;
+      }
+      
+      return matchesSearch && matchesFilter;
+    });
+
+    // Sort tasks
+    filtered.sort((a, b) => {
+      switch (orderBy) {
+        case 'deadline':
+          if (!a.due_date && !b.due_date) return 0;
+          if (!a.due_date) return 1;
+          if (!b.due_date) return -1;
+          return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+        case 'priority':
+          if (a.priority === b.priority) return 0;
+          return a.priority ? -1 : 1;
+        case 'candidate':
+          return a.candidate_name.localeCompare(b.candidate_name);
+        case 'created':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        default: // custom_order
+          return a.custom_order - b.custom_order;
+      }
+    });
+
+    return filtered;
+  }, [tasks, searchTerm, activeFilter, orderBy]);
+
+  // Task counts for sidebar
+  const taskCounts = useMemo(() => ({
+    all: tasks.filter(t => !t.is_deleted).length,
+    myTasks: tasks.filter(t => !t.is_completed && !t.is_deleted).length,
+    favorites: tasks.filter(t => t.is_favorite && !t.is_deleted).length,
+    done: tasks.filter(t => t.is_completed && !t.is_deleted).length,
+    deleted: tasks.filter(t => t.is_deleted).length,
+  }), [tasks]);
+
+  const handleCreateTask = async (taskData: any) => {
+    try {
+      await createTask(taskData);
+      // Tags will be handled separately if needed
+      console.log('Task created successfully');
+    } catch (error) {
+      console.error('Failed to create task:', error);
+    }
   };
 
   const handleEditTask = (taskId: string) => {
     console.log('Edit task:', taskId);
+    // TODO: Implement edit dialog
   };
 
-  const handleDeleteTask = (taskId: string) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, category: 'deleted' } : task
-    ));
-  };
-
-  const handleAddTask = () => {
-    console.log('Add new task');
-  };
-
-  const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.candidateName.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesFilter = activeFilter === 'all' || task.category === activeFilter;
-    
-    return matchesSearch && matchesFilter;
-  });
-
-  const taskCounts = {
-    all: tasks.length,
-    myTasks: tasks.filter(task => task.category === 'myTasks').length,
-    favorites: tasks.filter(task => task.category === 'favorites').length,
-    done: tasks.filter(task => task.category === 'done').length,
-    deleted: tasks.filter(task => task.category === 'deleted').length,
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center" style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Chargement des tâches...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex" style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
@@ -166,37 +118,46 @@ const CopiloteRH = () => {
           onSearchChange={setSearchTerm}
           orderBy={orderBy}
           onOrderByChange={setOrderBy}
-          onAddTask={handleAddTask}
-          notificationCount={2}
+          onAddTask={() => {}} // Not used, handled by CreateTaskDialog
+          notificationCount={taskCounts.myTasks}
+          customAddButton={
+            <CreateTaskDialog
+              tags={tags}
+              onCreateTask={handleCreateTask}
+            />
+          }
         />
         
         <div className="flex-1 p-6 overflow-y-auto">
           <div className="max-w-4xl mx-auto space-y-4">
-            {filteredTasks.map((task) => (
+            {filteredAndSortedTasks.map((task) => (
               <RecruiterTaskCard
                 key={task.id}
                 id={task.id}
                 title={task.title}
-                candidateName={task.candidateName}
-                tags={task.tags}
-                assignees={task.assignees}
+                candidateName={task.candidate_name}
+                tags={task.tags?.map(tag => ({
+                  label: tag.name,
+                  color: tag.color
+                })) || []}
+                assignees={task.assignees || []}
                 priority={task.priority}
-                dueDate={task.dueDate}
-                isCompleted={task.isCompleted}
-                onComplete={handleCompleteTask}
-                onTogglePriority={handleTogglePriority}
+                dueDate={task.due_date ? new Date(task.due_date).toLocaleDateString('fr-FR') : undefined}
+                isCompleted={task.is_completed}
+                onComplete={toggleTaskCompletion}
+                onTogglePriority={toggleTaskPriority}
                 onEdit={handleEditTask}
-                onDelete={handleDeleteTask}
+                onDelete={deleteTask}
               />
             ))}
             
-            {filteredTasks.length === 0 && (
+            {filteredAndSortedTasks.length === 0 && (
               <div className="text-center py-12">
                 <div className="text-gray-400 text-lg">
                   Aucune tâche trouvée
                 </div>
                 <p className="text-gray-500 mt-2">
-                  Essayez de modifier vos filtres ou ajoutez une nouvelle tâche
+                  {searchTerm ? 'Essayez de modifier votre recherche' : 'Créez votre première tâche pour commencer'}
                 </p>
               </div>
             )}

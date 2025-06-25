@@ -746,6 +746,65 @@ export type Database = {
         }
         Relationships: []
       }
+      recruiter_tasks: {
+        Row: {
+          candidate_id: string | null
+          candidate_name: string
+          created_at: string
+          custom_order: number
+          description: string | null
+          due_date: string | null
+          id: string
+          is_completed: boolean
+          is_deleted: boolean
+          is_favorite: boolean
+          priority: boolean
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          candidate_id?: string | null
+          candidate_name: string
+          created_at?: string
+          custom_order?: number
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_completed?: boolean
+          is_deleted?: boolean
+          is_favorite?: boolean
+          priority?: boolean
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          candidate_id?: string | null
+          candidate_name?: string
+          created_at?: string
+          custom_order?: number
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_completed?: boolean
+          is_deleted?: boolean
+          is_favorite?: boolean
+          priority?: boolean
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recruiter_tasks_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       searches: {
         Row: {
           brief_text: string
@@ -792,6 +851,92 @@ export type Database = {
         Update: {
           category?: string | null
           created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      task_assignees: {
+        Row: {
+          assigned_at: string
+          id: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          id?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          id?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_assignees_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "recruiter_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_tag_assignments: {
+        Row: {
+          id: string
+          tag_id: string
+          task_id: string
+        }
+        Insert: {
+          id?: string
+          tag_id: string
+          task_id: string
+        }
+        Update: {
+          id?: string
+          tag_id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_tag_assignments_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "task_tags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_tag_assignments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "recruiter_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_tags: {
+        Row: {
+          category: string
+          color: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          category: string
+          color: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          color?: string
+          created_at?: string
           id?: string
           name?: string
         }

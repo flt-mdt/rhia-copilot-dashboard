@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, Plus, Bell, ShoppingCart } from 'lucide-react';
+import { Search, Bell, ShoppingCart } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +19,7 @@ interface TopBarControlsProps {
   onOrderByChange: (value: string) => void;
   onAddTask: () => void;
   notificationCount: number;
+  customAddButton?: React.ReactNode;
 }
 
 const TopBarControls: React.FC<TopBarControlsProps> = ({
@@ -28,6 +29,7 @@ const TopBarControls: React.FC<TopBarControlsProps> = ({
   onOrderByChange,
   onAddTask,
   notificationCount,
+  customAddButton,
 }) => {
   return (
     <div className="bg-white border-b border-gray-200 p-4">
@@ -38,10 +40,10 @@ const TopBarControls: React.FC<TopBarControlsProps> = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Search..."
+              placeholder="Rechercher une tâche ou un candidat..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 w-64"
+              className="pl-10 w-80"
             />
           </div>
         </div>
@@ -63,34 +65,28 @@ const TopBarControls: React.FC<TopBarControlsProps> = ({
             </Badge>
           </Button>
 
-          <Button onClick={onAddTask} className="bg-blue-600 hover:bg-blue-700 text-white">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Task
-          </Button>
+          {customAddButton || (
+            <Button onClick={onAddTask} className="bg-blue-600 hover:bg-blue-700 text-white">
+              + Add Task
+            </Button>
+          )}
         </div>
       </div>
 
       <div className="flex items-center space-x-4 mt-4">
         <div className="flex items-center space-x-2">
-          <input type="checkbox" className="rounded" />
           <Select value={orderBy} onValueChange={onOrderByChange}>
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Order by" />
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Trier par" />
             </SelectTrigger>
             <SelectContent className="bg-white">
-              <SelectItem value="deadline">Deadline</SelectItem>
-              <SelectItem value="priority">Priority</SelectItem>
-              <SelectItem value="candidate">Candidate</SelectItem>
-              <SelectItem value="created">Created</SelectItem>
+              <SelectItem value="custom_order">Ordre personnalisé</SelectItem>
+              <SelectItem value="deadline">Date d'échéance</SelectItem>
+              <SelectItem value="priority">Priorité</SelectItem>
+              <SelectItem value="candidate">Candidat</SelectItem>
+              <SelectItem value="created">Date de création</SelectItem>
             </SelectContent>
           </Select>
-        </div>
-
-        <div className="flex-1">
-          <Input
-            placeholder="Search todo list"
-            className="max-w-md"
-          />
         </div>
       </div>
     </div>
