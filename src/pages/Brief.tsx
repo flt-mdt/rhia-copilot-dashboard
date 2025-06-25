@@ -31,7 +31,7 @@ import { useToast } from '@/hooks/use-toast';
 import BriefSummary from '@/components/brief/BriefSummary';
 import SectionConfiguration from '@/components/brief/SectionConfiguration';
 import SectionGenerator from '@/components/brief/SectionGenerator';
-import ChatMessage from '@/components/brief/ChatMessage';
+import ModernChatMessage from '@/components/brief/ModernChatMessage';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { UserPreferences } from '@/services/briefBackendApi';
 
@@ -128,74 +128,101 @@ const Brief = () => {
         );
       case 'data-entry':
         return (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <MessageSquare className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900">Assistant IA - Collecte d'informations</h2>
-                  <p className="text-sm text-gray-600">Discutez avec l'IA pour affiner les détails du poste</p>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4 mb-4 max-h-96 overflow-y-auto">
-                <div className="space-y-4">
-                  {messages.map((message) => (
-                    <ChatMessage key={message.id} message={{ ...message, isAI: message.type === 'ai' }} />
-                  ))}
-                  {isGenerating && (
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-blue-100 rounded-full">
-                        <Bot className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <div className="bg-white rounded-lg px-4 py-2 shadow-sm border">
-                        <div className="flex items-center gap-2">
-                          <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
-                          <span className="text-sm text-gray-600">L'IA réfléchit...</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  <div ref={messagesEndRef} />
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <Textarea
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="Décrivez le poste, les compétences requises, l'équipe..."
-                  className="flex-1 min-h-[80px] resize-none"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                />
-                <Button 
-                  onClick={handleSendMessage}
-                  disabled={!inputMessage.trim() || isGenerating}
-                  className="px-4 self-end"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
+          <div className="max-w-4xl mx-auto space-y-8">
+            {/* Header de la section */}
+            <div className="text-center space-y-4">
+              <h2 className="text-3xl font-bold text-gray-900">Assistant IA - Collecte d'informations</h2>
+              <p className="text-lg text-gray-600">
+                Discutez avec l'IA pour affiner les détails du poste
+              </p>
             </div>
 
-            <div className="flex justify-between">
+            {/* Chat Container avec style moderne */}
+            <Card className="border-2 border-gray-100 shadow-lg">
+              <div className="p-6">
+                {/* En-tête du chat */}
+                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+                    <MessageSquare className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Chat avec l'Assistant IA</h3>
+                    <p className="text-sm text-gray-500">Décrivez le poste, les compétences requises, l'équipe...</p>
+                  </div>
+                </div>
+
+                {/* Zone des messages */}
+                <div className="bg-gray-50 rounded-2xl p-6 mb-6 max-h-96 overflow-y-auto">
+                  <div className="space-y-1">
+                    {messages.map((message) => (
+                      <ModernChatMessage 
+                        key={message.id} 
+                        message={{ 
+                          ...message, 
+                          isAI: message.type === 'ai' 
+                        }} 
+                      />
+                    ))}
+                    {isGenerating && (
+                      <div className="flex justify-start mb-6">
+                        <div className="flex flex-row max-w-[80%]">
+                          <div className="flex-shrink-0 mr-3">
+                            <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                              <Bot className="h-5 w-5" />
+                            </div>
+                          </div>
+                          <div className="relative px-6 py-4 rounded-2xl bg-white border border-gray-200 shadow-sm">
+                            <div className="flex items-center gap-3">
+                              <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+                              <span className="text-sm text-gray-600">L'IA réfléchit...</span>
+                            </div>
+                            <div className="absolute top-4 w-3 h-3 transform rotate-45 bg-white border-l border-t border-gray-200 -left-1.5" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+                </div>
+
+                {/* Zone de saisie moderne */}
+                <div className="relative">
+                  <Textarea
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    placeholder="Tapez votre message ici..."
+                    className="pr-16 min-h-[100px] resize-none border-2 border-gray-200 rounded-2xl focus:border-blue-400 focus:ring-0"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
+                  />
+                  <Button 
+                    onClick={handleSendMessage}
+                    disabled={!inputMessage.trim() || isGenerating}
+                    className="absolute bottom-3 right-3 h-10 w-10 p-0 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+
+            {/* Boutons de navigation */}
+            <div className="flex justify-between items-center pt-6">
               <Button 
                 variant="outline" 
                 onClick={() => handleStepChange('config')}
+                className="px-6 py-3 rounded-xl"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Retour
               </Button>
               <Button 
                 onClick={() => handleStepChange('generation')}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-white font-medium"
               >
                 Générer le brief
                 <Sparkles className="h-4 w-4 ml-2" />
@@ -243,17 +270,17 @@ const Brief = () => {
   };
 
   return (
-    <div className="transition-all duration-300 ease-in-out p-4 sm:p-6 lg:p-8 bg-[#F9FAFB] min-h-screen"
+    <div className="transition-all duration-300 ease-in-out p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen"
          style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
       <Header title="Brief IA" />
       
-      <div className="max-w-6xl mx-auto">
-        {/* Progress Steps */}
-        <div className="mb-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Progress Steps avec style moderne */}
+        <div className="mb-12">
           <div className="flex items-center justify-between relative">
-            <div className="absolute top-5 left-0 w-full h-0.5 bg-gray-200 z-0"></div>
+            <div className="absolute top-5 left-0 w-full h-1 bg-gray-200 rounded-full z-0"></div>
             <div 
-              className="absolute top-5 left-0 h-0.5 bg-blue-600 z-10 transition-all duration-500"
+              className="absolute top-5 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full z-10 transition-all duration-500"
               style={{ width: `${((['config', 'data-entry', 'generation', 'final'].indexOf(currentStep)) / 3) * 100}%` }}
             ></div>
             
@@ -268,17 +295,17 @@ const Brief = () => {
                 <div key={step} className="flex flex-col items-center relative z-20">
                   <button
                     onClick={() => handleStepChange(step)}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
                       status === 'completed' 
-                        ? 'bg-blue-600 text-white' 
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
                         : status === 'current'
-                        ? 'bg-blue-600 text-white ring-4 ring-blue-200'
-                        : 'bg-gray-200 text-gray-400'
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white ring-4 ring-blue-200'
+                        : 'bg-white text-gray-400 border-2 border-gray-200'
                     }`}
                   >
                     <Icon className="h-5 w-5" />
                   </button>
-                  <span className={`mt-2 text-sm font-medium ${
+                  <span className={`mt-3 text-sm font-medium ${
                     status === 'current' ? 'text-blue-600' : 'text-gray-600'
                   }`}>
                     {label}
