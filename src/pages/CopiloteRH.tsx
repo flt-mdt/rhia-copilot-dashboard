@@ -11,6 +11,7 @@ const CopiloteRH = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [orderBy, setOrderBy] = useState('custom_order');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [selectedTagFilters, setSelectedTagFilters] = useState<string[]>([]);
 
   const {
     tasks,
@@ -24,6 +25,34 @@ const CopiloteRH = () => {
     toggleTaskFavorite,
     reorderTasks
   } = useRecruiterTasks();
+
+  // Calculate daily and weekly task counts
+  const { todayTasksCount, weekTasksCount } = useMemo(() => {
+    const today = new Date();
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay()); // Start of current week (Sunday)
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const activeTasks = tasks.filter(task => !task.is_completed && !task.is_deleted);
+
+    const todayTasks = activeTasks.filter(task => {
+      if (!task.due_date) return false;
+      const dueDate = new Date(task.due_date);
+      return dueDate >= startOfToday && dueDate < new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000);
+    });
+
+    const weekTasks = activeTasks.filter(task => {
+      if (!task.due_date) return false;
+      const dueDate = new Date(task.due_date);
+      return dueDate >= startOfWeek && dueDate < new Date(startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000);
+    });
+
+    return {
+      todayTasksCount: todayTasks.length,
+      weekTasksCount: weekTasks.length
+    };
+  }, [tasks]);
 
   // Filter and sort tasks
   const filteredAndSortedTasks = useMemo(() => {
@@ -48,8 +77,15 @@ const CopiloteRH = () => {
         default:
           matchesFilter = !task.is_deleted;
       }
+
+      // Filter by selected tags
+      let matchesTagFilter = true;
+      if (selectedTagFilters.length > 0) {
+        const taskTagIds = task.tags?.map(tag => tag.id) || [];
+        matchesTagFilter = selectedTagFilters.some(tagId => taskTagIds.includes(tagId));
+      }
       
-      return matchesSearch && matchesFilter;
+      return matchesSearch && matchesFilter && matchesTagFilter;
     });
 
     // Sort tasks
@@ -73,7 +109,7 @@ const CopiloteRH = () => {
     });
 
     return filtered;
-  }, [tasks, searchTerm, activeFilter, orderBy]);
+  }, [tasks, searchTerm, activeFilter, orderBy, selectedTagFilters]);
 
   // Task counts for sidebar
   const taskCounts = useMemo(() => ({
@@ -132,6 +168,11 @@ const CopiloteRH = () => {
               onCreateTask={handleCreateTask}
             />
           }
+          tags={tags}
+          selectedTagFilters={selectedTagFilters}
+          onTagFilterChange={setSelectedTagFilters}
+          todayTasksCount={todayTasksCount}
+          weekTasksCount={weekTasksCount}
         />
         
         <div className="flex-1 p-6 overflow-y-auto">
@@ -163,7 +204,7 @@ const CopiloteRH = () => {
                   Aucune tâche trouvée
                 </div>
                 <p className="text-gray-500 mt-2">
-                  {searchTerm ? 'Essayez de modifier votre recherche' : 'Créez votre première tâche pour commencer'}
+                  {searchTerm || selectedTagFilters.length > 0 ? 'Essayez de modifier votre recherche ou vos filtres' : 'Créez votre première tâche pour commencer'}
                 </p>
               </div>
             )}

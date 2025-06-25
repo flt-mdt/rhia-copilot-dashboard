@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, Bell, ShoppingCart } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { TaskTag } from '@/hooks/useRecruiterTasks';
 
 interface TopBarControlsProps {
   searchTerm: string;
@@ -20,6 +21,11 @@ interface TopBarControlsProps {
   onAddTask: () => void;
   notificationCount: number;
   customAddButton?: React.ReactNode;
+  tags: TaskTag[];
+  selectedTagFilters: string[];
+  onTagFilterChange: (tagIds: string[]) => void;
+  todayTasksCount: number;
+  weekTasksCount: number;
 }
 
 const TopBarControls: React.FC<TopBarControlsProps> = ({
@@ -30,7 +36,24 @@ const TopBarControls: React.FC<TopBarControlsProps> = ({
   onAddTask,
   notificationCount,
   customAddButton,
+  tags,
+  selectedTagFilters,
+  onTagFilterChange,
+  todayTasksCount,
+  weekTasksCount,
 }) => {
+  const toggleTagFilter = (tagId: string) => {
+    if (selectedTagFilters.includes(tagId)) {
+      onTagFilterChange(selectedTagFilters.filter(id => id !== tagId));
+    } else {
+      onTagFilterChange([...selectedTagFilters, tagId]);
+    }
+  };
+
+  const clearAllFilters = () => {
+    onTagFilterChange([]);
+  };
+
   return (
     <div className="bg-white border-b border-gray-200 p-4">
       <div className="flex items-center justify-between">
@@ -57,13 +80,6 @@ const TopBarControls: React.FC<TopBarControlsProps> = ({
               </Badge>
             )}
           </Button>
-          
-          <Button variant="ghost" size="sm" className="relative">
-            <ShoppingCart className="h-5 w-5" />
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
-              3
-            </Badge>
-          </Button>
 
           {customAddButton || (
             <Button onClick={onAddTask} className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -73,8 +89,8 @@ const TopBarControls: React.FC<TopBarControlsProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center space-x-4 mt-4">
-        <div className="flex items-center space-x-2">
+      <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center space-x-4">
           <Select value={orderBy} onValueChange={onOrderByChange}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Trier par" />
@@ -87,6 +103,48 @@ const TopBarControls: React.FC<TopBarControlsProps> = ({
               <SelectItem value="created">Date de création</SelectItem>
             </SelectContent>
           </Select>
+
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium text-gray-700">Filtres par tag:</span>
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <Button
+                  key={tag.id}
+                  variant={selectedTagFilters.includes(tag.id) ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => toggleTagFilter(tag.id)}
+                  className={`text-xs ${
+                    selectedTagFilters.includes(tag.id)
+                      ? `bg-${tag.color}-500 text-white hover:bg-${tag.color}-600`
+                      : `border-${tag.color}-300 text-${tag.color}-700 hover:bg-${tag.color}-50`
+                  }`}
+                >
+                  {tag.name}
+                </Button>
+              ))}
+              {selectedTagFilters.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearAllFilters}
+                  className="text-xs text-gray-500 hover:text-gray-700"
+                >
+                  Effacer
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 text-sm">
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+              Aujourd'hui: {todayTasksCount}
+            </Badge>
+            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+              Cette semaine: {weekTasksCount}
+            </Badge>
+          </div>
         </div>
       </div>
     </div>
