@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { X } from 'lucide-react';
 import { TaskTag } from '@/hooks/useRecruiterTasks';
 
@@ -46,9 +47,12 @@ const TagFilters: React.FC<TagFiltersProps> = ({
 
   if (compact) {
     // Version compacte pour desktop
+    const visibleTags = tags.slice(0, 4);
+    const remainingTags = tags.slice(4);
+    
     return (
       <div className="flex items-center gap-2 flex-wrap">
-        {tags.slice(0, 4).map((tag) => (
+        {visibleTags.map((tag) => (
           <Button
             key={tag.id}
             variant={selectedTagFilters.includes(tag.id) ? "default" : "outline"}
@@ -63,11 +67,42 @@ const TagFilters: React.FC<TagFiltersProps> = ({
             {tag.name}
           </Button>
         ))}
-        {tags.length > 4 && (
-          <Badge variant="outline" className="text-xs">
-            +{tags.length - 4}
-          </Badge>
+        
+        {remainingTags.length > 0 && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Badge 
+                variant="outline" 
+                className="text-xs cursor-pointer hover:bg-gray-100 transition-colors"
+              >
+                +{remainingTags.length}
+              </Badge>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-4">
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-gray-900">Autres filtres</h4>
+                <div className="flex flex-wrap gap-2">
+                  {remainingTags.map((tag) => (
+                    <Button
+                      key={tag.id}
+                      variant={selectedTagFilters.includes(tag.id) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => toggleTagFilter(tag.id)}
+                      className={`text-xs ${
+                        selectedTagFilters.includes(tag.id)
+                          ? `bg-${tag.color}-500 text-white hover:bg-${tag.color}-600`
+                          : `border-${tag.color}-300 text-${tag.color}-700 hover:bg-${tag.color}-50`
+                      }`}
+                    >
+                      {tag.name}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         )}
+        
         {selectedTagFilters.length > 0 && (
           <Button
             variant="ghost"
