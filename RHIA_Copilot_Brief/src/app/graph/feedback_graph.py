@@ -1,15 +1,15 @@
-from langgraph.graph import StateGraph
+from app.graph.nodes.feedback_llm_executor import FeedbackLLMExecutor
+from app.graph.nodes.feedback_prompt_builder import FeedbackPromptBuilder
 from app.graph.state import BriefState
-from app.graph.nodes.prompt_builder import PromptBuilder
-from app.graph.nodes.llm_executor import LLMExecutor
+from langgraph.graph import StateGraph
 
 # Graphe simplifié pour la reformulation après feedback utilisateur
 
 graph = StateGraph(BriefState)
 
 # Étapes
-graph.add_node("build_feedback_prompt", PromptBuilder())
-graph.add_node("call_llm", LLMExecutor())
+graph.add_node("build_feedback_prompt", FeedbackPromptBuilder())
+graph.add_node("call_llm", FeedbackLLMExecutor())
 
 # Transitions
 graph.set_entry_point("build_feedback_prompt")
