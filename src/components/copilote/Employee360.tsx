@@ -11,7 +11,7 @@ const Employee360: React.FC = () => {
       avatar: '/placeholder.svg',
       status: 'Période d\'essai',
       nextDeadline: '2024-01-15',
-      priority: 'high'
+      priority: 'high' as const
     },
     {
       id: '2',
@@ -19,7 +19,7 @@ const Employee360: React.FC = () => {
       avatar: '/placeholder.svg',
       status: 'Entretien annuel',
       nextDeadline: '2024-01-18',
-      priority: 'medium'
+      priority: 'medium' as const
     },
     {
       id: '3',
@@ -27,7 +27,7 @@ const Employee360: React.FC = () => {
       avatar: '/placeholder.svg',
       status: 'Formation',
       nextDeadline: '2024-01-20',
-      priority: 'low'
+      priority: 'low' as const
     }
   ];
 

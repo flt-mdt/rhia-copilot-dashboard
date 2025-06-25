@@ -11,21 +11,21 @@ const SmartSuggestionsAI: React.FC = () => {
       title: 'Victor M. termine sa période d\'essai dans 2 semaines',
       description: 'Ajouter un point RH pour valider sa confirmation ?',
       icon: '📌',
-      priority: 'high'
+      priority: 'high' as const
     },
     {
       id: '2',
       title: 'Clara n\'a pas encore programmé son entretien annuel',
       description: 'Relancer pour planifier avant fin janvier ?',
       icon: '📅',
-      priority: 'medium'
+      priority: 'medium' as const
     },
     {
       id: '3',
       title: '3 collaborateurs éligibles à une formation',
       description: 'Consulter le budget formation disponible ?',
       icon: '🎓',
-      priority: 'low'
+      priority: 'low' as const
     }
   ];
 

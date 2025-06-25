@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -33,6 +32,7 @@ import Presentation from "./pages/Presentation";
 import Privacy from "./pages/Privacy";
 import ScheduleDemo from "./pages/ScheduleDemo";
 import Tracking from "./pages/Tracking";
+import CopiloteRH from "./pages/CopiloteRH";
 
 const App: React.FC = () => {
   const [queryClient] = React.useState(() => new QueryClient({
