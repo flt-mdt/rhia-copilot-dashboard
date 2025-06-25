@@ -28,9 +28,13 @@ class AppSettings(BaseSettings):
     redis_host: str = "redis"
     redis_port: int = 6379
 
+    # Database
+    supabase_url: str = Field(..., alias="SUPABASE_URL")
+
     # Security
     cors_origins: list[str] = []
     enable_rbac: bool = True
+    JWT_SECRET_KEY: str = Field(..., alias="JWT_SECRET_KEY")
 
     # Tracing / Logs
     enable_otlp: bool = True

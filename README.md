@@ -60,6 +60,16 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Backend configuration
+
+The FastAPI backend located in `RHIA_Copilot_Brief` uses environment variables defined in `.env` or your deployment settings.
+At minimum, set the following values:
+
+```sh
+SUPABASE_URL=<postgres_connection_string>
+JWT_SECRET_KEY=<your_jwt_secret>
+```
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/80ec45b7-052b-4996-ba6e-908ad46130d4) and click on Share -> Publish.
