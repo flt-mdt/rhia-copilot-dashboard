@@ -43,6 +43,21 @@ export const useRecruiterTasks = () => {
   // Fetch tasks with their tags
   const fetchTasks = async () => {
     try {
+      console.log('🔄 Fetching tasks...');
+      
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        console.error('❌ Auth error:', userError);
+        throw userError;
+      }
+      
+      if (!userData.user) {
+        console.error('❌ No authenticated user found');
+        throw new Error('User not authenticated');
+      }
+
+      console.log('✅ User authenticated:', userData.user.id);
+
       const { data: tasksData, error: tasksError } = await supabase
         .from('recruiter_tasks')
         .select(`
@@ -53,7 +68,12 @@ export const useRecruiterTasks = () => {
         `)
         .order('custom_order', { ascending: true });
 
-      if (tasksError) throw tasksError;
+      if (tasksError) {
+        console.error('❌ Tasks fetch error:', tasksError);
+        throw tasksError;
+      }
+
+      console.log('✅ Tasks fetched successfully:', tasksData?.length || 0, 'tasks');
 
       const formattedTasks = tasksData?.map(task => ({
         ...task,
@@ -63,10 +83,10 @@ export const useRecruiterTasks = () => {
 
       setTasks(formattedTasks);
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      console.error('❌ Error fetching tasks:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de charger les tâches",
+        description: "Impossible de charger les tâches: " + (error instanceof Error ? error.message : 'Erreur inconnue'),
         variant: "destructive"
       });
     }
@@ -75,15 +95,27 @@ export const useRecruiterTasks = () => {
   // Fetch available tags
   const fetchTags = async () => {
     try {
+      console.log('🔄 Fetching tags...');
+      
       const { data, error } = await supabase
         .from('task_tags')
         .select('*')
         .order('category', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Tags fetch error:', error);
+        throw error;
+      }
+      
+      console.log('✅ Tags fetched successfully:', data?.length || 0, 'tags');
       setTags(data || []);
     } catch (error) {
-      console.error('Error fetching tags:', error);
+      console.error('❌ Error fetching tags:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les tags: " + (error instanceof Error ? error.message : 'Erreur inconnue'),
+        variant: "destructive"
+      });
     }
   };
 
@@ -97,15 +129,23 @@ export const useRecruiterTasks = () => {
     selectedTags: string[];
   }) => {
     try {
-      console.log('Creating task with data:', taskData);
+      console.log('🔄 Starting task creation with data:', taskData);
       
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) {
-        throw new Error('User not authenticated');
+      // Vérifier l'authentification
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        console.error('❌ Auth error during task creation:', userError);
+        throw new Error('Erreur d\'authentification: ' + userError.message);
       }
 
-      console.log('User authenticated:', userData.user.id);
+      if (!userData.user) {
+        console.error('❌ No authenticated user found during task creation');
+        throw new Error('Utilisateur non authentifié');
+      }
 
+      console.log('✅ User authenticated for task creation:', userData.user.id);
+
+      // Calculer l'ordre personnalisé
       const maxOrder = Math.max(...tasks.map(t => t.custom_order), 0);
       
       const taskInsertData = {
@@ -118,27 +158,28 @@ export const useRecruiterTasks = () => {
         custom_order: maxOrder + 1
       };
 
-      console.log('Inserting task:', taskInsertData);
+      console.log('🔄 Inserting task with data:', taskInsertData);
 
-      const { data, error } = await supabase
+      // Insérer la tâche
+      const { data: insertedTask, error: insertError } = await supabase
         .from('recruiter_tasks')
         .insert(taskInsertData)
         .select()
         .single();
 
-      if (error) {
-        console.error('Error inserting task:', error);
-        throw error;
+      if (insertError) {
+        console.error('❌ Task insertion error:', insertError);
+        throw new Error('Erreur lors de la création de la tâche: ' + insertError.message);
       }
 
-      console.log('Task created successfully:', data);
+      console.log('✅ Task created successfully:', insertedTask);
 
-      // Add tags to the task
+      // Ajouter les tags à la tâche
       if (taskData.selectedTags.length > 0) {
-        console.log('Adding tags to task:', taskData.selectedTags);
+        console.log('🔄 Adding tags to task:', taskData.selectedTags);
         
         const tagAssignments = taskData.selectedTags.map(tagId => ({
-          task_id: data.id,
+          task_id: insertedTask.id,
           tag_id: tagId
         }));
 
@@ -147,10 +188,14 @@ export const useRecruiterTasks = () => {
           .insert(tagAssignments);
 
         if (tagError) {
-          console.error('Error adding tags:', tagError);
-          // Don't throw here, task is already created
+          console.error('❌ Error adding tags:', tagError);
+          toast({
+            title: "Attention",
+            description: "Tâche créée mais erreur lors de l'ajout des tags: " + tagError.message,
+            variant: "destructive"
+          });
         } else {
-          console.log('Tags added successfully');
+          console.log('✅ Tags added successfully');
         }
       }
 
@@ -159,14 +204,16 @@ export const useRecruiterTasks = () => {
         description: "La nouvelle tâche a été ajoutée avec succès"
       });
 
-      // Refresh tasks to show the new one
+      // Actualiser les tâches pour afficher la nouvelle
       await fetchTasks();
-      return data;
+      return insertedTask;
+      
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error('❌ Error creating task:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors de la création';
       toast({
         title: "Erreur",
-        description: "Impossible de créer la tâche: " + (error instanceof Error ? error.message : 'Erreur inconnue'),
+        description: errorMessage,
         variant: "destructive"
       });
       throw error;
@@ -300,9 +347,11 @@ export const useRecruiterTasks = () => {
 
   useEffect(() => {
     const initializeData = async () => {
+      console.log('🔄 Initializing task data...');
       setLoading(true);
       await Promise.all([fetchTasks(), fetchTags()]);
       setLoading(false);
+      console.log('✅ Task data initialization complete');
     };
 
     initializeData();

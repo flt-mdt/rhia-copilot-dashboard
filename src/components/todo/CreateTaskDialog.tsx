@@ -30,22 +30,35 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
   const [dueDate, setDueDate] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('🔄 Form submission started');
+    setError(null);
+    
+    // Validation
     if (!title.trim() || !candidateName.trim()) {
-      console.log('Validation failed: missing title or candidate name');
+      console.log('❌ Validation failed: missing title or candidate name');
+      setError('Le titre et le nom du candidat sont obligatoires');
       return;
     }
 
     if (isSubmitting) {
-      console.log('Already submitting, ignoring');
+      console.log('⏳ Already submitting, ignoring duplicate submission');
       return;
     }
 
     setIsSubmitting(true);
-    console.log('Submitting task creation...');
+    console.log('🔄 Submitting task creation with data:', {
+      title: title.trim(),
+      description: description.trim() || undefined,
+      candidate_name: candidateName.trim(),
+      priority,
+      due_date: dueDate || undefined,
+      selectedTags
+    });
 
     try {
       await onCreateTask({
@@ -58,6 +71,7 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
       });
 
       // Reset form only on success
+      console.log('✅ Task creation successful, resetting form');
       setTitle('');
       setDescription('');
       setCandidateName('');
@@ -65,9 +79,12 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
       setDueDate('');
       setSelectedTags([]);
       setOpen(false);
-      console.log('Task creation completed successfully');
+      setError(null);
+      
     } catch (error) {
-      console.error('Task creation failed:', error);
+      console.error('❌ Task creation failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue lors de la création';
+      setError(errorMessage);
       // Keep form open on error so user can retry
     } finally {
       setIsSubmitting(false);
@@ -75,6 +92,7 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
   };
 
   const toggleTag = (tagId: string) => {
+    console.log('🔄 Toggling tag:', tagId);
     setSelectedTags(prev => 
       prev.includes(tagId) 
         ? prev.filter(id => id !== tagId)
@@ -107,6 +125,13 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
         <DialogHeader>
           <DialogTitle>Créer une nouvelle tâche</DialogTitle>
         </DialogHeader>
+        
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
+            <p className="text-red-800 text-sm">{error}</p>
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="title">Titre de la tâche *</Label>
@@ -116,6 +141,7 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ex: Appeler Sandra pour retour entretien"
               required
+              disabled={isSubmitting}
             />
           </div>
 
@@ -127,6 +153,7 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
               onChange={(e) => setCandidateName(e.target.value)}
               placeholder="Ex: Sandra Martin"
               required
+              disabled={isSubmitting}
             />
           </div>
 
@@ -138,6 +165,7 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Détails supplémentaires sur la tâche..."
               rows={3}
+              disabled={isSubmitting}
             />
           </div>
 
@@ -152,6 +180,7 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
                   className="pl-10"
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -161,6 +190,7 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
                 id="priority"
                 checked={priority}
                 onCheckedChange={(checked) => setPriority(checked as boolean)}
+                disabled={isSubmitting}
               />
               <Label htmlFor="priority" className="flex items-center">
                 <Star className="h-4 w-4 mr-1" />
@@ -185,11 +215,13 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
                       key={tag.id}
                       variant={selectedTags.includes(tag.id) ? "default" : "outline"}
                       className={`cursor-pointer transition-colors ${
+                        isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                      } ${
                         selectedTags.includes(tag.id) 
                           ? `bg-${tag.color}-500 text-white hover:bg-${tag.color}-600` 
                           : `border-${tag.color}-300 text-${tag.color}-700 hover:bg-${tag.color}-50`
                       }`}
-                      onClick={() => toggleTag(tag.id)}
+                      onClick={() => !isSubmitting && toggleTag(tag.id)}
                     >
                       {tag.name}
                     </Badge>
