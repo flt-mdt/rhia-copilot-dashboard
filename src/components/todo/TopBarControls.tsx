@@ -11,7 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { TaskTag } from '@/hooks/useRecruiterTasks';
+import TagFilters from './TagFilters';
+import FilterDrawer from './FilterDrawer';
 
 interface TopBarControlsProps {
   searchTerm: string;
@@ -42,36 +45,27 @@ const TopBarControls: React.FC<TopBarControlsProps> = ({
   todayTasksCount,
   weekTasksCount,
 }) => {
-  const toggleTagFilter = (tagId: string) => {
-    if (selectedTagFilters.includes(tagId)) {
-      onTagFilterChange(selectedTagFilters.filter(id => id !== tagId));
-    } else {
-      onTagFilterChange([...selectedTagFilters, tagId]);
-    }
-  };
-
-  const clearAllFilters = () => {
-    onTagFilterChange([]);
-  };
+  const isMobile = useIsMobile();
 
   return (
-    <div className="bg-white border-b border-gray-200 p-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-2xl font-bold text-gray-900">Todo List</h1>
+    <div className="bg-white border-b border-gray-200 p-4 space-y-4">
+      {/* Première ligne - Titre, recherche et actions principales */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4 flex-1">
+          <h1 className="text-2xl font-bold text-gray-900 whitespace-nowrap">Todo List</h1>
           
-          <div className="relative">
+          <div className="relative max-w-md flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               placeholder="Rechercher une tâche ou un candidat..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 w-80"
+              className="pl-10"
             />
           </div>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" className="relative">
             <Bell className="h-5 w-5" />
             {notificationCount > 0 && (
@@ -89,8 +83,9 @@ const TopBarControls: React.FC<TopBarControlsProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-4">
-        <div className="flex items-center space-x-4">
+      {/* Deuxième ligne - Filtres et compteurs */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4 flex-1">
           <Select value={orderBy} onValueChange={onOrderByChange}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Trier par" />
@@ -104,47 +99,34 @@ const TopBarControls: React.FC<TopBarControlsProps> = ({
             </SelectContent>
           </Select>
 
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium text-gray-700">Filtres par tag:</span>
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <Button
-                  key={tag.id}
-                  variant={selectedTagFilters.includes(tag.id) ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => toggleTagFilter(tag.id)}
-                  className={`text-xs ${
-                    selectedTagFilters.includes(tag.id)
-                      ? `bg-${tag.color}-500 text-white hover:bg-${tag.color}-600`
-                      : `border-${tag.color}-300 text-${tag.color}-700 hover:bg-${tag.color}-50`
-                  }`}
-                >
-                  {tag.name}
-                </Button>
-              ))}
-              {selectedTagFilters.length > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearAllFilters}
-                  className="text-xs text-gray-500 hover:text-gray-700"
-                >
-                  Effacer
-                </Button>
-              )}
+          {/* Filtres par tags - Responsive */}
+          {isMobile ? (
+            <FilterDrawer
+              tags={tags}
+              selectedTagFilters={selectedTagFilters}
+              onTagFilterChange={onTagFilterChange}
+            />
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700 whitespace-nowrap">Tags:</span>
+              <TagFilters
+                tags={tags}
+                selectedTagFilters={selectedTagFilters}
+                onTagFilterChange={onTagFilterChange}
+                compact={true}
+              />
             </div>
-          </div>
+          )}
         </div>
 
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 text-sm">
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-              Aujourd'hui: {todayTasksCount}
-            </Badge>
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-              Cette semaine: {weekTasksCount}
-            </Badge>
-          </div>
+        {/* Compteurs */}
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 whitespace-nowrap">
+            Aujourd'hui: {todayTasksCount}
+          </Badge>
+          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 whitespace-nowrap">
+            Semaine: {weekTasksCount}
+          </Badge>
         </div>
       </div>
     </div>

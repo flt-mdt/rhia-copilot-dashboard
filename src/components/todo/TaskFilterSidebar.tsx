@@ -2,8 +2,15 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Heart, CheckCircle2, Trash2, User, Star } from 'lucide-react';
+import { Heart, CheckCircle2, Trash2, User } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 interface TaskFilterSidebarProps {
   activeFilter: string;
@@ -22,6 +29,8 @@ const TaskFilterSidebar: React.FC<TaskFilterSidebarProps> = ({
   onFilterChange,
   taskCounts,
 }) => {
+  const isMobile = useIsMobile();
+
   const filterItems = [
     {
       key: 'all',
@@ -60,8 +69,8 @@ const TaskFilterSidebar: React.FC<TaskFilterSidebarProps> = ({
     },
   ];
 
-  return (
-    <div className="w-64 bg-white border-l border-gray-200 p-4 space-y-2">
+  const FilterContent = () => (
+    <div className="space-y-2">
       {filterItems.map((item) => (
         <Button
           key={item.key}
@@ -83,6 +92,32 @@ const TaskFilterSidebar: React.FC<TaskFilterSidebarProps> = ({
           </Badge>
         </Button>
       ))}
+    </div>
+  );
+
+  if (isMobile) {
+    return (
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="sm" className="fixed bottom-4 right-4 z-50 shadow-lg">
+            Menu
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="right" className="w-80">
+          <SheetHeader>
+            <SheetTitle>Filtres de statut</SheetTitle>
+          </SheetHeader>
+          <div className="mt-6">
+            <FilterContent />
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  return (
+    <div className="w-64 bg-white border-l border-gray-200 p-4">
+      <FilterContent />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import RecruiterTaskCard from '@/components/todo/RecruiterTaskCard';
 import TaskFilterSidebar from '@/components/todo/TaskFilterSidebar';
 import CreateTaskDialog from '@/components/todo/CreateTaskDialog';
 import { useRecruiterTasks } from '@/hooks/useRecruiterTasks';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Loader2 } from 'lucide-react';
 
 const CopiloteRH = () => {
@@ -12,6 +13,7 @@ const CopiloteRH = () => {
   const [orderBy, setOrderBy] = useState('custom_order');
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedTagFilters, setSelectedTagFilters] = useState<string[]>([]);
+  const isMobile = useIsMobile();
 
   const {
     tasks,
@@ -31,7 +33,7 @@ const CopiloteRH = () => {
     const today = new Date();
     const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay()); // Start of current week (Sunday)
+    startOfWeek.setDate(today.getDate() - today.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
 
     const activeTasks = tasks.filter(task => !task.is_completed && !task.is_deleted);
@@ -103,7 +105,7 @@ const CopiloteRH = () => {
           return a.candidate_name.localeCompare(b.candidate_name);
         case 'created':
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        default: // custom_order
+        default:
           return a.custom_order - b.custom_order;
       }
     });
@@ -143,7 +145,7 @@ const CopiloteRH = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center" style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
+      <div className={`min-h-screen bg-gray-50 flex items-center justify-center ${!isMobile ? 'ml-64' : ''}`}>
         <div className="flex items-center space-x-2">
           <Loader2 className="h-6 w-6 animate-spin" />
           <span>Chargement des tâches...</span>
@@ -153,14 +155,14 @@ const CopiloteRH = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex" style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
-      <div className="flex-1 flex flex-col">
+    <div className={`min-h-screen bg-gray-50 flex w-full ${!isMobile ? 'ml-64' : ''}`}>
+      <div className="flex-1 flex flex-col min-w-0">
         <TopBarControls
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           orderBy={orderBy}
           onOrderByChange={setOrderBy}
-          onAddTask={() => {}} // Not used, handled by CreateTaskDialog
+          onAddTask={() => {}}
           notificationCount={taskCounts.myTasks}
           customAddButton={
             <CreateTaskDialog
@@ -175,7 +177,7 @@ const CopiloteRH = () => {
           weekTasksCount={weekTasksCount}
         />
         
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex-1 p-4 md:p-6 overflow-y-auto">
           <div className="max-w-4xl mx-auto space-y-4">
             {filteredAndSortedTasks.map((task) => (
               <RecruiterTaskCard
