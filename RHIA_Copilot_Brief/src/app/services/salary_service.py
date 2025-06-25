@@ -1,7 +1,8 @@
-from typing import Optional, Dict, Any
-from app.graph.nodes.rag_retriever import retrieve_chunks
-from app.core.constants import THRESHOLD_RAG_SIMILARITY
 import re
+from typing import Any
+
+from app.core.constants import THRESHOLD_RAG_SIMILARITY
+from app.graph.nodes.rag_retriever import retrieve_chunks
 
 
 class SalaryService:
@@ -16,16 +17,13 @@ class SalaryService:
         seniority: str,
         contract_type: str,
         language: str = "fr"
-    ) -> Dict[str, Any]:
-        query = f"rémunération typique pour un poste de {job_function} ({seniority}) en {contract_type}"
-        filters = {
-            "section": "Rémunération & avantages",
-            "job_function": job_function,
-            "seniority_level": seniority,
-            "language": language
-        }
-
-        chunks = await retrieve_chunks(query=query, top_k=5, filters=filters)
+    ) -> dict[str, Any]:
+        chunks = await retrieve_chunks(
+            section="Rémunération & avantages",
+            job_function=job_function,
+            seniority=seniority,
+            language=language,
+        )
 
         for chunk in chunks:
             score = chunk.get("score", 0.0)
@@ -50,7 +48,7 @@ class SalaryService:
         }
 
 
-def extract_salary_range(text: str) -> tuple[Optional[int], Optional[int]]:
+def extract_salary_range(text: str) -> tuple[int | None, int | None]:
     """
     Extraction naïve d'une fourchette 30-40k à partir d’un texte en langage naturel.
     """

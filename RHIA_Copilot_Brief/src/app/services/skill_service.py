@@ -1,4 +1,5 @@
-from typing import List, Dict, Any
+from typing import Any
+
 from app.graph.nodes.rag_retriever import retrieve_chunks
 
 DEFAULT_HARD_SKILLS = {
@@ -18,13 +19,17 @@ class SkillService:
         job_function: str,
         seniority: str,
         language: str = "fr"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Retourne les hard/soft skills associés à un poste.
         Privilégie les chunks RAG, fallback sur référentiel statique.
         """
-        query = f"compétences clés pour un poste de {job_function} niveau {seniority}"
-        chunks = await retrieve_chunks(query=query, top_k=5, filters={"section": "Compétences"})
+        chunks = await retrieve_chunks(
+            section="Compétences",
+            job_function=job_function,
+            seniority=seniority,
+            language=language,
+        )
 
         for chunk in chunks:
             text = chunk["text"]
@@ -47,7 +52,7 @@ class SkillService:
         }
 
 
-def extract_skills(text: str, type: str) -> List[str]:
+def extract_skills(text: str, type: str) -> list[str]:
     """
     Parse le chunk texte et extrait une liste de compétences.
     Simplifié (à améliorer avec NLP ou regex si besoin).
