@@ -114,6 +114,12 @@ const App: React.FC = () => {
                     <JobDetail />
                   </ProtectedRoute>
                 } />
+                <Route path="/copilote-rh" element={
+                  <ProtectedRoute>
+                    <Sidebar />
+                    <CopiloteRH />
+                  </ProtectedRoute>
+                } />
                 <Route path="/settings" element={
                   <ProtectedRoute>
                     <Sidebar />
