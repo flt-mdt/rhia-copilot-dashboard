@@ -97,29 +97,46 @@ export const useRecruiterTasks = () => {
     selectedTags: string[];
   }) => {
     try {
+      console.log('Creating task with data:', taskData);
+      
       const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) throw new Error('User not authenticated');
+      if (!userData.user) {
+        throw new Error('User not authenticated');
+      }
+
+      console.log('User authenticated:', userData.user.id);
 
       const maxOrder = Math.max(...tasks.map(t => t.custom_order), 0);
       
+      const taskInsertData = {
+        title: taskData.title,
+        description: taskData.description,
+        candidate_name: taskData.candidate_name,
+        priority: taskData.priority,
+        due_date: taskData.due_date,
+        user_id: userData.user.id,
+        custom_order: maxOrder + 1
+      };
+
+      console.log('Inserting task:', taskInsertData);
+
       const { data, error } = await supabase
         .from('recruiter_tasks')
-        .insert({
-          title: taskData.title,
-          description: taskData.description,
-          candidate_name: taskData.candidate_name,
-          priority: taskData.priority,
-          due_date: taskData.due_date,
-          user_id: userData.user.id,
-          custom_order: maxOrder + 1
-        })
+        .insert(taskInsertData)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error inserting task:', error);
+        throw error;
+      }
+
+      console.log('Task created successfully:', data);
 
       // Add tags to the task
       if (taskData.selectedTags.length > 0) {
+        console.log('Adding tags to task:', taskData.selectedTags);
+        
         const tagAssignments = taskData.selectedTags.map(tagId => ({
           task_id: data.id,
           tag_id: tagId
@@ -131,6 +148,9 @@ export const useRecruiterTasks = () => {
 
         if (tagError) {
           console.error('Error adding tags:', tagError);
+          // Don't throw here, task is already created
+        } else {
+          console.log('Tags added successfully');
         }
       }
 
@@ -139,13 +159,14 @@ export const useRecruiterTasks = () => {
         description: "La nouvelle tâche a été ajoutée avec succès"
       });
 
-      fetchTasks();
+      // Refresh tasks to show the new one
+      await fetchTasks();
       return data;
     } catch (error) {
       console.error('Error creating task:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de créer la tâche",
+        description: "Impossible de créer la tâche: " + (error instanceof Error ? error.message : 'Erreur inconnue'),
         variant: "destructive"
       });
       throw error;

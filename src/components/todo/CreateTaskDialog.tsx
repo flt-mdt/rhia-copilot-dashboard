@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -30,29 +29,49 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
   const [priority, setPriority] = useState(false);
   const [dueDate, setDueDate] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title.trim() || !candidateName.trim()) return;
+    if (!title.trim() || !candidateName.trim()) {
+      console.log('Validation failed: missing title or candidate name');
+      return;
+    }
 
-    onCreateTask({
-      title: title.trim(),
-      description: description.trim() || undefined,
-      candidate_name: candidateName.trim(),
-      priority,
-      due_date: dueDate || undefined,
-      selectedTags
-    });
+    if (isSubmitting) {
+      console.log('Already submitting, ignoring');
+      return;
+    }
 
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setCandidateName('');
-    setPriority(false);
-    setDueDate('');
-    setSelectedTags([]);
-    setOpen(false);
+    setIsSubmitting(true);
+    console.log('Submitting task creation...');
+
+    try {
+      await onCreateTask({
+        title: title.trim(),
+        description: description.trim() || undefined,
+        candidate_name: candidateName.trim(),
+        priority,
+        due_date: dueDate || undefined,
+        selectedTags
+      });
+
+      // Reset form only on success
+      setTitle('');
+      setDescription('');
+      setCandidateName('');
+      setPriority(false);
+      setDueDate('');
+      setSelectedTags([]);
+      setOpen(false);
+      console.log('Task creation completed successfully');
+    } catch (error) {
+      console.error('Task creation failed:', error);
+      // Keep form open on error so user can retry
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const toggleTag = (tagId: string) => {
@@ -185,14 +204,15 @@ const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({ tags, onCreateTask 
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
+              disabled={isSubmitting}
             >
               Annuler
             </Button>
             <Button
               type="submit"
-              disabled={!title.trim() || !candidateName.trim()}
+              disabled={!title.trim() || !candidateName.trim() || isSubmitting}
             >
-              Créer la tâche
+              {isSubmitting ? 'Création...' : 'Créer la tâche'}
             </Button>
           </div>
         </form>
