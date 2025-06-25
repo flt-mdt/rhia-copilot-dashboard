@@ -1,6 +1,7 @@
+
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare, Folders, PanelLeftClose, PanelLeftOpen, BarChart, HelpCircle, TrendingUp } from "lucide-react";
+import { Settings, Users, Briefcase, LogOut, LogIn, Search, MessageSquare, Folders, PanelLeftClose, PanelLeftOpen, BarChart, HelpCircle, TrendingUp, CheckSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -141,6 +142,20 @@ const Sidebar = () => {
             </div>
           )}
           <ul className="space-y-1">
+            <li>
+              <Link 
+                to="/copilote-rh" 
+                className={`flex items-center gap-3 px-4 py-3 ${
+                  isActive("/copilote-rh") 
+                  ? "bg-blue-50 text-primary font-medium" 
+                  : "text-textGray hover:bg-gray-100"
+                }`}
+                title={isCollapsed ? "To-do" : ""}
+              >
+                <CheckSquare size={20} className="flex-shrink-0" />
+                {!isCollapsed && "To-do"}
+              </Link>
+            </li>
             <li>
               <Link 
                 to="/hunter" 
