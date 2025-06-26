@@ -33,6 +33,7 @@ import SectionConfiguration from '@/components/brief/SectionConfiguration';
 import SectionGenerator from '@/components/brief/SectionGenerator';
 import ModernChatMessage from '@/components/brief/ModernChatMessage';
 import BriefDataForm from '@/components/brief/BriefDataForm';
+import BriefGenerationStep from '@/components/brief/BriefGenerationStep';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { UserPreferences } from '@/services/briefBackendApi';
 
@@ -137,25 +138,11 @@ const Brief = () => {
         );
       case 'generation':
         return (
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold">Génération du brief</h2>
-            <p className="text-gray-600">Les sections sont en cours de génération...</p>
-            <div className="flex justify-between">
-              <Button 
-                variant="outline" 
-                onClick={() => handleStepChange('data-entry')}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Retour
-              </Button>
-              <Button 
-                onClick={() => handleStepChange('final')}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Terminer
-              </Button>
-            </div>
-          </div>
+          <BriefGenerationStep 
+            userPreferences={userPreferences}
+            onNext={() => handleStepChange('final')}
+            onBack={() => handleStepChange('data-entry')}
+          />
         );
       case 'final':
         return <BriefSummary briefData={briefData} />;
