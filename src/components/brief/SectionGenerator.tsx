@@ -35,10 +35,21 @@ const SectionGenerator: React.FC<SectionGeneratorProps> = ({
     briefData[sectionId] || {}
   );
 
-  const handleDataChange = (key: string, value: any) => {
+  const handleDataChange = async (key: string, value: any) => {
     const newData = { ...sectionData, [key]: value };
     setSectionData(newData);
+    
+    // Synchroniser avec le parent
     onDataUpdate(sectionId, newData);
+    
+    // Synchroniser avec le back-end
+    try {
+      await briefBackendApi.updateBriefData(sectionId, newData);
+      console.log(`Section ${sectionId} synchronized with backend`);
+    } catch (error) {
+      console.error('Erreur lors de la synchronisation:', error);
+      // En cas d'erreur, on continue sans bloquer l'utilisateur
+    }
   };
 
   const handleGenerate = async () => {

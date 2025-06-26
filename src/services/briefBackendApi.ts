@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 
 const BRIEF_API_BASE = (
@@ -77,6 +78,9 @@ export class BriefBackendApi {
     return this.sendUserPreferences(preferences);
   }
 
+  /**
+   * Met à jour les données d'une section spécifique du brief
+   */
   async updateBriefData(sectionId: string, data: Record<string, any>): Promise<void> {
     const response = await fetch(`${BRIEF_API_BASE}/v1/data`, {
       method: 'POST',
