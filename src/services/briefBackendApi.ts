@@ -1,7 +1,10 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
-const BRIEF_API_BASE = 'https://rhia-copilot-dashboard.onrender.com';
+const BRIEF_API_BASE = (
+  import.meta.env.VITE_API_BRIEF_URL ||
+  'https://rhia-copilot-dashboard.onrender.com'
+).replace(/\/$/, '');
 
 export interface UserPreferences {
   sections: boolean[]; // 18 sections
@@ -138,6 +141,29 @@ export class BriefBackendApi {
     }
 
     return response.json();
+  }
+
+  async storeSectionApproval(
+    sectionId: string,
+    markdown: string,
+    status: string = 'approved'
+  ): Promise<void> {
+    const response = await fetch(`${BRIEF_API_BASE}/v1/approval`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        session_id: this.sessionId,
+        section_id: sectionId,
+        markdown,
+        status
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur lors de l'enregistrement de la validation");
+    }
   }
 
   async getFinalBrief(): Promise<string> {

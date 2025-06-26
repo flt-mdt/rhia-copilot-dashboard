@@ -88,8 +88,13 @@ const SectionGenerator: React.FC<SectionGeneratorProps> = ({
     }
   };
 
-  const handleValidate = () => {
+  const handleValidate = async () => {
     setIsValidated(true);
+    try {
+      await briefBackendApi.storeSectionApproval(sectionId, generatedMarkdown);
+    } catch (err) {
+      console.error('Erreur lors de la validation:', err);
+    }
     onSectionComplete(sectionId, generatedMarkdown);
   };
 
