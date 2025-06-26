@@ -143,16 +143,9 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
                   <Icon className="h-6 w-6" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Checkbox
-                      checked={isSelected}
-                      onChange={() => {}} // Géré par le onClick du parent
-                      className="h-5 w-5"
-                    />
-                    {isSelected && (
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                    )}
-                  </div>
+                  {isSelected && (
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mb-2"></div>
+                  )}
                   <h3 className="text-sm font-medium text-gray-900 leading-tight">
                     {section.id}
                   </h3>
