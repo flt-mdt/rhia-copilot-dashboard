@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -185,27 +184,65 @@ const Brief = () => {
                   </div>
                 </div>
 
-                {/* Zone de saisie moderne */}
+                {/* Zone de saisie moderne reproduisant exactement l'image */}
                 <div className="relative">
-                  <Textarea
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Tapez votre message ici..."
-                    className="pr-16 min-h-[100px] resize-none border-2 border-gray-200 rounded-2xl focus:border-blue-400 focus:ring-0"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
-                    }}
-                  />
-                  <Button 
-                    onClick={handleSendMessage}
-                    disabled={!inputMessage.trim() || isGenerating}
-                    className="absolute bottom-3 right-3 h-10 w-10 p-0 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
+                  <div className="relative bg-white border border-gray-200 rounded-2xl shadow-sm">
+                    <Textarea
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      placeholder="Summarize the latest"
+                      className="min-h-[60px] resize-none border-0 bg-transparent px-4 py-4 pr-24 text-base placeholder:text-gray-500 focus:ring-0 focus:outline-none rounded-2xl"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }
+                      }}
+                    />
+                    
+                    {/* Bouton d'envoi positionné comme dans l'image */}
+                    <Button 
+                      onClick={handleSendMessage}
+                      disabled={!inputMessage.trim() || isGenerating}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 h-10 w-10 p-0 rounded-xl bg-transparent hover:bg-gray-100 disabled:opacity-50 border-0 shadow-none"
+                    >
+                      <Send className="h-5 w-5 text-gray-600" />
+                    </Button>
+                  </div>
+                  
+                  {/* Barre d'outils en bas reproduisant l'image */}
+                  <div className="flex items-center justify-between mt-3 px-1">
+                    <div className="flex items-center gap-4">
+                      <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                        </svg>
+                        Attach
+                      </button>
+                      <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                        Voice Message
+                      </button>
+                      <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Browse Prompts
+                      </button>
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      20 / 3,000
+                    </div>
+                  </div>
+                  
+                  {/* Note en bas comme dans l'image */}
+                  <div className="text-center mt-4">
+                    <p className="text-xs text-gray-400">
+                      Script may generate inaccurate information about people, places, or facts. Model: Script AI v1.3
+                    </p>
+                  </div>
                 </div>
               </div>
             </Card>
