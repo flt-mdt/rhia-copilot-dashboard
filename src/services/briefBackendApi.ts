@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 
 const BRIEF_API_BASE = (
@@ -42,7 +41,10 @@ export class BriefBackendApi {
     this.sessionId = uuidv4();
   }
 
-  async storeUserPreferences(preferences: UserPreferences): Promise<void> {
+  /**
+   * Envoie les préférences utilisateur à l'endpoint /v1/config
+   */
+  async sendUserPreferences(preferences: UserPreferences): Promise<void> {
     console.log('Sending config to backend:', {
       session_id: this.sessionId,
       ...preferences
@@ -69,6 +71,10 @@ export class BriefBackendApi {
 
     const result = await response.json();
     console.log('Config saved successfully:', result);
+  }
+
+  async storeUserPreferences(preferences: UserPreferences): Promise<void> {
+    return this.sendUserPreferences(preferences);
   }
 
   async updateBriefData(sectionId: string, data: Record<string, any>): Promise<void> {

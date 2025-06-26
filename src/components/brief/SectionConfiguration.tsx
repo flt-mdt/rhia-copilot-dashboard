@@ -1,11 +1,11 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { UserPreferences } from '@/services/briefBackendApi';
+import { UserPreferences, briefBackendApi } from '@/services/briefBackendApi';
 import { FileText, Target, Users, Briefcase, Globe, Award, DollarSign, Clock, Shield, TrendingUp, Plus } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 // Les 18 sections canoniques du brief avec leurs icônes et couleurs
 const SECTION_DATA = [
@@ -40,6 +40,9 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
   onPreferencesChange,
   onNext
 }) => {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const handleSectionToggle = (index: number, checked: boolean) => {
     const newSections = [...preferences.sections];
     newSections[index] = checked;
@@ -54,6 +57,30 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
       ...preferences,
       sections: new Array(18).fill(checked)
     });
+  };
+
+  const handleNext = async () => {
+    setIsLoading(true);
+    try {
+      // Sauvegarder les préférences vers l'API
+      await briefBackendApi.sendUserPreferences(preferences);
+      
+      toast({
+        title: "Configuration sauvegardée",
+        description: "Vos préférences ont été enregistrées avec succès.",
+      });
+      
+      onNext();
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de sauvegarder la configuration. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const selectedCount = preferences.sections.filter(Boolean).length;
@@ -172,16 +199,25 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
         })}
       </div>
 
-      {/* Bouton de continuation */}
+      {/* Bouton de continuation avec gestion du loading */}
       <div className="flex justify-center pt-6">
         <Button 
-          onClick={onNext} 
-          disabled={selectedCount === 0}
+          onClick={handleNext} 
+          disabled={selectedCount === 0 || isLoading}
           size="lg"
           className="px-8 py-4 text-base font-medium bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl"
         >
-          Continuer vers la saisie des données
-          <span className="ml-2">→</span>
+          {isLoading ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+              Sauvegarde...
+            </>
+          ) : (
+            <>
+              Continuer vers la saisie des données
+              <span className="ml-2">→</span>
+            </>
+          )}
         </Button>
       </div>
     </div>
