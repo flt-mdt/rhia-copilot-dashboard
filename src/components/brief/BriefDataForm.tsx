@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -70,17 +69,20 @@ interface BriefDataFormProps {
 const BriefDataForm: React.FC<BriefDataFormProps> = ({ userPreferences, onNext, onBack }) => {
   const { toast } = useToast();
   
-  // Récupérer les sections sélectionnées
-  const SECTION_NAMES = [
+  // Mémoriser les sections sélectionnées pour éviter la recalculation à chaque rendu
+  const SECTION_NAMES = useMemo(() => [
     "Titre & Job Family", "Contexte & Business Case", "Finalité/Mission", "Objectifs & KPIs",
     "Responsabilités clés", "Périmètre budgétaire & managérial", "Environnement & contraintes",
     "Compétences & exigences", "Qualifications & expériences", "Employee Value Proposition",
     "Perspectives d'évolution", "Rémunération & avantages", "Cadre contractuel",
     "Mesure de la performance & cadence", "Parties prenantes & RACI",
     "Inclusion, conformité & sécurité", "Onboarding & développement", "Processus de recrutement"
-  ];
+  ], []);
 
-  const selectedSections = SECTION_NAMES.filter((_, index) => userPreferences.sections[index]);
+  const selectedSections = useMemo(() => 
+    SECTION_NAMES.filter((_, index) => userPreferences.sections[index]),
+    [SECTION_NAMES, userPreferences.sections]
+  );
   
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [sectionData, setSectionData] = useState<Record<string, Record<string, any>>>({});
@@ -91,16 +93,18 @@ const BriefDataForm: React.FC<BriefDataFormProps> = ({ userPreferences, onNext, 
   const sectionConfig = SECTION_CONFIG[currentSection as keyof typeof SECTION_CONFIG] || DEFAULT_SECTION_CONFIG;
   const currentData = sectionData[currentSection] || {};
 
-  // Initialiser les données des sections
+  // Initialiser les données des sections une seule fois
   useEffect(() => {
     const initialData: Record<string, Record<string, any>> = {};
     selectedSections.forEach(section => {
       initialData[section] = {};
     });
     setSectionData(initialData);
+    console.log('Sections initialisées:', selectedSections);
   }, [selectedSections]);
 
   const updateFieldValue = (fieldName: string, value: any) => {
+    console.log('Mise à jour du champ:', fieldName, 'avec la valeur:', value);
     setSectionData(prev => ({
       ...prev,
       [currentSection]: {
@@ -189,13 +193,13 @@ const BriefDataForm: React.FC<BriefDataFormProps> = ({ userPreferences, onNext, 
               className={`w-full ${getInputSize(field.size || 'medium')} px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none focus:ring-0 transition-colors`}
             />
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
-              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+              <button type="button" className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
                 <Paperclip className="h-4 w-4 text-gray-400" />
               </button>
-              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+              <button type="button" className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
                 <Mic className="h-4 w-4 text-gray-400" />
               </button>
-              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+              <button type="button" className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
                 <Search className="h-4 w-4 text-gray-400" />
               </button>
             </div>
@@ -216,13 +220,13 @@ const BriefDataForm: React.FC<BriefDataFormProps> = ({ userPreferences, onNext, 
               className={`w-full ${getInputSize(field.size || 'large')} px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none focus:ring-0 transition-colors resize-none`}
             />
             <div className="absolute right-3 bottom-3 flex items-center space-x-2">
-              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+              <button type="button" className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
                 <Paperclip className="h-4 w-4 text-gray-400" />
               </button>
-              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+              <button type="button" className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
                 <Mic className="h-4 w-4 text-gray-400" />
               </button>
-              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+              <button type="button" className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
                 <Search className="h-4 w-4 text-gray-400" />
               </button>
             </div>
