@@ -16,7 +16,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { briefBackendApi, UserPreferences } from '@/services/briefBackendApi';
+import { briefBackendApi, UserPreferences, BriefData } from '@/services/briefBackendApi';
 import { SECTION_LABELS_TO_IDS } from '@/constants/sectionMapping';
 
 interface BriefGenerationStepProps {
@@ -68,11 +68,18 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
         throw new Error(`Section ID non trouvé pour: ${sectionName}`);
       }
 
-      // Préparer brief_data avec job_function obligatoire
-      const briefData = {
-        job_function: "Analyste financier", // TODO: Récupérer depuis les données saisies
-        contract_type: "CDI", // TODO: Récupérer depuis les données saisies
-        // Ajouter d'autres champs selon les données disponibles
+      // Préparer brief_data selon la structure attendue par BriefData
+      // Chaque clé de section contient un objet avec les données de cette section
+      const briefData: BriefData = {
+        "titre_job_family": {
+          job_function: "Analyste financier", // TODO: Récupérer depuis les données saisies
+          job_title: "Analyste Financier Senior"
+        },
+        "contexte": {
+          contract_type: "CDI", // TODO: Récupérer depuis les données saisies
+          department: "Finance"
+        }
+        // TODO: Ajouter d'autres sections selon les données collectées
       };
       
       console.log('Génération de section:', {
@@ -136,10 +143,16 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
         throw new Error(`Section ID non trouvé pour: ${sectionName}`);
       }
 
-      // Préparer brief_data avec job_function obligatoire
-      const briefData = {
-        job_function: "Analyste financier", // TODO: Récupérer depuis les données saisies
-        contract_type: "CDI", // TODO: Récupérer depuis les données saisies
+      // Préparer brief_data avec la même structure que pour la génération
+      const briefData: BriefData = {
+        "titre_job_family": {
+          job_function: "Analyste financier", // TODO: Récupérer depuis les données saisies
+          job_title: "Analyste Financier Senior"
+        },
+        "contexte": {
+          contract_type: "CDI", // TODO: Récupérer depuis les données saisies
+          department: "Finance"
+        }
       };
       
       const response = await briefBackendApi.provideFeedback(
