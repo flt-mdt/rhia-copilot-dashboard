@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,7 @@ import BriefSummary from '@/components/brief/BriefSummary';
 import SectionConfiguration from '@/components/brief/SectionConfiguration';
 import SectionGenerator from '@/components/brief/SectionGenerator';
 import ModernChatMessage from '@/components/brief/ModernChatMessage';
+import BriefDataForm from '@/components/brief/BriefDataForm';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { UserPreferences } from '@/services/briefBackendApi';
 
@@ -127,145 +129,11 @@ const Brief = () => {
         );
       case 'data-entry':
         return (
-          <div className="max-w-4xl mx-auto space-y-8">
-            {/* Header de la section */}
-            <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold text-gray-900">Assistant IA - Collecte d'informations</h2>
-              <p className="text-lg text-gray-600">
-                Discutez avec l'IA pour affiner les détails du poste
-              </p>
-            </div>
-
-            {/* Chat Container avec style moderne */}
-            <Card className="border-2 border-gray-100 shadow-lg">
-              <div className="p-6">
-                {/* En-tête du chat */}
-                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
-                    <MessageSquare className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">Chat avec l'Assistant IA</h3>
-                    <p className="text-sm text-gray-500">Décrivez le poste, les compétences requises, l'équipe...</p>
-                  </div>
-                </div>
-
-                {/* Zone des messages */}
-                <div className="bg-gray-50 rounded-2xl p-6 mb-6 max-h-96 overflow-y-auto">
-                  <div className="space-y-1">
-                    {messages.map((message) => (
-                      <ModernChatMessage 
-                        key={message.id} 
-                        message={{ 
-                          ...message, 
-                          isAI: message.type === 'ai' 
-                        }} 
-                      />
-                    ))}
-                    {isGenerating && (
-                      <div className="flex justify-start mb-6">
-                        <div className="flex flex-row max-w-[80%]">
-                          <div className="flex-shrink-0 mr-3">
-                            <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                              <Bot className="h-5 w-5" />
-                            </div>
-                          </div>
-                          <div className="relative px-6 py-4 rounded-2xl bg-white border border-gray-200 shadow-sm">
-                            <div className="flex items-center gap-3">
-                              <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
-                              <span className="text-sm text-gray-600">L'IA réfléchit...</span>
-                            </div>
-                            <div className="absolute top-4 w-3 h-3 transform rotate-45 bg-white border-l border-t border-gray-200 -left-1.5" />
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    <div ref={messagesEndRef} />
-                  </div>
-                </div>
-
-                {/* Zone de saisie moderne reproduisant exactement l'image */}
-                <div className="relative">
-                  <div className="relative bg-white border border-gray-200 rounded-2xl shadow-sm">
-                    <Textarea
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      placeholder="Summarize the latest"
-                      className="min-h-[60px] resize-none border-0 bg-transparent px-4 py-4 pr-24 text-base placeholder:text-gray-500 focus:ring-0 focus:outline-none rounded-2xl"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSendMessage();
-                        }
-                      }}
-                    />
-                    
-                    {/* Bouton d'envoi positionné comme dans l'image */}
-                    <Button 
-                      onClick={handleSendMessage}
-                      disabled={!inputMessage.trim() || isGenerating}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 h-10 w-10 p-0 rounded-xl bg-transparent hover:bg-gray-100 disabled:opacity-50 border-0 shadow-none"
-                    >
-                      <Send className="h-5 w-5 text-gray-600" />
-                    </Button>
-                  </div>
-                  
-                  {/* Barre d'outils en bas reproduisant l'image */}
-                  <div className="flex items-center justify-between mt-3 px-1">
-                    <div className="flex items-center gap-4">
-                      <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                        </svg>
-                        Attach
-                      </button>
-                      <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                        </svg>
-                        Voice Message
-                      </button>
-                      <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors">
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Browse Prompts
-                      </button>
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      20 / 3,000
-                    </div>
-                  </div>
-                  
-                  {/* Note en bas comme dans l'image */}
-                  <div className="text-center mt-4">
-                    <p className="text-xs text-gray-400">
-                      Script may generate inaccurate information about people, places, or facts. Model: Script AI v1.3
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Boutons de navigation */}
-            <div className="flex justify-between items-center pt-6">
-              <Button 
-                variant="outline" 
-                onClick={() => handleStepChange('config')}
-                className="px-6 py-3 rounded-xl"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Retour
-              </Button>
-              <Button 
-                onClick={() => handleStepChange('generation')}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-white font-medium"
-              >
-                Générer le brief
-                <Sparkles className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          </div>
+          <BriefDataForm 
+            userPreferences={userPreferences}
+            onNext={() => handleStepChange('generation')}
+            onBack={() => handleStepChange('config')}
+          />
         );
       case 'generation':
         return (
