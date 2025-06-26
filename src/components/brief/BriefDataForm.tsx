@@ -2,58 +2,54 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { briefBackendApi, UserPreferences } from '@/services/briefBackendApi';
-import { Save, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Save, CheckCircle, ArrowRight, ArrowLeft, Paperclip, Mic, Search } from 'lucide-react';
 
 // Configuration des sections avec leurs champs spécifiques
 const SECTION_CONFIG = {
   "Titre & Job Family": {
     fields: [
-      { name: 'job_title', type: 'text', label: 'Titre du poste', required: true, placeholder: 'Ex: Développeur Full Stack Senior' },
-      { name: 'job_family', type: 'select', label: 'Famille de métier', required: true, options: ['Tech', 'Sales', 'Marketing', 'Finance', 'Operations', 'HR'] },
-      { name: 'department', type: 'text', label: 'Département', placeholder: 'Ex: Engineering' },
-      { name: 'reporting_to', type: 'text', label: 'Rattachement hiérarchique', placeholder: 'Ex: CTO' }
+      { name: 'job_title', type: 'text', label: 'Titre du poste', required: true, placeholder: 'Ex: Développeur Full Stack Senior', size: 'medium' },
+      { name: 'job_family', type: 'select', label: 'Famille de métier', required: true, options: ['Tech', 'Sales', 'Marketing', 'Finance', 'Operations', 'HR'], size: 'medium' },
+      { name: 'department', type: 'text', label: 'Département', placeholder: 'Ex: Engineering', size: 'medium' },
+      { name: 'reporting_to', type: 'text', label: 'Rattachement hiérarchique', placeholder: 'Ex: CTO', size: 'medium' }
     ]
   },
   "Contexte & Business Case": {
     fields: [
-      { name: 'business_context', type: 'textarea', label: 'Contexte business', required: true, placeholder: 'Décrivez le contexte de création du poste...' },
-      { name: 'strategic_importance', type: 'select', label: 'Importance stratégique', options: ['Critique', 'Importante', 'Normale'] },
-      { name: 'urgency', type: 'select', label: 'Urgence du recrutement', options: ['Immédiate', 'Normale', 'Flexible'] }
+      { name: 'business_context', type: 'textarea', label: 'Contexte business', required: true, placeholder: 'Décrivez le contexte de création du poste...', size: 'large' },
+      { name: 'strategic_importance', type: 'select', label: 'Importance stratégique', options: ['Critique', 'Importante', 'Normale'], size: 'medium' },
+      { name: 'urgency', type: 'select', label: 'Urgence du recrutement', options: ['Immédiate', 'Normale', 'Flexible'], size: 'medium' }
     ]
   },
   "Finalité/Mission": {
     fields: [
-      { name: 'main_purpose', type: 'textarea', label: 'Finalité principale', required: true, placeholder: 'Quelle est la raison d\'être de ce poste ?' },
-      { name: 'key_contribution', type: 'textarea', label: 'Contribution clé', placeholder: 'Comment ce poste contribuera au succès de l\'équipe/entreprise ?' }
+      { name: 'main_purpose', type: 'textarea', label: 'Finalité principale', required: true, placeholder: 'Quelle est la raison d\'être de ce poste ?', size: 'large' },
+      { name: 'key_contribution', type: 'textarea', label: 'Contribution clé', placeholder: 'Comment ce poste contribuera au succès de l\'équipe/entreprise ?', size: 'large' }
     ]
   },
   "Objectifs & KPIs": {
     fields: [
-      { name: 'objectives', type: 'textarea', label: 'Objectifs principaux', required: true, placeholder: 'Listez les objectifs à 6-12 mois...' },
-      { name: 'success_metrics', type: 'textarea', label: 'Indicateurs de succès', placeholder: 'Comment mesurer la réussite ?' },
-      { name: 'performance_timeline', type: 'select', label: 'Délai d\'évaluation', options: ['3 mois', '6 mois', '12 mois'] }
+      { name: 'objectives', type: 'textarea', label: 'Objectifs principaux', required: true, placeholder: 'Listez les objectifs à 6-12 mois...', size: 'large' },
+      { name: 'success_metrics', type: 'textarea', label: 'Indicateurs de succès', placeholder: 'Comment mesurer la réussite ?', size: 'medium' },
+      { name: 'performance_timeline', type: 'select', label: 'Délai d\'évaluation', options: ['3 mois', '6 mois', '12 mois'], size: 'small' }
     ]
   },
   "Responsabilités clés": {
     fields: [
-      { name: 'daily_tasks', type: 'textarea', label: 'Tâches quotidiennes', required: true, placeholder: 'Décrivez les responsabilités principales...' },
-      { name: 'weekly_tasks', type: 'textarea', label: 'Tâches hebdomadaires', placeholder: 'Activités récurrentes...' },
-      { name: 'special_projects', type: 'textarea', label: 'Projets spéciaux', placeholder: 'Missions ponctuelles ou projets transversaux...' }
+      { name: 'daily_tasks', type: 'textarea', label: 'Tâches quotidiennes', required: true, placeholder: 'Décrivez les responsabilités principales...', size: 'large' },
+      { name: 'weekly_tasks', type: 'textarea', label: 'Tâches hebdomadaires', placeholder: 'Activités récurrentes...', size: 'medium' },
+      { name: 'special_projects', type: 'textarea', label: 'Projets spéciaux', placeholder: 'Missions ponctuelles ou projets transversaux...', size: 'medium' }
     ]
   },
   "Compétences & exigences": {
     fields: [
-      { name: 'hard_skills', type: 'textarea', label: 'Compétences techniques', required: true, placeholder: 'Technologies, outils, certifications...' },
-      { name: 'soft_skills', type: 'textarea', label: 'Compétences comportementales', required: true, placeholder: 'Leadership, communication, adaptabilité...' },
-      { name: 'languages', type: 'text', label: 'Langues requises', placeholder: 'Ex: Français natif, Anglais courant' }
+      { name: 'hard_skills', type: 'textarea', label: 'Compétences techniques', required: true, placeholder: 'Technologies, outils, certifications...', size: 'large' },
+      { name: 'soft_skills', type: 'textarea', label: 'Compétences comportementales', required: true, placeholder: 'Leadership, communication, adaptabilité...', size: 'large' },
+      { name: 'languages', type: 'text', label: 'Langues requises', placeholder: 'Ex: Français natif, Anglais courant', size: 'medium' }
     ]
   }
 };
@@ -61,7 +57,7 @@ const SECTION_CONFIG = {
 // Sections par défaut si pas dans la config
 const DEFAULT_SECTION_CONFIG = {
   fields: [
-    { name: 'content', type: 'textarea', label: 'Contenu', required: true, placeholder: 'Saisissez les informations pour cette section...' }
+    { name: 'content', type: 'textarea', label: 'Contenu', required: true, placeholder: 'Saisissez les informations pour cette section...', size: 'large' }
   ]
 };
 
@@ -164,55 +160,99 @@ const BriefDataForm: React.FC<BriefDataFormProps> = ({ userPreferences, onNext, 
     }
   };
 
+  const getInputSize = (size: string) => {
+    switch (size) {
+      case 'small': return 'h-10';
+      case 'medium': return 'h-12';
+      case 'large': return 'min-h-[120px]';
+      default: return 'h-12';
+    }
+  };
+
+  const getCharacterCount = (value: string, size: string) => {
+    const maxChars = size === 'large' ? 3000 : size === 'medium' ? 1000 : 500;
+    return { current: value.length, max: maxChars };
+  };
+
   const renderField = (field: any) => {
     const value = currentData[field.name] || '';
+    const charCount = getCharacterCount(value, field.size || 'medium');
 
     switch (field.type) {
       case 'text':
         return (
-          <Input
-            value={value}
-            onChange={(e) => updateFieldValue(field.name, e.target.value)}
-            placeholder={field.placeholder}
-            className="w-full"
-          />
+          <div className="relative">
+            <input
+              value={value}
+              onChange={(e) => updateFieldValue(field.name, e.target.value)}
+              placeholder={field.placeholder}
+              className={`w-full ${getInputSize(field.size || 'medium')} px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none focus:ring-0 transition-colors`}
+            />
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
+              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <Paperclip className="h-4 w-4 text-gray-400" />
+              </button>
+              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <Mic className="h-4 w-4 text-gray-400" />
+              </button>
+              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <Search className="h-4 w-4 text-gray-400" />
+              </button>
+            </div>
+            <div className="flex justify-between items-center mt-2 text-sm text-gray-500">
+              <span>Appuyez sur Entrée pour envoyer</span>
+              <span>{charCount.current} / {charCount.max}</span>
+            </div>
+          </div>
         );
       
       case 'textarea':
         return (
-          <Textarea
-            value={value}
-            onChange={(e) => updateFieldValue(field.name, e.target.value)}
-            placeholder={field.placeholder}
-            rows={4}
-            className="w-full"
-          />
+          <div className="relative">
+            <textarea
+              value={value}
+              onChange={(e) => updateFieldValue(field.name, e.target.value)}
+              placeholder={field.placeholder}
+              className={`w-full ${getInputSize(field.size || 'large')} px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none focus:ring-0 transition-colors resize-none`}
+            />
+            <div className="absolute right-3 bottom-3 flex items-center space-x-2">
+              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <Paperclip className="h-4 w-4 text-gray-400" />
+              </button>
+              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <Mic className="h-4 w-4 text-gray-400" />
+              </button>
+              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <Search className="h-4 w-4 text-gray-400" />
+              </button>
+            </div>
+            <div className="flex justify-between items-center mt-2 text-sm text-gray-500">
+              <span>Appuyez sur Entrée pour envoyer</span>
+              <span>{charCount.current} / {charCount.max}</span>
+            </div>
+          </div>
         );
       
       case 'select':
         return (
-          <Select value={value} onValueChange={(val) => updateFieldValue(field.name, val)}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Sélectionnez..." />
-            </SelectTrigger>
-            <SelectContent>
+          <div className="relative">
+            <select
+              value={value}
+              onChange={(e) => updateFieldValue(field.name, e.target.value)}
+              className={`w-full ${getInputSize(field.size || 'medium')} px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-gray-900 focus:border-blue-400 focus:outline-none focus:ring-0 transition-colors appearance-none`}
+            >
+              <option value="">Sélectionnez...</option>
               {field.options?.map((option: string) => (
-                <SelectItem key={option} value={option}>
+                <option key={option} value={option}>
                   {option}
-                </SelectItem>
+                </option>
               ))}
-            </SelectContent>
-          </Select>
-        );
-      
-      case 'checkbox':
-        return (
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              checked={value}
-              onCheckedChange={(checked) => updateFieldValue(field.name, checked)}
-            />
-            <label className="text-sm">{field.label}</label>
+            </select>
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
         );
       
@@ -257,7 +297,7 @@ const BriefDataForm: React.FC<BriefDataFormProps> = ({ userPreferences, onNext, 
         
         <CardContent className="space-y-6">
           {sectionConfig.fields.map((field) => (
-            <div key={field.name} className="space-y-2">
+            <div key={field.name} className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">
                 {field.label}
                 {field.required && <span className="text-red-500 ml-1">*</span>}
@@ -267,12 +307,13 @@ const BriefDataForm: React.FC<BriefDataFormProps> = ({ userPreferences, onNext, 
           ))}
 
           {/* Actions de la section */}
-          <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+          <div className="flex justify-between items-center pt-6 border-t border-gray-200">
             <div className="flex space-x-2">
               <Button 
                 variant="outline" 
                 onClick={goToPreviousSection}
                 disabled={currentSectionIndex === 0}
+                className="rounded-xl"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Section précédente
@@ -282,6 +323,7 @@ const BriefDataForm: React.FC<BriefDataFormProps> = ({ userPreferences, onNext, 
                 variant="outline" 
                 onClick={goToNextSection}
                 disabled={currentSectionIndex === selectedSections.length - 1}
+                className="rounded-xl"
               >
                 Section suivante
                 <ArrowRight className="h-4 w-4 ml-2" />
@@ -291,7 +333,7 @@ const BriefDataForm: React.FC<BriefDataFormProps> = ({ userPreferences, onNext, 
             <Button 
               onClick={saveCurrentSection}
               disabled={isLoading}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 rounded-xl px-6"
             >
               {isLoading ? (
                 <>
