@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { briefBackendApi, UserPreferences } from '@/services/briefBackendApi';
+import { SECTION_LABELS_TO_IDS } from '@/constants/sectionMapping';
 
 interface BriefGenerationStepProps {
   userPreferences: UserPreferences;
@@ -61,11 +61,29 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
     setLoadingSections(prev => new Set([...prev, sectionName]));
     
     try {
-      // Récupérer les données du brief depuis le backend ou le localStorage
-      const briefData = {}; // TODO: Récupérer les vraies données
+      // Récupérer l'identifiant technique de la section
+      const sectionId = SECTION_LABELS_TO_IDS[sectionName];
+      
+      if (!sectionId) {
+        throw new Error(`Section ID non trouvé pour: ${sectionName}`);
+      }
+
+      // Préparer brief_data avec job_function obligatoire
+      const briefData = {
+        job_function: "Analyste financier", // TODO: Récupérer depuis les données saisies
+        contract_type: "CDI", // TODO: Récupérer depuis les données saisies
+        // Ajouter d'autres champs selon les données disponibles
+      };
+      
+      console.log('Génération de section:', {
+        sectionName,
+        sectionId,
+        userPreferences,
+        briefData
+      });
       
       const response = await briefBackendApi.generateSection(
-        sectionName,
+        sectionId, // Utiliser l'ID technique au lieu du nom
         userPreferences,
         briefData
       );
@@ -111,10 +129,21 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
     setLoadingSections(prev => new Set([...prev, sectionName]));
     
     try {
-      const briefData = {}; // TODO: Récupérer les vraies données
+      // Récupérer l'identifiant technique de la section
+      const sectionId = SECTION_LABELS_TO_IDS[sectionName];
+      
+      if (!sectionId) {
+        throw new Error(`Section ID non trouvé pour: ${sectionName}`);
+      }
+
+      // Préparer brief_data avec job_function obligatoire
+      const briefData = {
+        job_function: "Analyste financier", // TODO: Récupérer depuis les données saisies
+        contract_type: "CDI", // TODO: Récupérer depuis les données saisies
+      };
       
       const response = await briefBackendApi.provideFeedback(
-        sectionName,
+        sectionId, // Utiliser l'ID technique
         feedback,
         currentSection.markdown,
         userPreferences,
@@ -162,7 +191,14 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
     if (!section) return;
 
     try {
-      await briefBackendApi.storeSectionApproval(sectionName, section.markdown);
+      // Récupérer l'identifiant technique de la section
+      const sectionId = SECTION_LABELS_TO_IDS[sectionName];
+      
+      if (!sectionId) {
+        throw new Error(`Section ID non trouvé pour: ${sectionName}`);
+      }
+
+      await briefBackendApi.storeSectionApproval(sectionId, section.markdown);
       
       setGeneratedSections(prev => ({
         ...prev,
