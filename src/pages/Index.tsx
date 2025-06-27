@@ -34,6 +34,21 @@ const Index = () => {
 
   // Get active job postings
   const activeJobs = jobPostings.filter(job => job.is_active).slice(0, 2);
+
+  // Helper function to safely format date
+  const formatAppliedDate = (dateString: string | null) => {
+    if (!dateString) return 'Date inconnue';
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Date inconnue';
+      }
+      return date.toLocaleDateString('fr-FR');
+    } catch (error) {
+      return 'Date inconnue';
+    }
+  };
   
   return (
     <div className="transition-all duration-300 ease-in-out p-4 md:p-8 min-h-screen" 
@@ -93,7 +108,7 @@ const Index = () => {
                     initials={candidate.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                     name={candidate.name} 
                     position={candidate.job_postings?.title || candidate.current_position || "N/A"}
-                    applied={new Date(candidate.created_at || '').toLocaleDateString('fr-FR')}
+                    applied={formatAppliedDate(candidate.created_at)}
                     score={{ 
                       rating: `${((candidate.ai_score || 0) / 20).toFixed(1)}/5`, 
                       percentage: candidate.ai_score || 0 
@@ -128,7 +143,7 @@ const Index = () => {
                   title={job.title} 
                   department={job.department || "N/A"} 
                   location={job.location || "N/A"}
-                  postedDate={new Date(job.created_at || '').toLocaleDateString('fr-FR')}
+                  postedDate={formatAppliedDate(job.created_at)}
                   candidates={candidates.filter(c => c.target_job_id === job.id).length}
                   onClick={() => handleJobClick(job.id)}
                 />

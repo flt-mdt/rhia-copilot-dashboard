@@ -22,11 +22,32 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
   applied,
   score,
 }) => {
-  const appliedDate = new Date(applied);
-  const timeAgo = formatDistanceToNow(appliedDate, { 
-    addSuffix: true, 
-    locale: fr 
-  });
+  // Valider et parser la date de manière sécurisée
+  const getTimeAgo = (dateString: string) => {
+    try {
+      // Si c'est déjà une date formatée (comme "27/06/2025"), on retourne directement
+      if (dateString.includes('/')) {
+        return `il y a quelques jours`;
+      }
+      
+      const appliedDate = new Date(dateString);
+      
+      // Vérifier si la date est valide
+      if (isNaN(appliedDate.getTime())) {
+        return 'Date inconnue';
+      }
+      
+      return formatDistanceToNow(appliedDate, { 
+        addSuffix: true, 
+        locale: fr 
+      });
+    } catch (error) {
+      console.error('Erreur lors du formatage de la date:', error);
+      return 'Date inconnue';
+    }
+  };
+
+  const timeAgo = getTimeAgo(applied);
 
   return (
     <div className="bg-white p-4 rounded-lg border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
