@@ -1,6 +1,6 @@
 from difflib import SequenceMatcher
 from typing import Optional, Tuple
-from app.core.constants import SECTION_IDS
+from app.core.constants import SECTION_IDS, SECTION_SLUGS_TO_LABELS
 
 from typing import Literal
 
@@ -73,8 +73,19 @@ class SectionMapper:
         return labels.get(section_id, section_id.replace("_", " ").capitalize())
     
     def __call__(self, state: dict) -> dict:
-        section_id = state.get("current_section")
-        section_name = SECTION_IDS[section_id]
+        """Ajoute le libellé de section normalisé dans l'état."""
+        section_key = state.get("current_section")
+
+        if isinstance(section_key, int):
+            # Index direct dans la liste canonique
+            section_name = SECTION_IDS[section_key]
+        elif isinstance(section_key, str):
+            # Identifiant technique (slug) ou libellé déjà explicite
+            section_name = SECTION_SLUGS_TO_LABELS.get(section_key, section_key)
+        else:
+            # Valeur inattendue : on la renvoie telle quelle
+            section_name = str(section_key)
+
         return {**state, "section_id": section_name}
 
 
