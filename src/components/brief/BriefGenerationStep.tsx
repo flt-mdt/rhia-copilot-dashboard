@@ -72,9 +72,9 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
       const titleSectionData = await briefBackendApi.getSectionData("Titre & Job Family");
       const jobFunction = titleSectionData?.job_function || titleSectionData?.job_title || "Poste non défini";
 
-      // Préparer brief_data avec la structure exacte attendue
-      const briefData = {
-        job_function: jobFunction
+      // Préparer brief_data : chaque clé correspond au slug de la section
+      const briefData: BriefData = {
+        [sectionId]: { job_function: jobFunction }
       };
       
       console.log('Génération de section:', {
@@ -143,8 +143,8 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
       const jobFunction = titleSectionData?.job_function || titleSectionData?.job_title || "Poste non défini";
 
       // Préparer brief_data avec la même structure
-      const briefData = {
-        job_function: jobFunction
+      const briefData: BriefData = {
+        [sectionId]: { job_function: jobFunction }
       };
       
       const response = await briefBackendApi.provideFeedback(

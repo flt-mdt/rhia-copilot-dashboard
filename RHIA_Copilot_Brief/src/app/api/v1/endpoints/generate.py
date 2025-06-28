@@ -7,6 +7,12 @@ from app.models.user_pref import UserPreferences
 router = APIRouter()
 
 class GenerateRequest(BaseModel):
+    """Payload for the /generate endpoint.
+
+    * ``brief_data`` is a mapping where each key is a section slug and the value
+      is the data saved for that section.
+    """
+
     session_id: str
     section_id: str
     user_preferences: UserPreferences
