@@ -31,7 +31,8 @@ async def generate_section(payload: GenerateRequest):
     state = {
         "session_id": payload.session_id,
         "current_section": payload.section_id,  # ← clé correcte
-        "user_preferences": payload.user_preferences,
+        # Pydantic → dict pour le prompt builder
+        "user_preferences": payload.user_preferences.dict(),
         "brief_data": payload.brief_data
     }
 
