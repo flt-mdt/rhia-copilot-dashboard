@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 
 const BRIEF_API_BASE = (
@@ -51,28 +50,27 @@ export class BriefBackendApi {
    * Envoie les préférences utilisateur à l'endpoint /v1/config
    */
   async sendUserPreferences(preferences: UserPreferences): Promise<void> {
-    console.log('Sending config to backend:', {
+    const payload = {
       session_id: this.sessionId,
-      ...preferences
-    });
+      sections: preferences.sections,
+      language: preferences.language,
+      seniority: preferences.seniority
+    };
+
+    console.log('Sending config to backend:', payload);
 
     const response = await fetch(`${BRIEF_API_BASE}/v1/config`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        session_id: this.sessionId,
-        sections: preferences.sections,
-        language: preferences.language,
-        seniority: preferences.seniority
-      })
+      body: JSON.stringify(payload)
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('API Error:', response.status, errorText);
-      throw new Error(`Erreur lors de la sauvegarde des préférences: ${response.status}`);
+      throw new Error(`Erreur lors de la sauvegarde des préférences: ${response.status} - ${errorText}`);
     }
 
     const result = await response.json();

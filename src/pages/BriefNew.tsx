@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -20,11 +19,17 @@ const BriefNew = () => {
   const [briefData, setBriefData] = useState<BriefData>({});
 
   const handleConfigurationComplete = async () => {
+    console.log('handleConfigurationComplete called with preferences:', userPreferences);
+    
     try {
       await briefBackendApi.storeUserPreferences(userPreferences);
+      console.log('Configuration stored successfully, moving to data step');
       setCurrentStep('data');
     } catch (error) {
       console.error('Erreur lors de la sauvegarde des préférences:', error);
+      // Ne pas passer à l'étape suivante en cas d'erreur
+      // L'erreur sera affichée par le toast dans SectionConfiguration
+      throw error; // Re-throw l'erreur pour que SectionConfiguration puisse la gérer
     }
   };
 

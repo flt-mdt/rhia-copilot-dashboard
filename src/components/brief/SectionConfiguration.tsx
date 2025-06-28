@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
-import { ArrowRight, Target, Users, Building, Zap, CheckCircle, Lock } from 'lucide-react';
+import { ArrowRight, Target, Users, Building, Zap, CheckCircle, Lock, Loader2 } from 'lucide-react';
 import { UserPreferences } from '@/services/briefBackendApi';
+import { useToast } from '@/hooks/use-toast';
 
 interface SectionConfigurationProps {
   preferences: UserPreferences;
@@ -18,6 +19,9 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
   onPreferencesChange, 
   onNext 
 }) => {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+
   const SECTION_NAMES = [
     "Titre & Job Family", "Contexte & Business Case", "Finalité/Mission", "Objectifs & KPIs",
     "Responsabilités clés", "Périmètre budgétaire & managérial", "Environnement & contraintes",
@@ -74,6 +78,25 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
     });
   };
 
+  const handleNextClick = async () => {
+    setIsLoading(true);
+    console.log('Starting configuration save process...');
+    
+    try {
+      await onNext();
+      console.log('Configuration saved successfully');
+    } catch (error) {
+      console.error('Error saving configuration:', error);
+      toast({
+        title: "Erreur de sauvegarde",
+        description: "Impossible de sauvegarder la configuration. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const selectedCount = preferences.sections.filter(Boolean).length;
   const canProceed = selectedCount >= 1; // Toujours vrai maintenant car la première section est obligatoire
 
@@ -110,6 +133,7 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
                   variant={preferences.language === 'fr' ? 'default' : 'outline'}
                   onClick={() => handleLanguageChange('fr')}
                   className="rounded-xl"
+                  disabled={isLoading}
                 >
                   Français
                 </Button>
@@ -117,6 +141,7 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
                   variant={preferences.language === 'en' ? 'default' : 'outline'}
                   onClick={() => handleLanguageChange('en')}
                   className="rounded-xl"
+                  disabled={isLoading}
                 >
                   English
                 </Button>
@@ -132,6 +157,7 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
                     variant={preferences.seniority === level ? 'default' : 'outline'}
                     onClick={() => handleSeniorityChange(level as any)}
                     className="rounded-xl text-sm"
+                    disabled={isLoading}
                   >
                     {level}
                   </Button>
@@ -171,7 +197,7 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
                         id={`section-${sectionIndex}`}
                         checked={preferences.sections[sectionIndex]}
                         onCheckedChange={(checked) => handleSectionChange(sectionIndex, checked as boolean)}
-                        disabled={sectionIndex === 0} // Désactiver le checkbox pour la première section
+                        disabled={sectionIndex === 0 || isLoading}
                         className="h-5 w-5"
                       />
                       {sectionIndex === 0 && (
@@ -204,12 +230,21 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
       {/* Navigation */}
       <div className="flex justify-end pt-6">
         <Button 
-          onClick={onNext}
-          disabled={!canProceed}
+          onClick={handleNextClick}
+          disabled={!canProceed || isLoading}
           className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-white font-medium"
         >
-          Continuer vers la saisie
-          <ArrowRight className="h-4 w-4 ml-2" />
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Sauvegarde en cours...
+            </>
+          ) : (
+            <>
+              Continuer vers la saisie
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </>
+          )}
         </Button>
       </div>
     </div>
