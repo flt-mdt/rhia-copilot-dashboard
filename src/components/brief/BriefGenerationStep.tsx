@@ -13,7 +13,8 @@ import {
   RefreshCw,
   Eye,
   ThumbsUp,
-  MessageSquare
+  MessageSquare,
+  Save
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { briefBackendApi, UserPreferences, BriefData } from '@/services/briefBackendApi';
@@ -56,6 +57,7 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
   const [generatedSections, setGeneratedSections] = useState<Record<string, GeneratedSection>>({});
   const [loadingSections, setLoadingSections] = useState<Set<string>>(new Set());
   const [feedbackTexts, setFeedbackTexts] = useState<Record<string, string>>({});
+  const [isSavingBrief, setIsSavingBrief] = useState(false);
 
   const handleGenerateSection = async (sectionName: string) => {
     setLoadingSections(prev => new Set([...prev, sectionName]));
@@ -226,6 +228,64 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
         description: "Impossible d'approuver cette section. Veuillez réessayer.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleFinalizeBrief = async () => {
+    setIsSavingBrief(true);
+    
+    try {
+      // Récupérer toutes les sections approuvées
+      const approvedSectionsData = selectedSections
+        .map(sectionName => {
+          const section = generatedSections[sectionName];
+          if (section?.isApproved) {
+            return {
+              name: sectionName,
+              content: section.markdown
+            };
+          }
+          return null;
+        })
+        .filter(Boolean) as Array<{ name: string; content: string }>;
+
+      if (approvedSectionsData.length === 0) {
+        toast({
+          title: "Aucune section approuvée",
+          description: "Vous devez approuver au moins une section avant de finaliser le brief.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Générer un titre pour le brief basé sur les sections
+      const briefTitle = approvedSectionsData.find(s => s.name.includes('Titre'))?.content.split('\n')[0] || 
+                        `Brief généré le ${new Date().toLocaleDateString('fr-FR')}`;
+
+      // Sauvegarder le brief
+      const briefId = await briefBackendApi.saveFinalBrief({
+        title: briefTitle,
+        sections: approvedSectionsData,
+        userPreferences: userPreferences
+      });
+
+      toast({
+        title: "Brief finalisé avec succès",
+        description: `Votre brief a été sauvegardé et est maintenant disponible dans vos collections.`,
+      });
+
+      // Passer à l'étape suivante
+      onNext();
+      
+    } catch (error) {
+      console.error('Erreur lors de la finalisation du brief:', error);
+      toast({
+        title: "Erreur de sauvegarde",
+        description: "Impossible de sauvegarder le brief. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingBrief(false);
     }
   };
 
@@ -401,11 +461,21 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
         </Button>
         
         <Button 
-          onClick={onNext}
-          disabled={approvedSections === 0}
+          onClick={handleFinalizeBrief}
+          disabled={approvedSections === 0 || isSavingBrief}
           className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-white font-medium"
         >
-          Finaliser le brief ({approvedSections} sections)
+          {isSavingBrief ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+              Sauvegarde en cours...
+            </>
+          ) : (
+            <>
+              <Save className="h-4 w-4 mr-2" />
+              Finaliser le brief ({approvedSections} sections)
+            </>
+          )}
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
       </div>

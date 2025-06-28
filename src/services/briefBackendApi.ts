@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 
 const BRIEF_API_BASE = (
@@ -258,6 +257,62 @@ export class BriefBackendApi {
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
       return null;
+    }
+  }
+
+  /**
+   * Sauvegarde le brief final dans la base de données Supabase
+   */
+  async saveFinalBrief(briefData: {
+    title: string;
+    sections: Array<{
+      name: string;
+      content: string;
+    }>;
+    userPreferences: UserPreferences;
+  }): Promise<string> {
+    try {
+      console.log('Saving final brief:', briefData);
+      
+      // Créer le contenu markdown complet du brief
+      const markdownContent = briefData.sections
+        .map(section => `## ${section.name}\n\n${section.content}`)
+        .join('\n\n---\n\n');
+
+      // Sauvegarder dans la table ai_briefs via Supabase
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const briefRecord = {
+        title: briefData.title,
+        is_complete: true,
+        conversation_data: {
+          session_id: this.sessionId,
+          user_preferences: briefData.userPreferences,
+          sections: briefData.sections
+        },
+        brief_summary: {
+          markdown: markdownContent,
+          sections_count: briefData.sections.length,
+          created_at: new Date().toISOString()
+        }
+      };
+
+      const { data, error } = await supabase
+        .from('ai_briefs')
+        .insert(briefRecord)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Erreur lors de la sauvegarde du brief:', error);
+        throw new Error(`Erreur lors de la sauvegarde: ${error.message}`);
+      }
+
+      console.log('Brief sauvegardé avec succès:', data);
+      return data.id;
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde du brief final:', error);
+      throw error;
     }
   }
 }
