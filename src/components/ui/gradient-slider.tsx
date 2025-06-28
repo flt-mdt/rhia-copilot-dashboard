@@ -25,6 +25,15 @@ const GradientSlider: React.FC<GradientSliderProps> = ({
     Math.abs(curr - percentage) < Math.abs(prev - percentage) ? curr : prev
   );
   
+  // Get the background color based on the score level
+  const getScoreBackgroundColor = (score: number) => {
+    if (score <= 20) return 'bg-red-500';
+    if (score <= 40) return 'bg-orange-500';
+    if (score <= 60) return 'bg-yellow-500';
+    if (score <= 80) return 'bg-lime-500';
+    return 'bg-green-500';
+  };
+  
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <div className="relative w-32 h-2">
@@ -53,7 +62,7 @@ const GradientSlider: React.FC<GradientSliderProps> = ({
             {/* Score value above the closest point */}
             {point === closestPoint && (
               <div 
-                className="absolute -top-8 transform -translate-x-1/2 bg-purple-500 text-white text-xs px-2 py-1 rounded"
+                className={`absolute -top-8 transform -translate-x-1/2 text-white text-xs px-2 py-1 rounded ${getScoreBackgroundColor(percentage)}`}
                 style={{ left: `${point}%` }}
               >
                 {Math.round(value)}
