@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 
 const BRIEF_API_BASE = (
@@ -36,6 +37,8 @@ export class BriefBackendApi {
 
   constructor() {
     this.sessionId = uuidv4();
+    console.log('BriefBackendApi initialized with session ID:', this.sessionId);
+    console.log('API Base URL:', BRIEF_API_BASE);
   }
 
   getSessionId(): string {
@@ -57,27 +60,45 @@ export class BriefBackendApi {
       seniority: preferences.seniority
     };
 
-    console.log('Sending config to backend:', payload);
+    const url = `${BRIEF_API_BASE}/v1/config`;
+    
+    console.log('=== SENDING CONFIG REQUEST ===');
+    console.log('URL:', url);
+    console.log('Session ID:', this.sessionId);
+    console.log('Payload:', JSON.stringify(payload, null, 2));
 
-    const response = await fetch(`${BRIEF_API_BASE}/v1/config`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API Error:', response.status, errorText);
-      throw new Error(`Erreur lors de la sauvegarde des préférences: ${response.status} - ${errorText}`);
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('=== API ERROR ===');
+        console.error('Status:', response.status);
+        console.error('Error text:', errorText);
+        throw new Error(`Erreur lors de la sauvegarde des préférences: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('=== CONFIG SAVED SUCCESSFULLY ===');
+      console.log('Result:', result);
+    } catch (error) {
+      console.error('=== FETCH ERROR ===');
+      console.error('Error:', error);
+      throw error;
     }
-
-    const result = await response.json();
-    console.log('Config saved successfully:', result);
   }
 
   async storeUserPreferences(preferences: UserPreferences): Promise<void> {
+    console.log('storeUserPreferences called with:', preferences);
     return this.sendUserPreferences(preferences);
   }
 

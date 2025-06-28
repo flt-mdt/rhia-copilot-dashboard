@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
-import { ArrowRight, Target, Users, Building, Zap, CheckCircle, Lock, Loader2 } from 'lucide-react';
+import { ArrowRight, Target, Users, Building, Zap, CheckCircle, Lock, Loader2, AlertCircle } from 'lucide-react';
 import { UserPreferences } from '@/services/briefBackendApi';
 import { useToast } from '@/hooks/use-toast';
 
@@ -21,6 +21,7 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
 }) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
   const SECTION_NAMES = [
     "Titre & Job Family", "Contexte & Business Case", "Finalité/Mission", "Objectifs & KPIs",
@@ -79,17 +80,32 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
   };
 
   const handleNextClick = async () => {
+    console.log('=== CONFIGURATION SAVE PROCESS STARTED ===');
+    console.log('Current preferences:', preferences);
+    
     setIsLoading(true);
-    console.log('Starting configuration save process...');
+    setDebugInfo('Début de la sauvegarde...');
     
     try {
+      setDebugInfo('Appel de onNext()...');
       await onNext();
-      console.log('Configuration saved successfully');
+      
+      setDebugInfo('Configuration sauvegardée avec succès !');
+      console.log('=== CONFIGURATION SAVED SUCCESSFULLY ===');
+      
+      toast({
+        title: "Configuration sauvegardée",
+        description: "Vos préférences ont été enregistrées avec succès.",
+      });
     } catch (error) {
-      console.error('Error saving configuration:', error);
+      console.error('=== ERROR SAVING CONFIGURATION ===');
+      console.error('Error details:', error);
+      
+      setDebugInfo(`Erreur: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+      
       toast({
         title: "Erreur de sauvegarde",
-        description: "Impossible de sauvegarder la configuration. Veuillez réessayer.",
+        description: error instanceof Error ? error.message : "Impossible de sauvegarder la configuration. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
@@ -98,10 +114,22 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
   };
 
   const selectedCount = preferences.sections.filter(Boolean).length;
-  const canProceed = selectedCount >= 1; // Toujours vrai maintenant car la première section est obligatoire
+  const canProceed = selectedCount >= 1;
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
+      {/* Debug Info Panel (développement) */}
+      {debugInfo && (
+        <Card className="border-yellow-200 bg-yellow-50">
+          <CardContent className="pt-4">
+            <div className="flex items-center space-x-2">
+              <AlertCircle className="h-4 w-4 text-yellow-600" />
+              <span className="text-sm text-yellow-800">Debug: {debugInfo}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* En-tête */}
       <div className="text-center space-y-4">
         <h2 className="text-3xl font-bold text-gray-900">Configuration de votre brief</h2>

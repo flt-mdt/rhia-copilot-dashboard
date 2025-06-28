@@ -19,17 +19,22 @@ const BriefNew = () => {
   const [briefData, setBriefData] = useState<BriefData>({});
 
   const handleConfigurationComplete = async () => {
-    console.log('handleConfigurationComplete called with preferences:', userPreferences);
+    console.log('=== handleConfigurationComplete called ===');
+    console.log('Session ID:', briefBackendApi.getSessionId());
+    console.log('User preferences:', userPreferences);
     
     try {
+      console.log('Calling briefBackendApi.storeUserPreferences...');
       await briefBackendApi.storeUserPreferences(userPreferences);
+      
       console.log('Configuration stored successfully, moving to data step');
       setCurrentStep('data');
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde des préférences:', error);
-      // Ne pas passer à l'étape suivante en cas d'erreur
-      // L'erreur sera affichée par le toast dans SectionConfiguration
-      throw error; // Re-throw l'erreur pour que SectionConfiguration puisse la gérer
+      console.error('=== ERROR IN handleConfigurationComplete ===');
+      console.error('Error details:', error);
+      
+      // Re-throw l'erreur pour que SectionConfiguration puisse la gérer
+      throw error;
     }
   };
 
