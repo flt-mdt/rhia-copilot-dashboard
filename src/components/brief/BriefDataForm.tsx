@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { briefBackendApi, UserPreferences } from '@/services/briefBackendApi';
 import { Save, CheckCircle, ArrowRight, ArrowLeft, Paperclip, Mic, Search } from 'lucide-react';
+import { SECTION_LABELS_TO_IDS } from '@/constants/sectionMapping';
 
 // Configuration des sections avec leurs champs spécifiques
 const SECTION_CONFIG = {
@@ -134,13 +135,23 @@ const BriefDataForm: React.FC<BriefDataFormProps> = ({ userPreferences, onNext, 
 
     setIsLoading(true);
     try {
-      // Pour la section "Titre & Job Family", s'assurer que job_function est défini
+      // Utiliser l'identifiant technique de la section pour l'API
+      const sectionId = SECTION_LABELS_TO_IDS[currentSection];
+      
+      if (!sectionId) {
+        throw new Error(`Section ID non trouvé pour: ${currentSection}`);
+      }
+
       let dataToSave = { ...currentData };
+      
+      // Pour la section "Titre & Job Family", s'assurer que job_function est défini
       if (currentSection === "Titre & Job Family" && currentData.job_title) {
         dataToSave.job_function = currentData.job_title;
       }
       
-      await briefBackendApi.updateBriefData(currentSection, dataToSave);
+      console.log('Sauvegarde section:', sectionId, dataToSave);
+      
+      await briefBackendApi.updateBriefData(sectionId, dataToSave);
       setSavedSections(prev => new Set([...prev, currentSection]));
       toast({
         title: "Section sauvegardée",

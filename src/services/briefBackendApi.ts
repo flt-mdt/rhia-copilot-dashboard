@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 
 const BRIEF_API_BASE = (
@@ -13,8 +14,11 @@ export interface UserPreferences {
 
 export interface BriefData {
   // Keys are section slugs (e.g. "titre_job_family") and values hold
-  // the data previously saved for each section.
-  [sectionId: string]: Record<string, any>;
+  // the data previously saved for each section with job_function included.
+  [sectionId: string]: {
+    job_function: string;
+    [key: string]: any;
+  };
 }
 
 export interface GenerateResponse {
@@ -83,6 +87,8 @@ export class BriefBackendApi {
    * Met à jour les données d'une section spécifique du brief
    */
   async updateBriefData(sectionId: string, data: Record<string, any>): Promise<void> {
+    console.log('Updating brief data:', { sectionId, data });
+    
     const response = await fetch(`${BRIEF_API_BASE}/v1/data`, {
       method: 'POST',
       headers: {
@@ -105,6 +111,13 @@ export class BriefBackendApi {
     userPreferences: UserPreferences, 
     briefData: BriefData
   ): Promise<GenerateResponse> {
+    console.log('Generate section payload:', {
+      session_id: this.sessionId,
+      section_id: sectionId,
+      user_preferences: userPreferences,
+      brief_data: briefData
+    });
+
     const response = await fetch(`${BRIEF_API_BASE}/v1/generate`, {
       method: 'POST',
       headers: {
@@ -132,6 +145,15 @@ export class BriefBackendApi {
     userPreferences: UserPreferences,
     briefData: BriefData
   ): Promise<FeedbackResponse> {
+    console.log('Feedback payload:', {
+      session_id: this.sessionId,
+      section_id: sectionId,
+      user_feedback: userFeedback,
+      previous_markdown: previousMarkdown,
+      user_preferences: userPreferences,
+      brief_data: briefData
+    });
+
     const response = await fetch(`${BRIEF_API_BASE}/v1/feedback`, {
       method: 'POST',
       headers: {
@@ -193,10 +215,12 @@ export class BriefBackendApi {
   }
 
   /**
-   * Récupère les données d'une section spécifique
+   * Récupère les données d'une section spécifique en utilisant l'identifiant technique
    */
   async getSectionData(sectionId: string): Promise<Record<string, any> | null> {
     try {
+      console.log('Getting section data for:', sectionId);
+      
       const response = await fetch(`${BRIEF_API_BASE}/v1/data/${this.sessionId}/${sectionId}`, {
         method: 'GET',
         headers: {
@@ -205,10 +229,13 @@ export class BriefBackendApi {
       });
 
       if (!response.ok) {
+        console.log('Section data not found for:', sectionId);
         return null;
       }
 
-      return response.json();
+      const data = await response.json();
+      console.log('Section data retrieved:', data);
+      return data;
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
       return null;

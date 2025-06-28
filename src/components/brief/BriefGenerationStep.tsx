@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -62,7 +61,6 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
     setLoadingSections(prev => new Set([...prev, sectionName]));
     
     try {
-      // Récupérer l'identifiant technique de la section
       const sectionId = SECTION_LABELS_TO_IDS[sectionName];
       
       if (!sectionId) {
@@ -70,10 +68,10 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
       }
 
       // Récupérer le job_function depuis les données sauvegardées
-      const titleSectionData = await briefBackendApi.getSectionData("Titre & Job Family");
-      const jobFunction = titleSectionData?.job_function || titleSectionData?.job_title || "Poste non défini";
+      const titleSectionData = await briefBackendApi.getSectionData("titre_job_family");
+      const jobFunction = titleSectionData?.job_title || titleSectionData?.job_function || "Poste non défini";
 
-      // Préparer brief_data avec la structure correcte
+      // Structure correcte du payload selon la nouvelle spécification
       const briefData: BriefData = {
         [sectionId]: {
           job_function: jobFunction
@@ -134,7 +132,6 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
     setLoadingSections(prev => new Set([...prev, sectionName]));
     
     try {
-      // Récupérer l'identifiant technique de la section
       const sectionId = SECTION_LABELS_TO_IDS[sectionName];
       
       if (!sectionId) {
@@ -142,10 +139,10 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
       }
 
       // Récupérer le job_function depuis les données sauvegardées
-      const titleSectionData = await briefBackendApi.getSectionData("Titre & Job Family");
-      const jobFunction = titleSectionData?.job_function || titleSectionData?.job_title || "Poste non défini";
+      const titleSectionData = await briefBackendApi.getSectionData("titre_job_family");
+      const jobFunction = titleSectionData?.job_title || titleSectionData?.job_function || "Poste non défini";
 
-      // Préparer brief_data avec la même structure
+      // Structure correcte du payload pour le feedback
       const briefData: BriefData = {
         [sectionId]: {
           job_function: jobFunction
@@ -201,7 +198,6 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
     if (!section) return;
 
     try {
-      // Récupérer l'identifiant technique de la section
       const sectionId = SECTION_LABELS_TO_IDS[sectionName];
       
       if (!sectionId) {
