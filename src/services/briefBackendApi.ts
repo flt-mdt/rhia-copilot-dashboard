@@ -12,6 +12,8 @@ export interface UserPreferences {
 }
 
 export interface BriefData {
+  // Keys are section slugs (e.g. "titre_job_family") and values hold
+  // the data previously saved for each section.
   [sectionId: string]: Record<string, any>;
 }
 

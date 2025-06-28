@@ -9,12 +9,14 @@ class RagRetriever:
             brief_data = state["brief_data"]
             user_preferences = state["user_preferences"]
 
-            job_function = brief_data.get("job_function", "").strip()
+            job_function = brief_data.get(section_id, {}).get("job_function", "").strip()
             seniority = user_preferences.seniority.strip()
             language = user_preferences.language.strip()
 
             if not job_function:
-                raise ValueError("Champ 'job_function' manquant dans brief_data")
+                raise ValueError(
+                    f"Champ 'job_function' manquant dans brief_data[{section_id}]"
+                )
 
             chunks = await retrieve_chunks(
                 section=section_id,
