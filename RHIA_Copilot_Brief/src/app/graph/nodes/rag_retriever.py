@@ -1,3 +1,4 @@
+
 from typing import Dict, Any
 from app.services.rag_retriever import retrieve_chunks
 from app.telemetry.logging import logger
@@ -9,9 +10,11 @@ class RagRetriever:
             brief_data = state["brief_data"]
             user_preferences = state["user_preferences"]
 
-            job_function = brief_data.get(section_id, {}).get("job_function", "").strip()
-            seniority = user_preferences.seniority.strip()
-            language = user_preferences.language.strip()
+            # brief_data est maintenant structuré comme {section_slug: {job_function: "..."}}
+            section_data = brief_data.get(section_id, {})
+            job_function = section_data.get("job_function", "").strip()
+            seniority = user_preferences.get("seniority", "").strip()
+            language = user_preferences.get("language", "").strip()
 
             if not job_function:
                 raise ValueError(

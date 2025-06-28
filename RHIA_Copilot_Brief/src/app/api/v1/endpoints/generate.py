@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any
@@ -10,13 +11,13 @@ class GenerateRequest(BaseModel):
     """Payload for the /generate endpoint.
 
     * ``brief_data`` is a mapping where each key is a section slug and the value
-      is the data saved for that section.
+      is an object containing the data for that section (e.g. {"job_function": "..."}).
     """
 
     session_id: str
     section_id: str
     user_preferences: UserPreferences
-    brief_data: Dict[str, Any]
+    brief_data: Dict[str, Dict[str, Any]]
 
 class GenerateResponse(BaseModel):
     markdown: str
