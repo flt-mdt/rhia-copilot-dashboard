@@ -47,7 +47,13 @@ export const useAIBriefs = () => {
       const mappedBriefs = (data || []).map(brief => ({
         ...brief,
         hardSkills: brief.hard_skills || [],
-        project_context: brief.brief_summary?.project_context || null
+        // Correction: accès sécurisé à brief_summary
+        project_context: brief.brief_summary && 
+                        typeof brief.brief_summary === 'object' && 
+                        brief.brief_summary !== null &&
+                        'project_context' in brief.brief_summary 
+                        ? (brief.brief_summary as any).project_context 
+                        : null
       }));
 
       setBriefs(mappedBriefs);
@@ -60,6 +66,48 @@ export const useAIBriefs = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchBrief = async (briefId: string): Promise<AIBrief | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('ai_briefs')
+        .select('*')
+        .eq('id', briefId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Erreur lors du chargement du brief:', error);
+        toast({
+          title: "Erreur de chargement",
+          description: "Impossible de charger le brief.",
+          variant: "destructive",
+        });
+        return null;
+      }
+
+      if (!data) return null;
+
+      // Mapper les données pour la compatibilité
+      return {
+        ...data,
+        hardSkills: data.hard_skills || [],
+        project_context: data.brief_summary && 
+                        typeof data.brief_summary === 'object' && 
+                        data.brief_summary !== null &&
+                        'project_context' in data.brief_summary 
+                        ? (data.brief_summary as any).project_context 
+                        : null
+      };
+    } catch (error) {
+      console.error('Erreur lors du chargement du brief:', error);
+      toast({
+        title: "Erreur de chargement",
+        description: "Une erreur est survenue lors du chargement du brief.",
+        variant: "destructive",
+      });
+      return null;
     }
   };
 
@@ -128,6 +176,7 @@ export const useAIBriefs = () => {
   return {
     briefs,
     loading,
+    fetchBrief,
     deleteBrief,
     refreshBriefs
   };

@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 
 const BRIEF_API_BASE = (
@@ -282,19 +283,24 @@ export class BriefBackendApi {
       // Sauvegarder dans la table ai_briefs via Supabase
       const { supabase } = await import('@/integrations/supabase/client');
       
+      // Correction: conversion explicite en JSON pour Supabase
       const briefRecord = {
         title: briefData.title,
         is_complete: true,
-        conversation_data: {
+        conversation_data: JSON.parse(JSON.stringify({
           session_id: this.sessionId,
-          user_preferences: briefData.userPreferences,
+          user_preferences: {
+            sections: briefData.userPreferences.sections,
+            language: briefData.userPreferences.language,
+            seniority: briefData.userPreferences.seniority
+          },
           sections: briefData.sections
-        },
-        brief_summary: {
+        })),
+        brief_summary: JSON.parse(JSON.stringify({
           markdown: markdownContent,
           sections_count: briefData.sections.length,
           created_at: new Date().toISOString()
-        }
+        }))
       };
 
       const { data, error } = await supabase
