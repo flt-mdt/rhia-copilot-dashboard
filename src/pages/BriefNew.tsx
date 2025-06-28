@@ -4,31 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { UserPreferences, BriefData, briefBackendApi } from '@/services/briefBackendApi';
 import SectionConfiguration from '@/components/brief/SectionConfiguration';
-import SectionGenerator from '@/components/brief/SectionGenerator';
+import BriefDataForm from '@/components/brief/BriefDataForm';
+import BriefGenerationStep from '@/components/brief/BriefGenerationStep';
 import FinalBriefPreview from '@/components/brief/FinalBriefPreview';
 
-const SECTION_IDS = [
-  "Titre & Job Family",
-  "Contexte & Business Case", 
-  "Finalité/Mission",
-  "Objectifs & KPIs",
-  "Responsabilités clés",
-  "Périmètre budgétaire & managérial",
-  "Environnement & contraintes",
-  "Compétences & exigences",
-  "Qualifications & expériences",
-  "Employee Value Proposition",
-  "Perspectives d'évolution",
-  "Rémunération & avantages",
-  "Cadre contractuel",
-  "Mesure de la performance & cadence",
-  "Parties prenantes & RACI",
-  "Inclusion, conformité & sécurité",
-  "Onboarding & développement",
-  "Processus de recrutement"
-];
-
-type Step = 'config' | 'generation' | 'preview';
+type Step = 'config' | 'data' | 'generation' | 'preview';
 
 const BriefNew = () => {
   const [currentStep, setCurrentStep] = useState<Step>('config');
@@ -38,31 +18,22 @@ const BriefNew = () => {
     seniority: 'Senior'
   });
   const [briefData, setBriefData] = useState<BriefData>({});
-  const [completedSections, setCompletedSections] = useState<Set<string>>(new Set());
-  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-
-  const activeSections = SECTION_IDS.filter((_, index) => userPreferences.sections[index]);
-  const progress = (completedSections.size / activeSections.length) * 100;
 
   const handleConfigurationComplete = async () => {
     try {
       await briefBackendApi.storeUserPreferences(userPreferences);
-      setCurrentStep('generation');
+      setCurrentStep('data');
     } catch (error) {
       console.error('Erreur lors de la sauvegarde des préférences:', error);
     }
   };
 
-  const handleSectionComplete = (sectionId: string, markdown: string) => {
-    setCompletedSections(prev => new Set([...prev, sectionId]));
-    
-    // Passer à la section suivante ou au preview final
-    const nextIndex = currentSectionIndex + 1;
-    if (nextIndex < activeSections.length) {
-      setCurrentSectionIndex(nextIndex);
-    } else {
-      setCurrentStep('preview');
-    }
+  const handleDataFormComplete = () => {
+    setCurrentStep('generation');
+  };
+
+  const handleGenerationComplete = () => {
+    setCurrentStep('preview');
   };
 
   const handleDataUpdate = (sectionId: string, data: Record<string, any>) => {
@@ -75,21 +46,40 @@ const BriefNew = () => {
     }));
   };
 
+  const handleBackToConfig = () => {
+    setCurrentStep('config');
+  };
+
+  const handleBackToData = () => {
+    setCurrentStep('data');
+  };
+
   const handleBackToGeneration = () => {
     setCurrentStep('generation');
-    setCurrentSectionIndex(Math.max(0, activeSections.length - 1));
   };
 
   const getStepTitle = () => {
     switch (currentStep) {
       case 'config':
         return 'Configuration du Brief';
+      case 'data':
+        return 'Saisie des données';
       case 'generation':
-        return `Section ${currentSectionIndex + 1}/${activeSections.length}: ${activeSections[currentSectionIndex]}`;
+        return 'Génération des sections';
       case 'preview':
         return 'Brief Final';
       default:
         return '';
+    }
+  };
+
+  const getStepNumber = () => {
+    switch (currentStep) {
+      case 'config': return 1;
+      case 'data': return 2;
+      case 'generation': return 3;
+      case 'preview': return 4;
+      default: return 1;
     }
   };
 
@@ -105,22 +95,24 @@ const BriefNew = () => {
           </p>
         </div>
 
-        {/* Barre de progression */}
+        {/* Barre de progression globale */}
         {currentStep !== 'config' && (
           <Card className="mb-6">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">{getStepTitle()}</span>
+                <span className="text-sm font-medium">
+                  Étape {getStepNumber()}/4 : {getStepTitle()}
+                </span>
                 <span className="text-sm text-gray-600">
-                  {Math.round(progress)}% terminé
+                  {Math.round((getStepNumber() / 4) * 100)}% terminé
                 </span>
               </div>
-              <Progress value={progress} className="h-2" />
+              <Progress value={(getStepNumber() / 4) * 100} className="h-2" />
             </CardContent>
           </Card>
         )}
 
-        {/* Étape actuelle */}
+        {/* Étapes */}
         <div className="max-w-4xl mx-auto">
           {currentStep === 'config' && (
             <SectionConfiguration
@@ -130,40 +122,20 @@ const BriefNew = () => {
             />
           )}
 
-          {currentStep === 'generation' && activeSections[currentSectionIndex] && (
-            <div className="space-y-6">
-              {/* Navigation entre sections */}
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex flex-wrap gap-2">
-                    {activeSections.map((section, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentSectionIndex(index)}
-                        className={`px-3 py-1 rounded text-xs ${
-                          index === currentSectionIndex
-                            ? 'bg-blue-500 text-white'
-                            : completedSections.has(section)
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-600'
-                        }`}
-                      >
-                        {index + 1}. {section}
-                      </button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+          {currentStep === 'data' && (
+            <BriefDataForm
+              userPreferences={userPreferences}
+              onNext={handleDataFormComplete}
+              onBack={handleBackToConfig}
+            />
+          )}
 
-              <SectionGenerator
-                sectionId={activeSections[currentSectionIndex]}
-                sectionIndex={currentSectionIndex}
-                userPreferences={userPreferences}
-                briefData={briefData}
-                onSectionComplete={handleSectionComplete}
-                onDataUpdate={handleDataUpdate}
-              />
-            </div>
+          {currentStep === 'generation' && (
+            <BriefGenerationStep
+              userPreferences={userPreferences}
+              onNext={handleGenerationComplete}
+              onBack={handleBackToData}
+            />
           )}
 
           {currentStep === 'preview' && (
