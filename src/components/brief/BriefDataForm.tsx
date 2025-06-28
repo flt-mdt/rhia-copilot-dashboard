@@ -134,7 +134,13 @@ const BriefDataForm: React.FC<BriefDataFormProps> = ({ userPreferences, onNext, 
 
     setIsLoading(true);
     try {
-      await briefBackendApi.updateBriefData(currentSection, currentData);
+      // Pour la section "Titre & Job Family", s'assurer que job_function est défini
+      let dataToSave = { ...currentData };
+      if (currentSection === "Titre & Job Family" && currentData.job_title) {
+        dataToSave.job_function = currentData.job_title;
+      }
+      
+      await briefBackendApi.updateBriefData(currentSection, dataToSave);
       setSavedSections(prev => new Set([...prev, currentSection]));
       toast({
         title: "Section sauvegardée",

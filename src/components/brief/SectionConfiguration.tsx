@@ -1,33 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { UserPreferences, briefBackendApi } from '@/services/briefBackendApi';
-import { FileText, Target, Users, Briefcase, Globe, Award, DollarSign, Clock, Shield, TrendingUp, Plus } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-
-// Les 18 sections canoniques du brief avec leurs icônes et couleurs
-const SECTION_DATA = [
-  { id: "Titre & Job Family", icon: FileText, bgColor: "bg-orange-100", iconColor: "text-orange-600" },
-  { id: "Contexte & Business Case", icon: Briefcase, bgColor: "bg-blue-100", iconColor: "text-blue-600" },
-  { id: "Finalité/Mission", icon: Target, bgColor: "bg-green-100", iconColor: "text-green-600" },
-  { id: "Objectifs & KPIs", icon: TrendingUp, bgColor: "bg-purple-100", iconColor: "text-purple-600" },
-  { id: "Responsabilités clés", icon: Users, bgColor: "bg-red-100", iconColor: "text-red-600" },
-  { id: "Périmètre budgétaire & managérial", icon: DollarSign, bgColor: "bg-yellow-100", iconColor: "text-yellow-600" },
-  { id: "Environnement & contraintes", icon: Globe, bgColor: "bg-cyan-100", iconColor: "text-cyan-600" },
-  { id: "Compétences & exigences", icon: Award, bgColor: "bg-indigo-100", iconColor: "text-indigo-600" },
-  { id: "Qualifications & expériences", icon: Shield, bgColor: "bg-pink-100", iconColor: "text-pink-600" },
-  { id: "Employee Value Proposition", icon: Target, bgColor: "bg-teal-100", iconColor: "text-teal-600" },
-  { id: "Perspectives d'évolution", icon: TrendingUp, bgColor: "bg-emerald-100", iconColor: "text-emerald-600" },
-  { id: "Rémunération & avantages", icon: DollarSign, bgColor: "bg-amber-100", iconColor: "text-amber-600" },
-  { id: "Cadre contractuel", icon: FileText, bgColor: "bg-slate-100", iconColor: "text-slate-600" },
-  { id: "Mesure de la performance & cadence", icon: Clock, bgColor: "bg-violet-100", iconColor: "text-violet-600" },
-  { id: "Parties prenantes & RACI", icon: Users, bgColor: "bg-rose-100", iconColor: "text-rose-600" },
-  { id: "Inclusion, conformité & sécurité", icon: Shield, bgColor: "bg-lime-100", iconColor: "text-lime-600" },
-  { id: "Onboarding & développement", icon: Award, bgColor: "bg-sky-100", iconColor: "text-sky-600" },
-  { id: "Processus de recrutement", icon: Briefcase, bgColor: "bg-fuchsia-100", iconColor: "text-fuchsia-600" }
-];
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
+import { ArrowRight, Target, Users, Building, Zap, CheckCircle, Lock } from 'lucide-react';
+import { UserPreferences } from '@/services/briefBackendApi';
 
 interface SectionConfigurationProps {
   preferences: UserPreferences;
@@ -35,15 +13,45 @@ interface SectionConfigurationProps {
   onNext: () => void;
 }
 
-const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
-  preferences,
-  onPreferencesChange,
-  onNext
+const SectionConfiguration: React.FC<SectionConfigurationProps> = ({ 
+  preferences, 
+  onPreferencesChange, 
+  onNext 
 }) => {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = React.useState(false);
+  const SECTION_NAMES = [
+    "Titre & Job Family", "Contexte & Business Case", "Finalité/Mission", "Objectifs & KPIs",
+    "Responsabilités clés", "Périmètre budgétaire & managérial", "Environnement & contraintes",
+    "Compétences & exigences", "Qualifications & expériences", "Employee Value Proposition",
+    "Perspectives d'évolution", "Rémunération & avantages", "Cadre contractuel",
+    "Mesure de la performance & cadence", "Parties prenantes & RACI",
+    "Inclusion, conformité & sécurité", "Onboarding & développement", "Processus de recrutement"
+  ];
 
-  const handleSectionToggle = (index: number, checked: boolean) => {
+  const SECTION_CATEGORIES = {
+    "Définition du poste": [0, 1, 2, 3, 4],
+    "Profil recherché": [5, 6, 7, 8],
+    "Environnement & Culture": [9, 10, 11, 12],
+    "Process & Suivi": [13, 14, 15, 16, 17]
+  };
+
+  // S'assurer que la première section est toujours cochée
+  useEffect(() => {
+    if (!preferences.sections[0]) {
+      const newSections = [...preferences.sections];
+      newSections[0] = true;
+      onPreferencesChange({
+        ...preferences,
+        sections: newSections
+      });
+    }
+  }, [preferences, onPreferencesChange]);
+
+  const handleSectionChange = (index: number, checked: boolean) => {
+    // Empêcher de décocher la première section
+    if (index === 0 && !checked) {
+      return;
+    }
+
     const newSections = [...preferences.sections];
     newSections[index] = checked;
     onPreferencesChange({
@@ -52,172 +60,156 @@ const SectionConfiguration: React.FC<SectionConfigurationProps> = ({
     });
   };
 
-  const toggleAllSections = (checked: boolean) => {
+  const handleLanguageChange = (language: 'fr' | 'en') => {
     onPreferencesChange({
       ...preferences,
-      sections: new Array(18).fill(checked)
+      language
     });
   };
 
-  const handleNext = async () => {
-    setIsLoading(true);
-    try {
-      // Sauvegarder les préférences vers l'API
-      await briefBackendApi.sendUserPreferences(preferences);
-      
-      toast({
-        title: "Configuration sauvegardée",
-        description: "Vos préférences ont été enregistrées avec succès.",
-      });
-      
-      onNext();
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de sauvegarder la configuration. Veuillez réessayer.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSeniorityChange = (seniority: 'Stagiaire' | 'Junior' | 'Senior' | 'C-level') => {
+    onPreferencesChange({
+      ...preferences,
+      seniority
+    });
   };
 
   const selectedCount = preferences.sections.filter(Boolean).length;
+  const canProceed = selectedCount >= 1; // Toujours vrai maintenant car la première section est obligatoire
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* En-tête */}
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold text-gray-900">Configuration du Brief</h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Sélectionnez les sections à inclure dans votre brief de poste personnalisé
+        <h2 className="text-3xl font-bold text-gray-900">Configuration de votre brief</h2>
+        <p className="text-lg text-gray-600">
+          Personnalisez les sections à inclure dans votre brief de recrutement
         </p>
+        <div className="max-w-md mx-auto">
+          <Progress value={(selectedCount / SECTION_NAMES.length) * 100} className="h-2" />
+          <p className="text-sm text-gray-500 mt-2">
+            {selectedCount} section{selectedCount > 1 ? 's' : ''} sélectionnée{selectedCount > 1 ? 's' : ''}
+          </p>
+        </div>
       </div>
 
-      {/* Contrôles globaux */}
-      <Card className="border-2 border-gray-100 shadow-sm">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center space-x-3">
-                <Checkbox
-                  checked={selectedCount === 18}
-                  onCheckedChange={toggleAllSections}
-                  className="h-5 w-5"
-                />
-                <span className="text-base font-medium text-gray-900">Tout sélectionner</span>
+      {/* Paramètres généraux */}
+      <Card className="border-2 border-blue-100 bg-blue-50/30">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Target className="h-5 w-5 text-blue-600" />
+            <span>Paramètres généraux</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-700">Langue du brief</label>
+              <div className="flex space-x-2">
+                <Button
+                  variant={preferences.language === 'fr' ? 'default' : 'outline'}
+                  onClick={() => handleLanguageChange('fr')}
+                  className="rounded-xl"
+                >
+                  Français
+                </Button>
+                <Button
+                  variant={preferences.language === 'en' ? 'default' : 'outline'}
+                  onClick={() => handleLanguageChange('en')}
+                  className="rounded-xl"
+                >
+                  English
+                </Button>
               </div>
-              <p className="text-sm text-gray-500 ml-8">
-                {selectedCount} section{selectedCount > 1 ? 's' : ''} sélectionnée{selectedCount > 1 ? 's' : ''}
-              </p>
             </div>
             
-            <div className="flex space-x-4">
-              <Select 
-                value={preferences.language} 
-                onValueChange={(value: 'fr' | 'en') => 
-                  onPreferencesChange({...preferences, language: value})
-                }
-              >
-                <SelectTrigger className="w-36 h-11">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fr">🇫🇷 Français</SelectItem>
-                  <SelectItem value="en">🇺🇸 English</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select 
-                value={preferences.seniority} 
-                onValueChange={(value: UserPreferences['seniority']) => 
-                  onPreferencesChange({...preferences, seniority: value})
-                }
-              >
-                <SelectTrigger className="w-44 h-11">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Stagiaire">👶 Stagiaire</SelectItem>
-                  <SelectItem value="Junior">🌱 Junior</SelectItem>
-                  <SelectItem value="Senior">⭐ Senior</SelectItem>
-                  <SelectItem value="C-level">👑 C-level</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-gray-700">Niveau de séniorité</label>
+              <div className="grid grid-cols-2 gap-2">
+                {['Stagiaire', 'Junior', 'Senior', 'C-level'].map((level) => (
+                  <Button
+                    key={level}
+                    variant={preferences.seniority === level ? 'default' : 'outline'}
+                    onClick={() => handleSeniorityChange(level as any)}
+                    className="rounded-xl text-sm"
+                  >
+                    {level}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Grille des sections avec le style exact de l'image de référence */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
-        {SECTION_DATA.map((section, index) => {
-          const Icon = section.icon;
-          const isSelected = preferences.sections[index] || false;
-          
-          return (
-            <div
-              key={index}
-              className={`relative bg-white rounded-2xl border border-gray-200 p-6 cursor-pointer transition-all duration-200 hover:shadow-lg group ${
-                isSelected ? 'ring-2 ring-blue-500 shadow-md' : 'hover:border-gray-300'
-              }`}
-              onClick={() => handleSectionToggle(index, !isSelected)}
-            >
-              {/* Contenu de la carte avec alignement identique à l'image */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  {/* Icône avec arrière-plan coloré */}
-                  <div className={`w-12 h-12 rounded-xl ${section.bgColor} flex items-center justify-center flex-shrink-0`}>
-                    <Icon className={`h-6 w-6 ${section.iconColor}`} />
+      {/* Sections par catégorie */}
+      <div className="space-y-6">
+        {Object.entries(SECTION_CATEGORIES).map(([category, sectionIndices]) => (
+          <Card key={category} className="border-2 border-gray-100 shadow-lg">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl font-semibold text-gray-900 flex items-center space-x-2">
+                <Building className="h-5 w-5 text-blue-600" />
+                <span>{category}</span>
+                <Badge variant="outline" className="ml-auto">
+                  {sectionIndices.filter(i => preferences.sections[i]).length}/{sectionIndices.length}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {sectionIndices.map((sectionIndex) => (
+                  <div 
+                    key={sectionIndex}
+                    className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all ${
+                      preferences.sections[sectionIndex] 
+                        ? 'border-blue-200 bg-blue-50' 
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                    } ${sectionIndex === 0 ? 'opacity-100' : ''}`}
+                  >
+                    <div className="relative">
+                      <Checkbox
+                        id={`section-${sectionIndex}`}
+                        checked={preferences.sections[sectionIndex]}
+                        onCheckedChange={(checked) => handleSectionChange(sectionIndex, checked as boolean)}
+                        disabled={sectionIndex === 0} // Désactiver le checkbox pour la première section
+                        className="h-5 w-5"
+                      />
+                      {sectionIndex === 0 && (
+                        <Lock className="h-3 w-3 text-blue-600 absolute -top-1 -right-1" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <label 
+                        htmlFor={`section-${sectionIndex}`}
+                        className={`text-sm font-medium cursor-pointer ${
+                          sectionIndex === 0 ? 'text-blue-700' : 'text-gray-900'
+                        }`}
+                      >
+                        {SECTION_NAMES[sectionIndex]}
+                        {sectionIndex === 0 && (
+                          <Badge variant="default" className="ml-2 bg-blue-100 text-blue-800 text-xs">
+                            Obligatoire
+                          </Badge>
+                        )}
+                      </label>
+                    </div>
                   </div>
-                  
-                  {/* Titre de la section */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-semibold text-gray-900 leading-tight">
-                      {section.id}
-                    </h3>
-                  </div>
-                </div>
-                
-                {/* Bouton + avec style exact de l'image */}
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
-                  isSelected 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-gray-100 text-gray-400 group-hover:bg-gray-200'
-                }`}>
-                  {isSelected ? (
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  ) : (
-                    <Plus className="w-4 h-4" />
-                  )}
-                </div>
+                ))}
               </div>
-            </div>
-          );
-        })}
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* Bouton de continuation avec gestion du loading */}
-      <div className="flex justify-center pt-6">
+      {/* Navigation */}
+      <div className="flex justify-end pt-6">
         <Button 
-          onClick={handleNext} 
-          disabled={selectedCount === 0 || isLoading}
-          size="lg"
-          className="px-8 py-4 text-base font-medium bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl"
+          onClick={onNext}
+          disabled={!canProceed}
+          className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-white font-medium"
         >
-          {isLoading ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-              Sauvegarde...
-            </>
-          ) : (
-            <>
-              Continuer vers la saisie des données
-              <span className="ml-2">→</span>
-            </>
-          )}
+          Continuer vers la saisie
+          <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
       </div>
     </div>

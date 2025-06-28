@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 
 const BRIEF_API_BASE = (
@@ -189,6 +188,29 @@ export class BriefBackendApi {
     }
 
     return response.text();
+  }
+
+  /**
+   * Récupère les données d'une section spécifique
+   */
+  async getSectionData(sectionId: string): Promise<Record<string, any> | null> {
+    try {
+      const response = await fetch(`${BRIEF_API_BASE}/v1/data/${this.sessionId}/${sectionId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('Erreur lors de la récupération des données:', error);
+      return null;
+    }
   }
 }
 

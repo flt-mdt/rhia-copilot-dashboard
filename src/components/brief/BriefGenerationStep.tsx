@@ -68,18 +68,13 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
         throw new Error(`Section ID non trouvé pour: ${sectionName}`);
       }
 
-      // Préparer brief_data selon la structure attendue par BriefData
-      // Chaque clé de section contient un objet avec les données de cette section
-      const briefData: BriefData = {
-        "titre_job_family": {
-          job_function: "Analyste financier", // TODO: Récupérer depuis les données saisies
-          job_title: "Analyste Financier Senior"
-        },
-        "contexte": {
-          contract_type: "CDI", // TODO: Récupérer depuis les données saisies
-          department: "Finance"
-        }
-        // TODO: Ajouter d'autres sections selon les données collectées
+      // Récupérer le job_function depuis les données sauvegardées
+      const titleSectionData = await briefBackendApi.getSectionData("Titre & Job Family");
+      const jobFunction = titleSectionData?.job_function || titleSectionData?.job_title || "Poste non défini";
+
+      // Préparer brief_data avec la structure exacte attendue
+      const briefData = {
+        job_function: jobFunction
       };
       
       console.log('Génération de section:', {
@@ -90,7 +85,7 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
       });
       
       const response = await briefBackendApi.generateSection(
-        sectionId, // Utiliser l'ID technique au lieu du nom
+        sectionId,
         userPreferences,
         briefData
       );
@@ -143,20 +138,17 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
         throw new Error(`Section ID non trouvé pour: ${sectionName}`);
       }
 
-      // Préparer brief_data avec la même structure que pour la génération
-      const briefData: BriefData = {
-        "titre_job_family": {
-          job_function: "Analyste financier", // TODO: Récupérer depuis les données saisies
-          job_title: "Analyste Financier Senior"
-        },
-        "contexte": {
-          contract_type: "CDI", // TODO: Récupérer depuis les données saisies
-          department: "Finance"
-        }
+      // Récupérer le job_function depuis les données sauvegardées
+      const titleSectionData = await briefBackendApi.getSectionData("Titre & Job Family");
+      const jobFunction = titleSectionData?.job_function || titleSectionData?.job_title || "Poste non défini";
+
+      // Préparer brief_data avec la même structure
+      const briefData = {
+        job_function: jobFunction
       };
       
       const response = await briefBackendApi.provideFeedback(
-        sectionId, // Utiliser l'ID technique
+        sectionId,
         feedback,
         currentSection.markdown,
         userPreferences,
