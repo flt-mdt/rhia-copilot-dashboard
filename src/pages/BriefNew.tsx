@@ -68,7 +68,10 @@ const BriefNew = () => {
   const handleDataUpdate = (sectionId: string, data: Record<string, any>) => {
     setBriefData(prev => ({
       ...prev,
-      [sectionId]: data
+      [sectionId]: {
+        job_function: data.job_function || data.job_title || "Poste non défini",
+        ...data
+      }
     }));
   };
 
