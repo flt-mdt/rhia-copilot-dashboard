@@ -20,11 +20,6 @@ const GradientSlider: React.FC<GradientSliderProps> = ({
   // Calculate graduation points (5 points total: 0%, 25%, 50%, 75%, 100%)
   const graduationPoints = [0, 25, 50, 75, 100];
   
-  // Find the closest graduation point to the current value
-  const closestPoint = graduationPoints.reduce((prev, curr) => 
-    Math.abs(curr - percentage) < Math.abs(prev - percentage) ? curr : prev
-  );
-  
   // Get the background color based on the score level
   const getScoreBackgroundColor = (score: number) => {
     if (score <= 20) return 'bg-red-500';
@@ -32,6 +27,15 @@ const GradientSlider: React.FC<GradientSliderProps> = ({
     if (score <= 60) return 'bg-yellow-500';
     if (score <= 80) return 'bg-lime-500';
     return 'bg-green-500';
+  };
+
+  // Get the border color based on the score level
+  const getScoreBorderColor = (score: number) => {
+    if (score <= 20) return 'border-red-500';
+    if (score <= 40) return 'border-orange-500';
+    if (score <= 60) return 'border-yellow-500';
+    if (score <= 80) return 'border-lime-500';
+    return 'border-green-500';
   };
   
   return (
@@ -53,23 +57,21 @@ const GradientSlider: React.FC<GradientSliderProps> = ({
             <div 
               className={`absolute top-1/2 w-3 h-3 rounded-full border-2 transform -translate-y-1/2 -translate-x-1.5 transition-all duration-300 ${
                 point <= percentage 
-                  ? 'bg-white border-purple-500' 
+                  ? `bg-white ${getScoreBorderColor(point)}` 
                   : 'bg-gray-400 border-gray-400'
               }`}
               style={{ left: `${point}%` }}
             />
-            
-            {/* Score value above the closest point */}
-            {point === closestPoint && (
-              <div 
-                className={`absolute -top-8 transform -translate-x-1/2 text-white text-xs px-2 py-1 rounded ${getScoreBackgroundColor(percentage)}`}
-                style={{ left: `${point}%` }}
-              >
-                {Math.round(value)}
-              </div>
-            )}
           </div>
         ))}
+
+        {/* Score value above the actual score position */}
+        <div 
+          className={`absolute -top-8 transform -translate-x-1/2 text-white text-xs px-2 py-1 rounded ${getScoreBackgroundColor(percentage)}`}
+          style={{ left: `${percentage}%` }}
+        >
+          {Math.round(value)}
+        </div>
       </div>
       
       {showValue && (
