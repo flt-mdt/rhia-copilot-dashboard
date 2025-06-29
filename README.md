@@ -34,6 +34,9 @@ npm i
 
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
+
+Count line : git ls-files | % { Get-Content $_ } | Measure-Object -Line
+
 ```
 
 **Edit a file directly in GitHub**
