@@ -11,7 +11,7 @@ numpy>=1.26,<1.27
 sentence-transformers
 
 # === AGENTIC LLM ===
-langchain<=0.2.99
+langchain>=0.2.20,<0.3
 langchain-core>=0.2.43,<0.3
 langchain-openai<=0.1.25
 langgraph>=0.2.20,<0.3
