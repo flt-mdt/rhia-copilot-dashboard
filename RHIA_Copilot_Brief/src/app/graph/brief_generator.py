@@ -32,4 +32,4 @@ graph.add_conditional_edges(
 )
 
 # 5. Compiler le graphe␊
-brief_graph = graph.compile()␊
+brief_graph = graph.compile()
