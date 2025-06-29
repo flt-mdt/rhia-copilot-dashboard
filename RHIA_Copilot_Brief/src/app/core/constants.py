@@ -67,3 +67,6 @@ THRESHOLD_MAPPING: Final[float] = 0.85
 THRESHOLD_RAG_SIMILARITY: Final[float] = 0.83
 THRESHOLD_CONFIDENCE_LLM: Final[float] = 0.85
 MIN_SKILLS_REQUIRED: Final[int] = 3
+
+# Nombre maximum de tentatives de génération avant d'arrêter les boucles
+MAX_GRAPH_RETRIES: Final[int] = 3
