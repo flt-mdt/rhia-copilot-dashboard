@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
+
 class FeedbackRequest(BaseModel):
     session_id: str
     section_id: str
@@ -15,9 +16,12 @@ class FeedbackRequest(BaseModel):
     user_preferences: UserPreferences
     brief_data: dict[str, Any]
 
+
 class FeedbackResponse(BaseModel):
     markdown: str
     confidence: float
+    confidence_label: str
+
 
 @router.post("/feedback", response_model=FeedbackResponse)
 async def revise_section(payload: FeedbackRequest):
@@ -30,12 +34,13 @@ async def revise_section(payload: FeedbackRequest):
         "user_feedback": payload.user_feedback,
         "previous_output": payload.previous_markdown,
         "user_preferences": payload.user_preferences.dict(),
-        "brief_data": payload.brief_data
+        "brief_data": payload.brief_data,
     }
 
     result = await feedback_graph.ainvoke(state)
 
     return FeedbackResponse(
         markdown=result["draft"],
-        confidence=result["confidence"]
+        confidence=result["confidence"],
+        confidence_label=result.get("confidence_label", ""),
     )

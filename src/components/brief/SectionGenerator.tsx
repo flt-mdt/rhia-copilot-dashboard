@@ -1,11 +1,15 @@
-
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Check, RefreshCw } from 'lucide-react';
-import { UserPreferences, BriefData, GenerateResponse, briefBackendApi } from '@/services/briefBackendApi';
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { AlertTriangle, Check, RefreshCw } from "lucide-react";
+import {
+  UserPreferences,
+  BriefData,
+  GenerateResponse,
+  briefBackendApi,
+} from "@/services/briefBackendApi";
 
 interface SectionGeneratorProps {
   sectionId: string;
@@ -22,32 +26,33 @@ const SectionGenerator: React.FC<SectionGeneratorProps> = ({
   userPreferences,
   briefData,
   onSectionComplete,
-  onDataUpdate
+  onDataUpdate,
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isReforming, setIsReforming] = useState(false);
-  const [generatedMarkdown, setGeneratedMarkdown] = useState<string>('');
+  const [generatedMarkdown, setGeneratedMarkdown] = useState<string>("");
   const [confidence, setConfidence] = useState<number>(0);
+  const [confidenceLabel, setConfidenceLabel] = useState<string>("");
   const [fallbackNeeded, setFallbackNeeded] = useState<boolean>(false);
   const [isValidated, setIsValidated] = useState<boolean>(false);
-  const [feedback, setFeedback] = useState<string>('');
+  const [feedback, setFeedback] = useState<string>("");
   const [sectionData, setSectionData] = useState<Record<string, any>>(
-    briefData[sectionId] || {}
+    briefData[sectionId] || {},
   );
 
   const handleDataChange = async (key: string, value: any) => {
     const newData = { ...sectionData, [key]: value };
     setSectionData(newData);
-    
+
     // Synchroniser avec le parent
     onDataUpdate(sectionId, newData);
-    
+
     // Synchroniser avec le back-end
     try {
       await briefBackendApi.updateBriefData(sectionId, newData);
       console.log(`Section ${sectionId} synchronized with backend`);
     } catch (error) {
-      console.error('Erreur lors de la synchronisation:', error);
+      console.error("Erreur lors de la synchronisation:", error);
       // En cas d'erreur, on continue sans bloquer l'utilisateur
     }
   };
@@ -57,19 +62,20 @@ const SectionGenerator: React.FC<SectionGeneratorProps> = ({
     try {
       // Sauvegarder les données d'abord
       await briefBackendApi.updateBriefData(sectionId, sectionData);
-      
+
       // Générer la section
       const response: GenerateResponse = await briefBackendApi.generateSection(
         sectionId,
         userPreferences,
-        briefData
+        briefData,
       );
-      
+
       setGeneratedMarkdown(response.markdown);
       setConfidence(response.confidence);
+      setConfidenceLabel(response.confidence_label);
       setFallbackNeeded(response.fallback_needed);
     } catch (error) {
-      console.error('Erreur lors de la génération:', error);
+      console.error("Erreur lors de la génération:", error);
     } finally {
       setIsGenerating(false);
     }
@@ -77,7 +83,7 @@ const SectionGenerator: React.FC<SectionGeneratorProps> = ({
 
   const handleReformulate = async () => {
     if (!feedback.trim() || !generatedMarkdown) return;
-    
+
     setIsReforming(true);
     try {
       const response = await briefBackendApi.provideFeedback(
@@ -85,15 +91,16 @@ const SectionGenerator: React.FC<SectionGeneratorProps> = ({
         feedback,
         generatedMarkdown,
         userPreferences,
-        briefData
+        briefData,
       );
-      
+
       setGeneratedMarkdown(response.markdown);
       setConfidence(response.confidence);
-      setFeedback('');
+      setConfidenceLabel(response.confidence_label);
+      setFeedback("");
       setFallbackNeeded(false);
     } catch (error) {
-      console.error('Erreur lors de la reformulation:', error);
+      console.error("Erreur lors de la reformulation:", error);
     } finally {
       setIsReforming(false);
     }
@@ -104,15 +111,15 @@ const SectionGenerator: React.FC<SectionGeneratorProps> = ({
     try {
       await briefBackendApi.storeSectionApproval(sectionId, generatedMarkdown);
     } catch (err) {
-      console.error('Erreur lors de la validation:', err);
+      console.error("Erreur lors de la validation:", err);
     }
     onSectionComplete(sectionId, generatedMarkdown);
   };
 
   const getConfidenceColor = (conf: number) => {
-    if (conf >= 0.8) return 'bg-green-500';
-    if (conf >= 0.6) return 'bg-yellow-500';
-    return 'bg-red-500';
+    if (conf >= 0.8) return "bg-green-500";
+    if (conf >= 0.6) return "bg-yellow-500";
+    return "bg-red-500";
   };
 
   return (
@@ -128,20 +135,20 @@ const SectionGenerator: React.FC<SectionGeneratorProps> = ({
         <div className="space-y-3">
           <Textarea
             placeholder={`Saisissez les informations pour "${sectionId}"...`}
-            value={sectionData.content || ''}
-            onChange={(e) => handleDataChange('content', e.target.value)}
+            value={sectionData.content || ""}
+            onChange={(e) => handleDataChange("content", e.target.value)}
             rows={3}
           />
         </div>
 
         {/* Actions */}
         <div className="flex space-x-2">
-          <Button 
+          <Button
             onClick={handleGenerate}
             disabled={isGenerating || isValidated}
             className="flex-1"
           >
-            {isGenerating ? 'Génération...' : 'Générer'}
+            {isGenerating ? "Génération..." : "Générer"}
           </Button>
         </div>
 
@@ -151,11 +158,18 @@ const SectionGenerator: React.FC<SectionGeneratorProps> = ({
             <div className="flex items-center space-x-2">
               <span className="text-sm font-medium">Confiance :</span>
               <div className="flex items-center space-x-2">
-                <div className={`w-16 h-2 rounded ${getConfidenceColor(confidence)}`} />
-                <span className="text-sm">{Math.round(confidence * 100)}%</span>
+                <div
+                  className={`w-16 h-2 rounded ${getConfidenceColor(confidence)}`}
+                />
+                <span className="text-sm">
+                  {confidenceLabel || `${Math.round(confidence * 100)}%`}
+                </span>
               </div>
               {fallbackNeeded && (
-                <Badge variant="destructive" className="flex items-center space-x-1">
+                <Badge
+                  variant="destructive"
+                  className="flex items-center space-x-1"
+                >
                   <AlertTriangle className="h-3 w-3" />
                   <span>Révision suggérée</span>
                 </Badge>
@@ -163,7 +177,9 @@ const SectionGenerator: React.FC<SectionGeneratorProps> = ({
             </div>
 
             <div className="p-3 bg-gray-50 rounded border">
-              <pre className="whitespace-pre-wrap text-sm">{generatedMarkdown}</pre>
+              <pre className="whitespace-pre-wrap text-sm">
+                {generatedMarkdown}
+              </pre>
             </div>
 
             {!isValidated && (
@@ -175,19 +191,18 @@ const SectionGenerator: React.FC<SectionGeneratorProps> = ({
                   rows={2}
                 />
                 <div className="flex space-x-2">
-                  <Button 
+                  <Button
                     variant="outline"
                     onClick={handleReformulate}
                     disabled={!feedback.trim() || isReforming}
                     className="flex items-center space-x-1"
                   >
                     <RefreshCw className="h-4 w-4" />
-                    <span>{isReforming ? 'Reformulation...' : 'Reformuler'}</span>
+                    <span>
+                      {isReforming ? "Reformulation..." : "Reformuler"}
+                    </span>
                   </Button>
-                  <Button 
-                    onClick={handleValidate}
-                    className="flex-1"
-                  >
+                  <Button onClick={handleValidate} className="flex-1">
                     Valider cette section
                   </Button>
                 </div>
