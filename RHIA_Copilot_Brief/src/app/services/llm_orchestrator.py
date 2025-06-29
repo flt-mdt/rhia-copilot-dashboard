@@ -15,15 +15,12 @@ async def generate_section(
     Retourne le markdown + score de confiance + log.
     """
 
-    # 1. Concatène les contextes RAG
-    context_text = "\n\n".join([c["text"] for c in chunks])
-
-    # 2. Construit le prompt dynamique (template v3)
+    # 1. Construit le prompt dynamique (template v3)
     prompt = build_prompt(
         section_id=section_id,
-        rag_context=context_text,
+        rag_chunks=chunks,
         brief_data=brief_data,
-        user_preferences=user_preferences
+        user_preferences=user_preferences,
     )
 
     # 3. Appel LLM (OpenAI ou autre orchestrateur)

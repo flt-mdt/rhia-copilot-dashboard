@@ -2,6 +2,7 @@ from sentence_transformers import SentenceTransformer
 from qdrant_client.models import Filter, FieldCondition, MatchValue, SearchParams
 from app.services.qdrant_client import get_qdrant_client
 from app.core.constants import QDRANT_COLLECTION_BRIEF
+import asyncio
 
 qdrant = get_qdrant_client()
 
@@ -10,11 +11,8 @@ def get_embedder():
         get_embedder._model = SentenceTransformer("all-MiniLM-L6-v2")
     return get_embedder._model
 
-def retrieve_chunks(section: str, job_function: str, seniority: str, language: str) -> list[dict]:
-    """
-    Interroge Qdrant pour retrouver les meilleurs chunks contextuels selon
-    la section, le rôle, la séniorité et la langue.
-    """
+def _retrieve_chunks_sync(section: str, job_function: str, seniority: str, language: str) -> list[dict]:
+    """Blocking Qdrant search used in async wrapper."""
     query = f"{section} pour un rôle de {job_function} niveau {seniority}"
     embedder = get_embedder()
     vector = embedder.encode(query).tolist()
@@ -38,3 +36,14 @@ def retrieve_chunks(section: str, job_function: str, seniority: str, language: s
     )
 
     return [{"text": r.payload.get("text"), "score": r.score, "metadata": r.payload} for r in results]
+
+
+async def retrieve_chunks(section: str, job_function: str, seniority: str, language: str) -> list[dict]:
+    """Asynchronous wrapper around the blocking Qdrant search."""
+    return await asyncio.to_thread(
+        _retrieve_chunks_sync,
+        section,
+        job_function,
+        seniority,
+        language,
+    )

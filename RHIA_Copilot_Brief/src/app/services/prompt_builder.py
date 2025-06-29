@@ -1,9 +1,32 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 
-def build_prompt(section_id: str, rag_context: str, brief_data: Dict[str, Any], user_preferences: Dict[str, Any]) -> str:
+def build_prompt(
+    section_id: str,
+    rag_context: str | None = None,
+    brief_data: Dict[str, Any] | None = None,
+    user_preferences: Dict[str, Any] | None = None,
+    rag_chunks: List[Dict[str, Any]] | None = None,
+) -> str:
     """
     Construit un prompt structuré pour le LLM à partir des données utilisateur + contexte RAG.
     """
+    brief_data = brief_data or {}
+    user_preferences = user_preferences or {}
+
+    if rag_chunks is not None:
+        formatted_chunks = []
+        for chunk in rag_chunks:
+            text = chunk.get("text", "")
+            metadata = chunk.get("metadata", {})
+            meta_str = ", ".join(f"{k}: {v}" for k, v in metadata.items() if k != "text")
+            if meta_str:
+                formatted_chunks.append(f"{text}\n[{meta_str}]")
+            else:
+                formatted_chunks.append(text)
+        rag_context = "\n\n".join(formatted_chunks)
+    else:
+        rag_context = rag_context or ""
+
     seniority = user_preferences.get("seniority", "Senior")
     tone = {
         "Stagiaire": "simple et accessible",
