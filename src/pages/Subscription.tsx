@@ -5,6 +5,7 @@ import { LogIn, ChevronRight, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { SecurityComplianceSection } from '@/components/subscription/SecurityComplianceSection';
+import { useSEO } from '@/hooks/useSEO';
 
 interface PricingFeature {
   text: string;
@@ -26,6 +27,12 @@ interface PricingPlan {
 const Subscription = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+
+  // SEO optimization
+  useSEO({
+    title: 'Plans et Tarifs RHIA Copilot - Abonnements IA pour le Recrutement',
+    description: 'Découvrez nos plans d\'abonnement RHIA Copilot : Starter à 29€, Pro à 79€, Enterprise à 199€. Solutions IA complètes pour automatiser votre recrutement. Essai gratuit disponible.'
+  });
 
   const plans: PricingPlan[] = [
     {

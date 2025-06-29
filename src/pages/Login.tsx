@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useSEO } from '@/hooks/useSEO';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,6 +19,12 @@ const Login = () => {
   const { toast } = useToast();
   const { signInWithEmail, signInWithGoogle, signInWithLinkedIn, signUp, user } = useAuth();
   const { t } = useLanguage();
+
+  // SEO optimization
+  useSEO({
+    title: 'Connexion RHIA Copilot - Accédez à votre Dashboard RH IA',
+    description: 'Connectez-vous à RHIA Copilot pour accéder à vos outils de recrutement IA : analyse de candidats, sourcing automatisé et brief intelligent. Plateforme sécurisée pour les professionnels RH.'
+  });
 
   // Redirect if already logged in
   React.useEffect(() => {

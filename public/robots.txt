@@ -1,7 +1,49 @@
+
+# Robots.txt pour RHIA Copilot
+# Dernière mise à jour: 2024
+
+User-agent: *
+Allow: /
+
+# Pages importantes à indexer en priorité
+Allow: /presentation
+Allow: /subscription  
+Allow: /privacy
+
+# Pages privées et interfaces utilisateur à exclure
+Disallow: /dashboard
+Disallow: /login
+Disallow: /brief
+Disallow: /candidates
+Disallow: /hunter
+Disallow: /settings
+Disallow: /collection
+Disallow: /job-postings
+Disallow: /tracking
+Disallow: /schedule-demo
+
+# Dossiers techniques à exclure
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /static/
+
+# Autoriser les ressources publiques
+Allow: /lovable-uploads/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.webp
+
+# Bots spécifiques - Autoriser l'indexation complète
 User-agent: Googlebot
 Allow: /
 
-User-agent: Bingbot
+User-agent: Bingbot  
 Allow: /
 
 User-agent: Twitterbot
@@ -10,5 +52,8 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
-Allow: /
+# Sitemap
+Sitemap: https://rhia-copilot.com/sitemap.xml
+
+# Délai entre les requêtes (en secondes) pour éviter la surcharge
+Crawl-delay: 1
