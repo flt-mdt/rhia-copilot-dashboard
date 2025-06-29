@@ -2,7 +2,8 @@ from typing import Any
 
 from app.graph.brief_generator import brief_graph
 from app.models.user_pref import UserPreferences
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from langgraph.errors import GraphRecursionError
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -39,9 +40,19 @@ async def generate_section(payload: GenerateRequest):
         # Pydantic → dict pour le prompt builder
         "user_preferences": payload.user_preferences.dict(),
         "brief_data": payload.brief_data,
+        "retry_count": 0,
     }
 
-    result = await brief_graph.ainvoke(state)  # ← version asynchrone !
+    try:
+        result = await brief_graph.ainvoke(state)  # ← version asynchrone !
+    except GraphRecursionError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "Generation loop exceeded limits. "
+                "Please check the provided data or try again."
+            ),
+        ) from exc
 
     return GenerateResponse(
         markdown=result["draft"],
