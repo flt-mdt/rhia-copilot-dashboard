@@ -2,6 +2,7 @@
 from typing import Dict, Any
 from app.services.rag_retriever import retrieve_chunks
 from app.telemetry.logging import logger
+from app.core.constants import THRESHOLD_RAG_SIMILARITY
 
 class RagRetriever:
     async def __call__(self, state: Dict[str, Any]) -> Dict[str, Any]:
@@ -28,12 +29,13 @@ class RagRetriever:
                 language=language
             )
 
-            context = "\n\n".join([chunk["text"] for chunk in chunks if "text" in chunk])
+            filtered = [c for c in chunks if c.get("score", 0.0) >= THRESHOLD_RAG_SIMILARITY]
+            context = "\n\n".join([chunk["text"] for chunk in filtered if "text" in chunk])
 
             return {
                 **state,
                 "rag_context": context,
-                "rag_chunks": chunks,
+                "rag_chunks": filtered,
                 "rag_confidence": max((chunk.get("score", 0) for chunk in chunks), default=0)
             }
 
