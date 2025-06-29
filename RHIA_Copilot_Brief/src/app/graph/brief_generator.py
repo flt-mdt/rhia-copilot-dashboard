@@ -32,6 +32,5 @@ graph.add_conditional_edges(
 )
 
 
-# 5. Compiler le graphe avec une limite de récursion explicite
-# pour éviter les boucles infinies en cas de confiance trop basse
-brief_graph = graph.compile(config={"recursion_limit": 10})
+# 5. Compiler le graphe
+brief_graph = graph.compile()

@@ -44,13 +44,15 @@ async def generate_section(payload: GenerateRequest):
     }
 
     try:
-        result = await brief_graph.ainvoke(state)  # ← version asynchrone !
+        result = await brief_graph.ainvoke(
+            state,
+            config={"recursion_limit": 10},
+        )  # ← version asynchrone !
     except GraphRecursionError as exc:
         raise HTTPException(
             status_code=500,
             detail=(
-                "Generation loop exceeded limits. "
-                "Please check the provided data or try again."
+                "Generation loop exceeded limits. " "Please check the provided data or try again."
             ),
         ) from exc
 
