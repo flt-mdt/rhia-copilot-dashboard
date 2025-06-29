@@ -1,24 +1,28 @@
-import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Textarea } from '@/components/ui/textarea';
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  Sparkles, 
-  CheckCircle, 
-  AlertTriangle, 
+import React, { useState, useMemo } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Sparkles,
+  CheckCircle,
+  AlertTriangle,
   RefreshCw,
   Eye,
   ThumbsUp,
   MessageSquare,
-  Save
-} from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { briefBackendApi, UserPreferences, BriefData } from '@/services/briefBackendApi';
-import { SECTION_LABELS_TO_IDS } from '@/constants/sectionMapping';
+  Save,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import {
+  briefBackendApi,
+  UserPreferences,
+  BriefData,
+} from "@/services/briefBackendApi";
+import { SECTION_LABELS_TO_IDS } from "@/constants/sectionMapping";
 
 interface BriefGenerationStepProps {
   userPreferences: UserPreferences;
@@ -29,94 +33,120 @@ interface BriefGenerationStepProps {
 interface GeneratedSection {
   markdown: string;
   confidence: number;
+  confidence_label: string;
   fallback_needed: boolean;
   isApproved: boolean;
 }
 
-const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({ 
-  userPreferences, 
-  onNext, 
-  onBack 
+const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
+  userPreferences,
+  onNext,
+  onBack,
 }) => {
   const { toast } = useToast();
-  
-  const SECTION_NAMES = useMemo(() => [
-    "Titre & Job Family", "Contexte & Business Case", "Finalité/Mission", "Objectifs & KPIs",
-    "Responsabilités clés", "Périmètre budgétaire & managérial", "Environnement & contraintes",
-    "Compétences & exigences", "Qualifications & expériences", "Employee Value Proposition",
-    "Perspectives d'évolution", "Rémunération & avantages", "Cadre contractuel",
-    "Mesure de la performance & cadence", "Parties prenantes & RACI",
-    "Inclusion, conformité & sécurité", "Onboarding & développement", "Processus de recrutement"
-  ], []);
 
-  const selectedSections = useMemo(() => 
-    SECTION_NAMES.filter((_, index) => userPreferences.sections[index]),
-    [SECTION_NAMES, userPreferences.sections]
+  const SECTION_NAMES = useMemo(
+    () => [
+      "Titre & Job Family",
+      "Contexte & Business Case",
+      "Finalité/Mission",
+      "Objectifs & KPIs",
+      "Responsabilités clés",
+      "Périmètre budgétaire & managérial",
+      "Environnement & contraintes",
+      "Compétences & exigences",
+      "Qualifications & expériences",
+      "Employee Value Proposition",
+      "Perspectives d'évolution",
+      "Rémunération & avantages",
+      "Cadre contractuel",
+      "Mesure de la performance & cadence",
+      "Parties prenantes & RACI",
+      "Inclusion, conformité & sécurité",
+      "Onboarding & développement",
+      "Processus de recrutement",
+    ],
+    [],
   );
 
-  const [generatedSections, setGeneratedSections] = useState<Record<string, GeneratedSection>>({});
-  const [loadingSections, setLoadingSections] = useState<Set<string>>(new Set());
-  const [feedbackTexts, setFeedbackTexts] = useState<Record<string, string>>({});
+  const selectedSections = useMemo(
+    () => SECTION_NAMES.filter((_, index) => userPreferences.sections[index]),
+    [SECTION_NAMES, userPreferences.sections],
+  );
+
+  const [generatedSections, setGeneratedSections] = useState<
+    Record<string, GeneratedSection>
+  >({});
+  const [loadingSections, setLoadingSections] = useState<Set<string>>(
+    new Set(),
+  );
+  const [feedbackTexts, setFeedbackTexts] = useState<Record<string, string>>(
+    {},
+  );
   const [isSavingBrief, setIsSavingBrief] = useState(false);
 
   const handleGenerateSection = async (sectionName: string) => {
-    setLoadingSections(prev => new Set([...prev, sectionName]));
-    
+    setLoadingSections((prev) => new Set([...prev, sectionName]));
+
     try {
       const sectionId = SECTION_LABELS_TO_IDS[sectionName];
-      
+
       if (!sectionId) {
         throw new Error(`Section ID non trouvé pour: ${sectionName}`);
       }
 
       // Récupérer le job_function depuis les données sauvegardées
-      const titleSectionData = await briefBackendApi.getSectionData("titre_job_family");
-      const jobFunction = titleSectionData?.job_title || titleSectionData?.job_function || "Poste non défini";
+      const titleSectionData =
+        await briefBackendApi.getSectionData("titre_job_family");
+      const jobFunction =
+        titleSectionData?.job_title ||
+        titleSectionData?.job_function ||
+        "Poste non défini";
 
       // Structure correcte du payload selon la nouvelle spécification
       const briefData: BriefData = {
         [sectionId]: {
-          job_function: jobFunction
-        }
+          job_function: jobFunction,
+        },
       };
-      
-      console.log('Génération de section:', {
+
+      console.log("Génération de section:", {
         sectionName,
         sectionId,
         userPreferences,
-        briefData
+        briefData,
       });
-      
+
       const response = await briefBackendApi.generateSection(
         sectionId,
         userPreferences,
-        briefData
+        briefData,
       );
-      
-      setGeneratedSections(prev => ({
+
+      setGeneratedSections((prev) => ({
         ...prev,
         [sectionName]: {
           markdown: response.markdown,
           confidence: response.confidence,
+          confidence_label: response.confidence_label,
           fallback_needed: response.fallback_needed,
-          isApproved: false
-        }
+          isApproved: false,
+        },
       }));
-      
+
       toast({
         title: "Section générée",
         description: `Le contenu de "${sectionName}" a été généré avec succès.`,
       });
-      
     } catch (error) {
-      console.error('Erreur lors de la génération:', error);
+      console.error("Erreur lors de la génération:", error);
       toast({
         title: "Erreur de génération",
         description: "Impossible de générer cette section. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
-      setLoadingSections(prev => {
+      setLoadingSections((prev) => {
         const newSet = new Set(prev);
         newSet.delete(sectionName);
         return newSet;
@@ -131,63 +161,68 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
     const currentSection = generatedSections[sectionName];
     if (!currentSection) return;
 
-    setLoadingSections(prev => new Set([...prev, sectionName]));
-    
+    setLoadingSections((prev) => new Set([...prev, sectionName]));
+
     try {
       const sectionId = SECTION_LABELS_TO_IDS[sectionName];
-      
+
       if (!sectionId) {
         throw new Error(`Section ID non trouvé pour: ${sectionName}`);
       }
 
       // Récupérer le job_function depuis les données sauvegardées
-      const titleSectionData = await briefBackendApi.getSectionData("titre_job_family");
-      const jobFunction = titleSectionData?.job_title || titleSectionData?.job_function || "Poste non défini";
+      const titleSectionData =
+        await briefBackendApi.getSectionData("titre_job_family");
+      const jobFunction =
+        titleSectionData?.job_title ||
+        titleSectionData?.job_function ||
+        "Poste non défini";
 
       // Structure correcte du payload pour le feedback
       const briefData: BriefData = {
         [sectionId]: {
-          job_function: jobFunction
-        }
+          job_function: jobFunction,
+        },
       };
-      
+
       const response = await briefBackendApi.provideFeedback(
         sectionId,
         feedback,
         currentSection.markdown,
         userPreferences,
-        briefData
+        briefData,
       );
-      
-      setGeneratedSections(prev => ({
+
+      setGeneratedSections((prev) => ({
         ...prev,
         [sectionName]: {
           ...prev[sectionName],
           markdown: response.markdown,
           confidence: response.confidence,
-          fallback_needed: false
-        }
+          confidence_label: response.confidence_label,
+          fallback_needed: false,
+        },
       }));
-      
-      setFeedbackTexts(prev => ({
+
+      setFeedbackTexts((prev) => ({
         ...prev,
-        [sectionName]: ''
+        [sectionName]: "",
       }));
-      
+
       toast({
         title: "Section reformulée",
         description: `Le contenu de "${sectionName}" a été mis à jour selon vos commentaires.`,
       });
-      
     } catch (error) {
-      console.error('Erreur lors de la reformulation:', error);
+      console.error("Erreur lors de la reformulation:", error);
       toast({
         title: "Erreur de reformulation",
-        description: "Impossible de reformuler cette section. Veuillez réessayer.",
+        description:
+          "Impossible de reformuler cette section. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
-      setLoadingSections(prev => {
+      setLoadingSections((prev) => {
         const newSet = new Set(prev);
         newSet.delete(sectionName);
         return newSet;
@@ -201,31 +236,31 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
 
     try {
       const sectionId = SECTION_LABELS_TO_IDS[sectionName];
-      
+
       if (!sectionId) {
         throw new Error(`Section ID non trouvé pour: ${sectionName}`);
       }
 
       await briefBackendApi.storeSectionApproval(sectionId, section.markdown);
-      
-      setGeneratedSections(prev => ({
+
+      setGeneratedSections((prev) => ({
         ...prev,
         [sectionName]: {
           ...prev[sectionName],
-          isApproved: true
-        }
+          isApproved: true,
+        },
       }));
-      
+
       toast({
         title: "Section approuvée",
         description: `Le contenu de "${sectionName}" a été approuvé.`,
       });
-      
     } catch (error) {
-      console.error('Erreur lors de l\'approbation:', error);
+      console.error("Erreur lors de l'approbation:", error);
       toast({
         title: "Erreur d'approbation",
-        description: "Impossible d'approuver cette section. Veuillez réessayer.",
+        description:
+          "Impossible d'approuver cette section. Veuillez réessayer.",
         variant: "destructive",
       });
     }
@@ -233,16 +268,16 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
 
   const handleFinalizeBrief = async () => {
     setIsSavingBrief(true);
-    
+
     try {
       // Récupérer toutes les sections approuvées
       const approvedSectionsData = selectedSections
-        .map(sectionName => {
+        .map((sectionName) => {
           const section = generatedSections[sectionName];
           if (section?.isApproved) {
             return {
               name: sectionName,
-              content: section.markdown
+              content: section.markdown,
             };
           }
           return null;
@@ -252,21 +287,25 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
       if (approvedSectionsData.length === 0) {
         toast({
           title: "Aucune section approuvée",
-          description: "Vous devez approuver au moins une section avant de finaliser le brief.",
+          description:
+            "Vous devez approuver au moins une section avant de finaliser le brief.",
           variant: "destructive",
         });
         return;
       }
 
       // Générer un titre pour le brief basé sur les sections
-      const briefTitle = approvedSectionsData.find(s => s.name.includes('Titre'))?.content.split('\n')[0] || 
-                        `Brief généré le ${new Date().toLocaleDateString('fr-FR')}`;
+      const briefTitle =
+        approvedSectionsData
+          .find((s) => s.name.includes("Titre"))
+          ?.content.split("\n")[0] ||
+        `Brief généré le ${new Date().toLocaleDateString("fr-FR")}`;
 
       // Sauvegarder le brief
       const briefId = await briefBackendApi.saveFinalBrief({
         title: briefTitle,
         sections: approvedSectionsData,
-        userPreferences: userPreferences
+        userPreferences: userPreferences,
       });
 
       toast({
@@ -276,9 +315,8 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
 
       // Passer à l'étape suivante
       onNext();
-      
     } catch (error) {
-      console.error('Erreur lors de la finalisation du brief:', error);
+      console.error("Erreur lors de la finalisation du brief:", error);
       toast({
         title: "Erreur de sauvegarde",
         description: "Impossible de sauvegarder le brief. Veuillez réessayer.",
@@ -290,26 +328,31 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
   };
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 0.8) return 'bg-green-500';
-    if (confidence >= 0.6) return 'bg-yellow-500';
-    return 'bg-red-500';
+    if (confidence >= 0.8) return "bg-green-500";
+    if (confidence >= 0.6) return "bg-yellow-500";
+    return "bg-red-500";
   };
 
   const getConfidenceLabel = (confidence: number) => {
-    if (confidence >= 0.8) return 'Élevée';
-    if (confidence >= 0.6) return 'Moyenne';
-    return 'Faible';
+    if (confidence >= 0.8) return "Élevée";
+    if (confidence >= 0.6) return "Moyenne";
+    return "Faible";
   };
 
-  const approvedSections = Object.values(generatedSections).filter(section => section.isApproved).length;
+  const approvedSections = Object.values(generatedSections).filter(
+    (section) => section.isApproved,
+  ).length;
   const totalSections = selectedSections.length;
-  const progressPercentage = totalSections > 0 ? (approvedSections / totalSections) * 100 : 0;
+  const progressPercentage =
+    totalSections > 0 ? (approvedSections / totalSections) * 100 : 0;
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       {/* En-tête avec progression */}
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-gray-900">Génération des sections</h2>
+        <h2 className="text-3xl font-bold text-gray-900">
+          Génération des sections
+        </h2>
         <p className="text-lg text-gray-600">
           Générez et validez le contenu de chaque section sélectionnée
         </p>
@@ -326,10 +369,13 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
         {selectedSections.map((sectionName, index) => {
           const generatedSection = generatedSections[sectionName];
           const isLoading = loadingSections.has(sectionName);
-          const feedbackText = feedbackTexts[sectionName] || '';
+          const feedbackText = feedbackTexts[sectionName] || "";
 
           return (
-            <Card key={sectionName} className="border-2 border-gray-100 shadow-lg">
+            <Card
+              key={sectionName}
+              className="border-2 border-gray-100 shadow-lg"
+            >
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xl font-semibold text-gray-900">
@@ -337,13 +383,19 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
                   </CardTitle>
                   <div className="flex items-center space-x-2">
                     {generatedSection?.isApproved && (
-                      <Badge variant="default" className="bg-green-100 text-green-800">
+                      <Badge
+                        variant="default"
+                        className="bg-green-100 text-green-800"
+                      >
                         <CheckCircle className="h-4 w-4 mr-1" />
                         Approuvée
                       </Badge>
                     )}
                     {generatedSection && !generatedSection.isApproved && (
-                      <Badge variant="outline" className="border-blue-200 text-blue-700">
+                      <Badge
+                        variant="outline"
+                        className="border-blue-200 text-blue-700"
+                      >
                         <Eye className="h-4 w-4 mr-1" />
                         En révision
                       </Badge>
@@ -351,11 +403,11 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
                   </div>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="space-y-4">
                 {/* Bouton de génération */}
                 {!generatedSection && (
-                  <Button 
+                  <Button
                     onClick={() => handleGenerateSection(sectionName)}
                     disabled={isLoading}
                     className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl py-3"
@@ -379,15 +431,26 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
                   <div className="space-y-4">
                     {/* Indicateur de confiance */}
                     <div className="flex items-center space-x-3">
-                      <span className="text-sm font-medium text-gray-700">Confiance :</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        Confiance :
+                      </span>
                       <div className="flex items-center space-x-2">
-                        <div className={`w-20 h-2 rounded-full ${getConfidenceColor(generatedSection.confidence)}`} />
+                        <div
+                          className={`w-20 h-2 rounded-full ${getConfidenceColor(generatedSection.confidence)}`}
+                        />
                         <span className="text-sm font-medium">
-                          {getConfidenceLabel(generatedSection.confidence)} ({Math.round(generatedSection.confidence * 100)}%)
+                          {generatedSection.confidence_label ||
+                            getConfidenceLabel(
+                              generatedSection.confidence,
+                            )}{" "}
+                          ({Math.round(generatedSection.confidence * 100)}%)
                         </span>
                       </div>
                       {generatedSection.fallback_needed && (
-                        <Badge variant="destructive" className="flex items-center space-x-1">
+                        <Badge
+                          variant="destructive"
+                          className="flex items-center space-x-1"
+                        >
                           <AlertTriangle className="h-3 w-3" />
                           <span>Révision suggérée</span>
                         </Badge>
@@ -413,10 +476,12 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
                           </label>
                           <Textarea
                             value={feedbackText}
-                            onChange={(e) => setFeedbackTexts(prev => ({
-                              ...prev,
-                              [sectionName]: e.target.value
-                            }))}
+                            onChange={(e) =>
+                              setFeedbackTexts((prev) => ({
+                                ...prev,
+                                [sectionName]: e.target.value,
+                              }))
+                            }
                             placeholder="Ajoutez des précisions ou demandez des modifications..."
                             className="rounded-xl border-2 border-gray-200 focus:border-blue-400"
                             rows={3}
@@ -425,17 +490,19 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
 
                         {/* Boutons d'action */}
                         <div className="flex space-x-3">
-                          <Button 
+                          <Button
                             variant="outline"
                             onClick={() => handleProvideFeedback(sectionName)}
                             disabled={!feedbackText.trim() || isLoading}
                             className="flex items-center space-x-2 rounded-xl"
                           >
                             <RefreshCw className="h-4 w-4" />
-                            <span>{isLoading ? 'Reformulation...' : 'Reformuler'}</span>
+                            <span>
+                              {isLoading ? "Reformulation..." : "Reformuler"}
+                            </span>
                           </Button>
-                          
-                          <Button 
+
+                          <Button
                             onClick={() => handleApproveSection(sectionName)}
                             className="flex-1 bg-green-600 hover:bg-green-700 rounded-xl"
                           >
@@ -455,12 +522,16 @@ const BriefGenerationStep: React.FC<BriefGenerationStepProps> = ({
 
       {/* Navigation globale */}
       <div className="flex justify-between items-center pt-8 border-t border-gray-200">
-        <Button variant="outline" onClick={onBack} className="px-6 py-3 rounded-xl">
+        <Button
+          variant="outline"
+          onClick={onBack}
+          className="px-6 py-3 rounded-xl"
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Retour à la saisie
         </Button>
-        
-        <Button 
+
+        <Button
           onClick={handleFinalizeBrief}
           disabled={approvedSections === 0 || isSavingBrief}
           className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl text-white font-medium"

@@ -1,18 +1,18 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
 
 
 class DraftSectionRequest(BaseModel):
     session_id: str
     current_section: str  # ex: "Profil"
     user_preferences: dict  # temporaire (Pydantic model acceptable)
-    brief_data: dict        # idem
+    brief_data: dict  # idem
 
 
 class DraftSectionResponse(BaseModel):
     section_id: str
     markdown: str
     confidence: float
+    confidence_label: str
     fallback_needed: bool
 
 
@@ -28,6 +28,7 @@ class FeedbackRequest(BaseModel):
 class FeedbackResponse(BaseModel):
     markdown: str
     confidence: float
+    confidence_label: str
 
 
 class SectionApproval(BaseModel):
@@ -35,4 +36,3 @@ class SectionApproval(BaseModel):
     section_id: str
     markdown: str
     status: str = Field(default="approved")  # approved | rejected
- 

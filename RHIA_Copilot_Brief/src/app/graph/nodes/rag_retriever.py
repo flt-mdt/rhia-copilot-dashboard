@@ -1,11 +1,16 @@
+from typing import Any
 
-from typing import Dict, Any
+from app.core.constants import THRESHOLD_RAG_SIMILARITY
+from app.services.confidence_scoring import (
+    compute_rag_score,
+    rerank_chunks,
+)
 from app.services.rag_retriever import retrieve_chunks
 from app.telemetry.logging import logger
-from app.core.constants import THRESHOLD_RAG_SIMILARITY
+
 
 class RagRetriever:
-    async def __call__(self, state: Dict[str, Any]) -> Dict[str, Any]:
+    async def __call__(self, state: dict[str, Any]) -> dict[str, Any]:
         try:
             section_id = state["current_section"]
             brief_data = state["brief_data"]
@@ -18,25 +23,26 @@ class RagRetriever:
             language = user_preferences.get("language", "").strip()
 
             if not job_function:
-                raise ValueError(
-                    f"Champ 'job_function' manquant dans brief_data[{section_id}]"
-                )
+                raise ValueError(f"Champ 'job_function' manquant dans brief_data[{section_id}]")
 
             chunks = await retrieve_chunks(
                 section=section_id,
                 job_function=job_function,
                 seniority=seniority,
-                language=language
+                language=language,
             )
 
-            filtered = [c for c in chunks if c.get("score", 0.0) >= THRESHOLD_RAG_SIMILARITY]
-            context = "\n\n".join([chunk["text"] for chunk in filtered if "text" in chunk])
+            query = f"{section_id} {job_function} {seniority} {language}".strip()
+            reranked = rerank_chunks(query, chunks)
+            filtered = [c for c in reranked if c.get("score", 0.0) >= THRESHOLD_RAG_SIMILARITY]
+            context = "\n\n".join([chunk.get("text", "") for chunk in filtered])
+            rag_score = compute_rag_score(filtered)
 
             return {
                 **state,
                 "rag_context": context,
                 "rag_chunks": filtered,
-                "rag_confidence": max((chunk.get("score", 0) for chunk in chunks), default=0)
+                "rag_confidence": rag_score,
             }
 
         except Exception as e:
@@ -46,5 +52,5 @@ class RagRetriever:
                 "rag_context": "",
                 "rag_chunks": [],
                 "rag_confidence": 0.0,
-                "rag_error": str(e)
+                "rag_error": str(e),
             }

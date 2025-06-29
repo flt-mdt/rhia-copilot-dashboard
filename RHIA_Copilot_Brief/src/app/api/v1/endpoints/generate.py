@@ -1,11 +1,12 @@
+from typing import Any
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import Dict, Any
 from app.graph.brief_generator import brief_graph
 from app.models.user_pref import UserPreferences
+from fastapi import APIRouter
+from pydantic import BaseModel
 
 router = APIRouter()
+
 
 class GenerateRequest(BaseModel):
     """Payload for the /generate endpoint.
@@ -17,12 +18,15 @@ class GenerateRequest(BaseModel):
     session_id: str
     section_id: str
     user_preferences: UserPreferences
-    brief_data: Dict[str, Dict[str, Any]]
+    brief_data: dict[str, dict[str, Any]]
+
 
 class GenerateResponse(BaseModel):
     markdown: str
     confidence: float
+    confidence_label: str
     fallback_needed: bool
+
 
 @router.post("/generate", response_model=GenerateResponse)
 async def generate_section(payload: GenerateRequest):
@@ -34,7 +38,7 @@ async def generate_section(payload: GenerateRequest):
         "current_section": payload.section_id,  # ← clé correcte
         # Pydantic → dict pour le prompt builder
         "user_preferences": payload.user_preferences.dict(),
-        "brief_data": payload.brief_data
+        "brief_data": payload.brief_data,
     }
 
     result = await brief_graph.ainvoke(state)  # ← version asynchrone !
@@ -42,5 +46,6 @@ async def generate_section(payload: GenerateRequest):
     return GenerateResponse(
         markdown=result["draft"],
         confidence=result["confidence"],
-        fallback_needed=result.get("fallback_needed", False)
+        confidence_label=result.get("confidence_label", ""),
+        fallback_needed=result.get("fallback_needed", False),
     )
