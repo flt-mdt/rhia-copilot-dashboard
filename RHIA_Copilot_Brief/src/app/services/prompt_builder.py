@@ -1,5 +1,55 @@
 from typing import Dict, Any, List
 
+
+def format_user_data(section_id: str, data: Dict[str, Any]) -> str:
+    """Return a readable string from raw user data for a section."""
+    if not data:
+        return ""
+
+    templates = {
+        "titre_job_family": (
+            "Nous recherchons un {job_title} issu de la famille de m\u00e9tier {job_family} "
+            "qui sera rattache\u0301 au {reporting_to} au sein du d\u00e9partement {department}."
+        ),
+        "contexte": (
+            "Contexte business : {business_context}. Importance : {strategic_importance}. "
+            "Urgence : {urgency}."
+        ),
+        "finalite_mission": (
+            "Mission principale : {main_purpose}. Contribution cl\u00e9 : {key_contribution}."
+        ),
+        "objectifs_kpis": (
+            "Objectifs : {objectives}. Indicateurs : {success_metrics}. Evaluation sous {performance_timeline}."
+        ),
+        "responsabilites_cles": (
+            "T\u00e2ches quotidiennes : {daily_tasks}. Hebdo : {weekly_tasks}. Projets sp\u00e9ciaux : {special_projects}."
+        ),
+        "competences_exigences": (
+            "Comp\u00e9tences techniques : {hard_skills}. Comp\u00e9tences comportementales : {soft_skills}. Langues : {languages}."
+        ),
+        "perimetre_budgetaire": "P\u00e9rim\u00e8tre budg\u00e9taire et manag\u00e9rial : {content}",
+        "environnement_contraintes": "Environnement et contraintes : {content}",
+        "qualifications_experiences": "Qualifications et exp\u00e9riences : {content}",
+        "employee_value_proposition": "Proposition de valeur employ\u00e9 : {content}",
+        "perspectives_evolution": "Perspectives d\u2019\u00e9volution : {content}",
+        "remuneration_avantages": "R\u00e9mun\u00e9ration et avantages : {content}",
+        "cadre_contractuel": "Cadre contractuel : {content}",
+        "performance_cadence": "Mesure de la performance et cadence : {content}",
+        "parties_prenantes_raci": "Parties prenantes & RACI : {content}",
+        "inclusion_conformite": "Inclusion, conformit\u00e9 et s\u00e9curit\u00e9 : {content}",
+        "onboarding_developpement": "Onboarding et d\u00e9veloppement : {content}",
+        "processus_recrutement": "Processus de recrutement : {content}",
+    }
+
+    template = templates.get(section_id)
+    if template:
+        try:
+            return template.format(**data)
+        except Exception:
+            pass
+
+    return "; ".join(f"{k}: {v}" for k, v in data.items())
+
 def build_prompt(
     section_id: str,
     rag_context: str | None = None,
@@ -36,6 +86,7 @@ def build_prompt(
     }.get(seniority, "professionnel")
 
     user_data = brief_data.get(section_id, {})
+    user_data_str = format_user_data(section_id, user_data)
 
     return f"""
 Tu es un expert RH en charge de rédiger une seule section de brief de poste.
@@ -49,7 +100,7 @@ Respecte les bonnes pratiques RH : clarté, inclusivité, précision.
 - Langue : {user_preferences.get('language', 'fr')}
 - Ton attendu : {tone}
 - Niveau : {seniority}
-- Données utilisateur : {user_data}
+- Données utilisateur : {user_data_str}
 - Réponds uniquement par le texte de cette section
 
 ## CONTRAINTES
@@ -74,6 +125,7 @@ def build_feedback_prompt(section_id: str, user_feedback: str, previous_output: 
     }.get(seniority, "professionnel")
 
     user_data = brief_data.get(section_id, {})
+    user_data_str = format_user_data(section_id, user_data)
 
     return f"""
 Tu es un assistant RH expert chargé de reformuler une section de brief de poste.
@@ -86,7 +138,7 @@ Tu es un assistant RH expert chargé de reformuler une section de brief de poste
 
 ## CONTEXTE UTILISATEUR
 - Niveau : {seniority}
-- Données supplémentaires : {user_data}
+- Données supplémentaires : {user_data_str}
 
 ## CONSIGNES
 - Reformule uniquement cette section
