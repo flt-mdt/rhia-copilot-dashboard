@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ import { useSEO } from '@/hooks/useSEO';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, loading, signInWithEmail } = useAuth();
   const { t } = useLanguage();
 
   useSEO({
@@ -31,8 +32,6 @@ const Login = () => {
     }
   }, [user, navigate]);
 
-  const { login } = useAuth();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -43,7 +42,7 @@ const Login = () => {
     }
 
     try {
-      await login(email, password);
+      await signInWithEmail(email, password);
       navigate('/dashboard');
     } catch (err: any) {
       setError(t('login.error.invalidCredentials'));
