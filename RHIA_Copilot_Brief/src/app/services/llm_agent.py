@@ -11,9 +11,9 @@ class LLMAgent:
     async def generate_section(self, state: Dict[str, Any]) -> Dict[str, Any]:
         prompt = build_prompt(
             section_id=state["section_id"],
-            rag_context="\n\n".join([c["text"] for c in state.get("rag_chunks", [])]),
+            rag_chunks=state.get("rag_chunks", []),
             brief_data=state["brief_data"],
-            user_preferences=state["user_preferences"]
+            user_preferences=state["user_preferences"],
         )
 
         response = await call_llm(prompt)
