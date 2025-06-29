@@ -27,7 +27,7 @@ async def generate_section(
     )
 
     # 3. Appel LLM (OpenAI ou autre orchestrateur)
-    response = await call_llm(prompt=prompt)
+    response = await call_llm(prompt=prompt, section_id=section_id)
 
     return {
         "markdown": response["output"],

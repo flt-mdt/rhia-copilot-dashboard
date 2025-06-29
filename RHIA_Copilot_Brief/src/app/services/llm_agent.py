@@ -16,7 +16,7 @@ class LLMAgent:
             user_preferences=state["user_preferences"]
         )
 
-        response = await call_llm(prompt)
+        response = await call_llm(prompt, state["section_id"])
 
         return {
             **state,
@@ -35,7 +35,7 @@ class LLMAgent:
             user_preferences=state["user_preferences"]
         )
 
-        response = await call_llm(prompt)
+        response = await call_llm(prompt, state["section_id"])
 
         return {
             **state,

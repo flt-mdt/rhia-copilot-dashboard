@@ -8,15 +8,20 @@ client = AsyncOpenAI(
     timeout=settings.llm_timeout
 )
 
-async def call_llm(prompt: str) -> dict:
+async def call_llm(prompt: str, section_id: str) -> dict:
     """
     Envoie un prompt au LLM (OpenAI) et renvoie la réponse + estimation de confiance.
     """
     try:
+        system_message = (
+            "Tu es un expert RH chargé de rédiger uniquement la section '"
+            f"{section_id}" "' d'un brief de poste. Ne génère aucune autre section."
+        )
+
         response = await client.chat.completions.create(
             model=settings.openai_model,
             messages=[
-                {"role": "system", "content": "Tu es un expert RH chargé de rédiger des briefs de poste précis, inclusifs et adaptés au niveau de séniorité."},
+                {"role": "system", "content": system_message},
                 {"role": "user", "content": prompt}
             ],
             temperature=settings.temperature,
