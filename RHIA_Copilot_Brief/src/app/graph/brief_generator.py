@@ -31,6 +31,5 @@ graph.add_conditional_edges(
     "verify", lambda state: "build_prompt" if state.get("fallback_needed") else "output"
 )
 
-
-# 5. Compiler le graphe
-brief_graph = graph.compile()
+# 5. Compiler le graphe␊
+brief_graph = graph.compile()␊
