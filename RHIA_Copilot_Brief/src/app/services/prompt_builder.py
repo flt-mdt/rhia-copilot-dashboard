@@ -38,7 +38,7 @@ def build_prompt(
     user_data = brief_data.get(section_id, {})
 
     return f"""
-Tu es un expert RH en charge de rédiger une section de brief de poste.
+Tu es un expert RH en charge de rédiger une seule section de brief de poste.
 Respecte les bonnes pratiques RH : clarté, inclusivité, précision.
 
 ## CONTEXTE SEMANTIQUE (issu de documents similaires)
@@ -50,10 +50,11 @@ Respecte les bonnes pratiques RH : clarté, inclusivité, précision.
 - Ton attendu : {tone}
 - Niveau : {seniority}
 - Données utilisateur : {user_data}
+- Réponds uniquement par le texte de cette section
 
 ## CONTRAINTES
 - Si une information est manquante, indique-la entre parenthèses : (à compléter)
-- Ne reformule pas les autres sections
+- Ne génère aucune autre section
 - Utilise un format strictement Markdown
 
 Commence la rédaction maintenant.
@@ -92,6 +93,7 @@ Tu es un assistant RH expert chargé de reformuler une section de brief de poste
 - Style : {tone}
 - Réécris dans un format Markdown propre
 - Ne jamais sortir du périmètre de la section
+- Réponds uniquement par le texte de cette section
 
 Commence la reformulation maintenant.
 """.strip()
