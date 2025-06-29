@@ -1,270 +1,275 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { LogIn, ChevronRight, Check } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { SecurityComplianceSection } from '@/components/subscription/SecurityComplianceSection';
-
-interface PricingFeature {
-  text: string;
-  included: boolean;
-}
-
-interface PricingPlan {
-  id: string;
-  name: string;
-  price: number;
-  currency: string;
-  period: string;
-  description: string;
-  features: PricingFeature[];
-  highlighted?: boolean;
-  priceId: string; // Stripe price ID
-}
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useSEO } from '@/hooks/useSEO';
 
 const Subscription = () => {
   const { t } = useLanguage();
-  const navigate = useNavigate();
 
-  const plans: PricingPlan[] = [
-    {
-      id: 'starter',
-      name: t('subscription.plans.starter.name'),
-      price: 29,
-      currency: '€',
-      period: '/mois',
-      description: t('subscription.plans.starter.description'),
-      priceId: 'price_starter_monthly',
-      features: [
-        { text: t('subscription.plans.starter.features.requests'), included: true },
-        { text: t('subscription.plans.starter.features.accounts'), included: true },
-        { text: t('subscription.plans.starter.features.emailSupport'), included: true },
-        { text: t('subscription.plans.starter.features.platformAccess'), included: true },
-        { text: t('subscription.plans.starter.features.hrReports'), included: true },
-        { text: t('subscription.plans.starter.features.apiIntegration'), included: false },
-        { text: t('subscription.plans.starter.features.dedicatedSupport'), included: false },
-      ]
-    },
-    {
-      id: 'pro',
-      name: t('subscription.plans.pro.name'),
-      price: 79,
-      currency: '€',
-      period: '/mois',
-      description: t('subscription.plans.pro.description'),
-      priceId: 'price_pro_monthly',
-      features: [
-        { text: t('subscription.plans.pro.features.requests'), included: true },
-        { text: t('subscription.plans.pro.features.accounts'), included: true },
-        { text: t('subscription.plans.pro.features.hrReports'), included: true },
-        { text: t('subscription.plans.pro.features.prioritySupport'), included: true },
-        { text: t('subscription.plans.pro.features.platformAccess'), included: true },
-        { text: t('subscription.plans.pro.features.apiIntegration'), included: true },
-        { text: t('subscription.plans.pro.features.dedicatedSupport'), included: false },
-      ]
-    },
-    {
-      id: 'enterprise',
-      name: t('subscription.plans.enterprise.name'),
-      price: 199,
-      currency: '€',
-      period: '/mois',
-      description: t('subscription.plans.enterprise.description'),
-      priceId: 'price_enterprise_monthly',
-      features: [
-        { text: t('subscription.plans.enterprise.features.requests'), included: true },
-        { text: t('subscription.plans.enterprise.features.accounts'), included: true },
-        { text: t('subscription.plans.enterprise.features.apiWebhooks'), included: true },
-        { text: t('subscription.plans.enterprise.features.dedicatedSupport'), included: true },
-        { text: t('subscription.plans.enterprise.features.hrReports'), included: true },
-        { text: t('subscription.plans.enterprise.features.prioritySupport'), included: true },
-        { text: t('subscription.plans.enterprise.features.platformAccess'), included: true },
-      ]
-    }
-  ];
-
-  const faqs = [
-    {
-      id: 'faq1',
-      question: t('subscription.faq.changePlan.question'),
-      answer: t('subscription.faq.changePlan.answer'),
-    },
-    {
-      id: 'faq2',
-      question: t('subscription.faq.exceedQuota.question'),
-      answer: t('subscription.faq.exceedQuota.answer'),
-    },
-    {
-      id: 'faq3',
-      question: t('subscription.faq.freeTrial.question'),
-      answer: t('subscription.faq.freeTrial.answer'),
-    },
-    {
-      id: 'faq4',
-      question: t('subscription.faq.dataSecure.question'),
-      answer: t('subscription.faq.dataSecure.answer'),
-    },
-    {
-      id: 'faq5',
-      question: t('subscription.faq.integration.question'),
-      answer: t('subscription.faq.integration.answer'),
-    },
-    {
-      id: 'faq6',
-      question: t('subscription.faq.aiModel.question'),
-      answer: t('subscription.faq.aiModel.answer'),
-    },
-    {
-      id: 'faq7',
-      question: t('subscription.faq.supportOnboarding.question'),
-      answer: t('subscription.faq.supportOnboarding.answer'),
-    },
-  ];
-
-  const handleSubscribe = async (priceId: string, planName: string) => {
-    try {
-      // TODO: Remplacer par votre véritable appel API
-      console.log(`Création d'une session Stripe pour le plan: ${planName} (${priceId})`);
-      
-      // Exemple d'appel API (à adapter selon votre backend)
-      /*
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          priceId: priceId,
-          planName: planName,
-        }),
-      });
-      
-      const { url } = await response.json();
-      
-      if (url) {
-        window.location.href = url;
-      }
-      */
-      
-      // Simulation temporaire
-      alert(`Redirection vers Stripe pour le plan ${planName}...`);
-    } catch (error) {
-      console.error('Erreur lors de la création de la session Stripe:', error);
-      alert('Une erreur est survenue. Veuillez réessayer.');
-    }
-  };
+  useSEO({
+    title: 'Pricing Plans - RHIA Copilot | Choose Your AI Recruitment Solution',
+    description: 'Choose the perfect RHIA Copilot plan for your HR needs. From Starter to Enterprise, find AI-powered recruitment solutions that scale with your business. No commitment required.',
+    keywords: 'RHIA Copilot pricing, HR software plans, AI recruitment pricing, recruitment platform subscription, HR automation costs',
+    canonical: 'https://dashboard.rekrut.pro/subscription'
+  });
 
   return (
-    <div className="min-h-screen bg-white py-12 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header avec bouton Planifier une démo puis Connexion */}
-        <div className="flex justify-between items-center mb-8">
-          <button onClick={() => navigate('/')} className="flex items-center gap-3">
-            <img 
-              src="/lovable-uploads/fdc4d16b-8516-4b74-b559-2340f062242b.png" 
-              alt="RHIA Copilot Logo" 
-              className="h-10 w-10 object-contain"
-            />
-            <span className="font-semibold text-lg">RHIA Copilot</span>
-          </button>
-          {/* Boutons pixel perfect : copie exacte du style de Presentation */}
-          <div className="flex gap-4">
-            <Button
-              onClick={() => navigate('/schedule-demo')}
-              className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 hover:border-gray-400 font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
-              style={{ fontFamily: 'Inter, sans-serif' }}
-            >
-              {t('common.planDemo')}
-            </Button>
-            <Button
-              onClick={() => navigate('/login')}
-              className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-full transition-colors duration-200 text-sm h-10"
-              style={{ fontFamily: 'Inter, sans-serif' }}
-            >
-              {t('common.signIn')}
-            </Button>
-          </div>
+    <div className="transition-all duration-300 ease-in-out p-4 md:p-8 min-h-screen"
+      style={{ marginLeft: 'var(--sidebar-width, 256px)' }}>
+      <div className="container mx-auto py-12">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-semibold text-gray-800">{t('subscription.title')}</h1>
+          <p className="text-gray-500 mt-2">{t('subscription.subtitle')}</p>
         </div>
 
-        {/* Header content */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 mb-4">
-            {t('subscription.title')}
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            {t('subscription.subtitle')}
-          </p>
-        </div>
-
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8">
-          {plans.map((plan) => {
-            return (
-              <div 
-                key={plan.id}
-                className="rounded-2xl p-8 flex flex-col bg-blue-50"
-              >
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{plan.name}</h3>
-                
-                <div className="mb-6">
-                  <span className="text-5xl font-bold text-gray-900">
-                    {plan.price}{plan.currency}
-                  </span>
-                  <span className="text-gray-600">{plan.period}</span>
-                </div>
-                
-                <p className="text-gray-600 mb-8">{plan.description}</p>
-                
-                <div className="space-y-3 mb-10">
-                  {plan.features.filter(f => f.included).map((feature, fIndex) => (
-                    <div key={fIndex} className="flex items-start gap-3">
-                      <ChevronRight className="w-5 h-5 flex-shrink-0 mt-0.5 text-blue-600" />
-                      <span className="text-gray-700">{feature.text}</span>
-                    </div>
-                  ))}
-                </div>
-                
-                <Button 
-                  onClick={() => handleSubscribe(plan.priceId, plan.name)}
-                  variant="light-blue"
-                  className="mt-auto w-full justify-center h-12 text-md font-semibold"
-                >
-                  Choisir ce plan
-                </Button>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Starter Plan */}
+          <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">{t('subscription.plans.starter.name')}</CardTitle>
+              <CardDescription className="text-gray-500">{t('subscription.plans.starter.description')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.starter.features.requests')}</span>
               </div>
-            )
-          })}
-        </div>
-        
-        {/* Section Sécurité & Conformité */}
-        <SecurityComplianceSection />
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.starter.features.accounts')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.starter.features.platformAccess')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.starter.features.hrReports')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.starter.features.apiIntegration')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.starter.features.emailSupport')}</span>
+              </div>
+              <Button className="w-full">{t('subscription.subscribe')}</Button>
+            </CardContent>
+          </Card>
 
-        {/* FAQ Section */}
-        <div className="mt-24 mb-12">
-          <div className="grid md:grid-cols-3 gap-16">
-            <div className="md:col-span-1">
-              <h2 className="text-4xl md:text-5xl font-geist font-bold text-gray-900 leading-tight">
-                {t('subscription.faq.title')}
-              </h2>
-            </div>
-            <div className="md:col-span-2">
-              <Accordion type="single" collapsible className="w-full">
-                {faqs.map((faq) => (
-                  <AccordionItem value={faq.id} key={faq.id}>
-                    <AccordionTrigger className="text-left">
-                      {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </div>
+          {/* Pro Plan */}
+          <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-2 border-primary">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">{t('subscription.plans.pro.name')}</CardTitle>
+              <CardDescription className="text-gray-500">{t('subscription.plans.pro.description')}</CardDescription>
+              <Badge className="bg-primary text-primary-foreground mt-2">{t('subscription.mostPopular')}</Badge>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.pro.features.requests')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.pro.features.accounts')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.pro.features.platformAccess')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.pro.features.hrReports')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.pro.features.apiIntegration')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.pro.features.prioritySupport')}</span>
+              </div>
+              <Button className="w-full">{t('subscription.subscribe')}</Button>
+            </CardContent>
+          </Card>
+
+          {/* Enterprise Plan */}
+          <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">{t('subscription.plans.enterprise.name')}</CardTitle>
+              <CardDescription className="text-gray-500">{t('subscription.plans.enterprise.description')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.enterprise.features.requests')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.enterprise.features.accounts')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.enterprise.features.platformAccess')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.enterprise.features.hrReports')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.enterprise.features.apiWebhooks')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>{t('subscription.plans.enterprise.features.dedicatedSupport')}</span>
+              </div>
+              <Button className="w-full">{t('subscription.subscribe')}</Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        <section className="mt-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">{t('subscription.comparison.title')}</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full border border-gray-200 rounded-md">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="py-3 px-6 text-left font-medium text-gray-500 uppercase tracking-wider">{t('subscription.comparison.features')}</th>
+                  <th className="py-3 px-6 text-center font-medium text-gray-500 uppercase tracking-wider">Starter</th>
+                  <th className="py-3 px-6 text-center font-medium text-gray-500 uppercase tracking-wider">Pro</th>
+                  <th className="py-3 px-6 text-center font-medium text-gray-500 uppercase tracking-wider">Enterprise</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="py-4 px-6 border-b">
+                    <div className="flex items-center">
+                      <span>{t('subscription.comparison.aiRequests')}</span>
+                    </div>
+                  </td>
+                  <td className="py-4 px-6 border-b text-center">100</td>
+                  <td className="py-4 px-6 border-b text-center">1000</td>
+                  <td className="py-4 px-6 border-b text-center">{t('common.unlimited')}</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-6 border-b">
+                    <div className="flex items-center">
+                      <span>{t('subscription.comparison.hrAccounts')}</span>
+                    </div>
+                  </td>
+                  <td className="py-4 px-6 border-b text-center">1</td>
+                  <td className="py-4 px-6 border-b text-center">3</td>
+                  <td className="py-4 px-6 border-b text-center">10</td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-6 border-b">
+                    <div className="flex items-center">
+                      <span>{t('subscription.comparison.hrReports')}</span>
+                    </div>
+                  </td>
+                  <td className="py-4 px-6 border-b text-center"><Check className="h-4 w-4 mx-auto text-green-500" /></td>
+                  <td className="py-4 px-6 border-b text-center"><Check className="h-4 w-4 mx-auto text-green-500" /></td>
+                  <td className="py-4 px-6 border-b text-center"><Check className="h-4 w-4 mx-auto text-green-500" /></td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-6 border-b">
+                    <div className="flex items-center">
+                      <span>{t('subscription.comparison.apiWebhooks')}</span>
+                    </div>
+                  </td>
+                  <td className="py-4 px-6 border-b text-center"><X className="h-4 w-4 mx-auto text-red-500" /></td>
+                  <td className="py-4 px-6 border-b text-center"><Check className="h-4 w-4 mx-auto text-green-500" /></td>
+                  <td className="py-4 px-6 border-b text-center"><Check className="h-4 w-4 mx-auto text-green-500" /></td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-6 border-b">
+                    <div className="flex items-center">
+                      <span>{t('subscription.comparison.support')}</span>
+                    </div>
+                  </td>
+                  <td className="py-4 px-6 border-b text-center">{t('subscription.plans.starter.features.emailSupport')}</td>
+                  <td className="py-4 px-6 border-b text-center">{t('subscription.plans.pro.features.prioritySupport')}</td>
+                  <td className="py-4 px-6 border-b text-center">{t('subscription.plans.enterprise.features.dedicatedSupport')}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </div>
+        </section>
 
+        <section className="mt-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">{t('subscription.faq.title')}</h2>
+          <div className="space-y-4">
+            <details className="border border-gray-200 rounded-md shadow-sm" open>
+              <summary className="px-4 py-2 font-medium text-gray-800 list-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary">
+                {t('subscription.faq.changePlan.question')}
+              </summary>
+              <div className="px-4 py-2 text-gray-600">
+                {t('subscription.faq.changePlan.answer')}
+              </div>
+            </details>
+            <details className="border border-gray-200 rounded-md shadow-sm">
+              <summary className="px-4 py-2 font-medium text-gray-800 list-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary">
+                {t('subscription.faq.exceedQuota.question')}
+              </summary>
+              <div className="px-4 py-2 text-gray-600">
+                {t('subscription.faq.exceedQuota.answer')}
+              </div>
+            </details>
+            <details className="border border-gray-200 rounded-md shadow-sm">
+              <summary className="px-4 py-2 font-medium text-gray-800 list-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary">
+                {t('subscription.faq.freeTrial.question')}
+              </summary>
+              <div className="px-4 py-2 text-gray-600">
+                {t('subscription.faq.freeTrial.answer')}
+              </div>
+            </details>
+            <details className="border border-gray-200 rounded-md shadow-sm">
+              <summary className="px-4 py-2 font-medium text-gray-800 list-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary">
+                {t('subscription.faq.dataSecure.question')}
+              </summary>
+              <div className="px-4 py-2 text-gray-600">
+                {t('subscription.faq.dataSecure.answer')}
+              </div>
+            </details>
+             <details className="border border-gray-200 rounded-md shadow-sm">
+              <summary className="px-4 py-2 font-medium text-gray-800 list-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary">
+                {t('subscription.faq.integration.question')}
+              </summary>
+              <div className="px-4 py-2 text-gray-600">
+                {t('subscription.faq.integration.answer')}
+              </div>
+            </details>
+             <details className="border border-gray-200 rounded-md shadow-sm">
+              <summary className="px-4 py-2 font-medium text-gray-800 list-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary">
+                {t('subscription.faq.aiModel.question')}
+              </summary>
+              <div className="px-4 py-2 text-gray-600">
+                {t('subscription.faq.aiModel.answer')}
+              </div>
+            </details>
+             <details className="border border-gray-200 rounded-md shadow-sm">
+              <summary className="px-4 py-2 font-medium text-gray-800 list-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary">
+                {t('subscription.faq.supportOnboarding.question')}
+              </summary>
+              <div className="px-4 py-2 text-gray-600">
+                {t('subscription.faq.supportOnboarding.answer')}
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <section className="mt-12 text-center">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">{t('subscription.cta.needHelp')}</h2>
+          <Button variant="outline">{t('subscription.cta.contactTeam')}</Button>
+        </section>
+
+        <SecurityComplianceSection />
       </div>
     </div>
   );

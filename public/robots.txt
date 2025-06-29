@@ -1,14 +1,66 @@
+
+# Robots.txt for RHIA Copilot - AI-Powered HR Recruitment Platform
+# https://dashboard.rekrut.pro
+
+User-agent: *
+Allow: /
+Allow: /presentation
+Allow: /login
+Allow: /subscription
+Allow: /privacy
+Allow: /schedule-demo
+
+# Disallow sensitive or private areas
+Disallow: /dashboard*
+Disallow: /candidates*
+Disallow: /job-postings*
+Disallow: /settings*
+Disallow: /help*
+Disallow: /hunter*
+Disallow: /collection*
+Disallow: /saved-profiles*
+Disallow: /brief*
+Disallow: /job-templates*
+Disallow: /tracking*
+Disallow: /copilote-rh*
+
+# Disallow API endpoints
+Disallow: /api/
+Disallow: /v1/
+
+# Allow specific bots
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
 
 User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 2
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 2
+
+User-agent: facebookexternalhit
 Allow: /
 
 User-agent: Twitterbot
 Allow: /
 
-User-agent: facebookexternalhit
+User-agent: LinkedInBot
 Allow: /
 
-User-agent: *
-Allow: /
+# Sitemap location
+Sitemap: https://dashboard.rekrut.pro/sitemap.xml
